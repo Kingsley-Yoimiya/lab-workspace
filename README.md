@@ -10,8 +10,9 @@
 .
 ├── projects/
 │   ├── probing/         # DeepLink-org/probing（上游参考）
-│   ├── Probing_plus/    # Ascend 适配（开发主战场，分支 kingsley/ascend-lab）
-│   └── probing-test/    # 历史 Nvidia 测试参考
+│   ├── Probing_plus/    # → Kingsley-Yoimiya/Probing（分支 kingsley/ascend-lab）
+│   ├── probing-test/    # 历史 Nvidia 测试参考
+│   └── CARD_SCREEN/     # ShilohYu/CARD_SCREEN（分支 montyyin_develop）
 ├── scripts/             # 恢复与 SSH 代理脚本
 ├── configs/
 ├── docs/
@@ -32,18 +33,19 @@ Host github.com
 
 验证：`ssh -F ~/.ssh/config -T git@github.com`
 
-## Probing_plus 开发分支（勿与上游混写）
+## Probing（原 Probing_plus）开发分支
 
-本地已切到 `kingsley/ascend-lab`。对 `banzhijiangshan/Probing_plus` **无 push 权限**，需要先 fork 到自己账号，再：
+路径仍为 `projects/Probing_plus`，远程：
 
-```bash
-cd projects/Probing_plus
-git remote rename origin upstream
-git remote add origin git@github.com:Kingsley-Yoimiya/Probing_plus.git
-git push -u origin kingsley/ascend-lab
-```
+- `origin` → `Kingsley-Yoimiya/Probing`（推送）
+- `upstream` → `banzhijiangshan/Probing_plus`（拉基线）
 
-之后改代码只在该分支 commit/push 到自己的 fork。
+工作分支：`kingsley/ascend-lab`（已与 origin 跟踪）。
+
+## CARD_SCREEN
+
+- 路径：`projects/CARD_SCREEN`
+- 工作分支：`montyyin_develop`（已推到 `ShilohYu/CARD_SCREEN`）
 
 ## 新机器恢复
 
