@@ -1,0 +1,77 @@
+{
+  "key_values": {
+    "all_reduce_256M_16": 149.84558285541254,
+    "all_reduce_256M_128": 137.7643413248867
+  },
+  "figures": [
+    "bus_bw_all_reduce.png",
+    "bus_bw_all_gather.png",
+    "bus_bw_reduce_scatter.png",
+    "bus_bw_broadcast.png",
+    "scaling_efficiency.png"
+  ],
+  "link_health": {
+    "n_nodes": 8,
+    "n_npu_per_node": 16,
+    "total_npu_ok": 128,
+    "nodes": [
+      {
+        "host": "huawei-8node-copy-master-0",
+        "npu_health_ok": 16,
+        "temp_min": 36,
+        "temp_max": 39,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-0",
+        "npu_health_ok": 16,
+        "temp_min": 37,
+        "temp_max": 39,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-1",
+        "npu_health_ok": 16,
+        "temp_min": 38,
+        "temp_max": 40,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-2",
+        "npu_health_ok": 16,
+        "temp_min": 37,
+        "temp_max": 39,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-3",
+        "npu_health_ok": 16,
+        "temp_min": 36,
+        "temp_max": 39,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-4",
+        "npu_health_ok": 16,
+        "temp_min": 38,
+        "temp_max": 40,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-5",
+        "npu_health_ok": 16,
+        "temp_min": 37,
+        "temp_max": 39,
+        "hccn_missing": true
+      },
+      {
+        "host": "huawei-8node-copy-worker-6",
+        "npu_health_ok": 16,
+        "temp_min": 36,
+        "temp_max": 39,
+        "hccn_missing": true
+      }
+    ],
+    "hccn_missing_count": 8
+  }
+}

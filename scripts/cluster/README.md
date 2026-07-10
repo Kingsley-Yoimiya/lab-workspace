@@ -35,6 +35,22 @@ PUSH=1 ./scripts/cluster/build_image.sh
 ./scripts/cluster/run_card_screen.sh
 ./scripts/cluster/run_probing_plus.sh
 
+# 128 卡筛卡扇出（perf + 轻量 SDC）
+./scripts/cluster/run_card_screen_128.sh
+
+# HCCL scale（16/32/64/128）+ 链路健康
+./scripts/cluster/run_hccl_scale.sh
+./scripts/cluster/run_link_health.sh
+
+# 训练 MFU 微基准（dense / moe）
+MODE=dense ./scripts/cluster/run_mfu_bench_scale.sh
+MODE=moe MASTER_PORT=31001 ./scripts/cluster/run_mfu_bench_scale.sh
+
+# 报告（本机）
+python3 reports/gen_card_screen_128_report.py
+python3 reports/gen_hccl_128_report.py
+python3 reports/gen_train_mfu_128_report.py
+
 # 辅助
 ./scripts/cluster/job_helpers.sh pods
 ```

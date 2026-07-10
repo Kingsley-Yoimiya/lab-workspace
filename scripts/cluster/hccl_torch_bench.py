@@ -1,0 +1,148 @@
+#!/usr/bin/env python3
+"""PyTorch HCCL collective microbenchmark (替代未编译的 hccl_test)。
+
+单机: torchrun --nproc_per_node=16 hccl_torch_bench.py --out ...
+多机: 各节点 torchrun --nnodes=N --node_rank=R --master_addr=... --nproc_per_node=16 ...
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import os
+import time
+from pathlib import Path
+
+
+def _bytes_list(spec: str) -> list[int]:
+    out = []
+    for part in spec.split(","):
+        part = part.strip().upper()
+        if part.endswith("K"):
+            out.append(int(float(part[:-1]) * 1024))
+        elif part.endswith("M"):
+            out.append(int(float(part[:-1]) * 1024**2))
+        elif part.endswith("G"):
+            out.append(int(float(part[:-1]) * 1024**3))
+        else:
+            out.append(int(part))
+    return out
+
+
+def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--ops", default="all_reduce,all_gather,reduce_scatter,broadcast")
+    ap.add_argument("--sizes", default="1M,16M,64M,256M")
+    ap.add_argument("--warmup", type=int, default=5)
+    ap.add_argument("--iters", type=int, default=20)
+    ap.add_argument("--dtype", default="fp32", choices=["fp32", "fp16", "bf16"])
+    ap.add_argument("--out", required=True)
+    args = ap.parse_args()
+
+    import torch
+    import torch.distributed as dist
+    import torch_npu  # noqa: F401
+
+    dist.init_process_group(backend="hccl")
+    rank = dist.get_rank()
+    world = dist.get_world_size()
+    local_rank = int(os.environ.get("LOCAL_RANK", rank % 16))
+    torch.npu.set_device(local_rank)
+
+    dtype = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}[args.dtype]
+    ops = [x.strip() for x in args.ops.split(",") if x.strip()]
+    sizes = _bytes_list(args.sizes)
+    elem_size = torch.tensor([], dtype=dtype).element_size()
+
+    results = []
+    for nbytes in sizes:
+        n_elem = max(1, nbytes // elem_size)
+        # pad to world for reduce_scatter/all_gather friendliness
+        n_elem = (n_elem // world) * world
+        if n_elem < world:
+            n_elem = world
+
+        for op in ops:
+            if op == "all_reduce":
+                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
+            elif op == "broadcast":
+                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
+            elif op == "all_gather":
+                chunk = n_elem // world
+                t = torch.randn(chunk, device=f"npu:{local_rank}", dtype=dtype)
+                out = [torch.empty(chunk, device=f"npu:{local_rank}", dtype=dtype) for _ in range(world)]
+            elif op == "reduce_scatter":
+                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
+                out = torch.empty(n_elem // world, device=f"npu:{local_rank}", dtype=dtype)
+            else:
+                continue
+
+            # warmup
+            for _ in range(args.warmup):
+                if op == "all_reduce":
+                    dist.all_reduce(t)
+                elif op == "broadcast":
+                    dist.broadcast(t, src=0)
+                elif op == "all_gather":
+                    dist.all_gather(out, t)
+                elif op == "reduce_scatter":
+                    dist.reduce_scatter(out, list(t.chunk(world)))
+                torch.npu.synchronize()
+            dist.barrier()
+
+            t0 = time.perf_counter()
+            for _ in range(args.iters):
+                if op == "all_reduce":
+                    dist.all_reduce(t)
+                elif op == "broadcast":
+                    dist.broadcast(t, src=0)
+                elif op == "all_gather":
+                    dist.all_gather(out, t)
+                elif op == "reduce_scatter":
+                    dist.reduce_scatter(out, list(t.chunk(world)))
+                torch.npu.synchronize()
+            dist.barrier()
+            elapsed = time.perf_counter() - t0
+            avg_s = elapsed / args.iters
+            # bus bandwidth approx (all_reduce ~ 2*(n-1)/n * size / time)
+            data_bytes = n_elem * elem_size
+            if op == "all_reduce":
+                alg_bw = data_bytes / avg_s / 1e9
+                bus_bw = alg_bw * (2.0 * (world - 1) / world)
+            elif op in ("all_gather", "reduce_scatter"):
+                alg_bw = data_bytes / avg_s / 1e9
+                bus_bw = alg_bw * ((world - 1) / world)
+            else:
+                alg_bw = data_bytes / avg_s / 1e9
+                bus_bw = alg_bw
+
+            rec = {
+                "record": "hccl_bench",
+                "op": op,
+                "world_size": world,
+                "rank": rank,
+                "nbytes": data_bytes,
+                "avg_s": avg_s,
+                "alg_bw_GBps": alg_bw,
+                "bus_bw_GBps": bus_bw,
+                "dtype": args.dtype,
+            }
+            results.append(rec)
+            if rank == 0:
+                print(
+                    f"op={op} world={world} size={data_bytes} "
+                    f"avg_ms={avg_s*1e3:.3f} alg={alg_bw:.2f} bus={bus_bw:.2f} GB/s"
+                )
+
+    if rank == 0:
+        path = Path(args.out)
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("a") as f:
+            for r in results:
+                f.write(json.dumps(r) + "\n")
+        print(f"wrote {path}")
+
+    dist.destroy_process_group()
+
+
+if __name__ == "__main__":
+    main()

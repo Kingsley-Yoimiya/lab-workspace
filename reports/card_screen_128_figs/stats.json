@@ -1,0 +1,61 @@
+{
+  "n_cards": 128,
+  "summary": {
+    "good": 128
+  },
+  "medians": {
+    "func_tflops": 292.7877436845068,
+    "hbm_gbps": 1242.6201066288227,
+    "sustained_tflops": 307.08597069437565
+  },
+  "stats": {
+    "func_tflops": {
+      "mean": 290.93212920028367,
+      "median": 292.7877436845068,
+      "std": 6.99483341873905,
+      "min": 267.60312580961767,
+      "max": 300.99196517519437,
+      "cv_pct": 2.4042835825546316
+    },
+    "hbm_gbps": {
+      "mean": 1220.0598137886075,
+      "median": 1242.6201066288227,
+      "std": 48.496901389700966,
+      "min": 1013.3176553719545,
+      "max": 1262.141715430962,
+      "cv_pct": 3.974960968438531
+    },
+    "sustained_tflops": {
+      "mean": 306.4615605742092,
+      "median": 307.08597069437565,
+      "std": 4.106886364659885,
+      "min": 295.5074237664139,
+      "max": 313.2781959700451,
+      "cv_pct": 1.34009836566939
+    }
+  },
+  "representative_cards": {
+    "slow_sustained": {
+      "host": "huawei-8node-copy-worker-2",
+      "device": 3,
+      "sustained_tflops": 295.5074237664139
+    },
+    "median_sustained": {
+      "host": "huawei-8node-copy-worker-6",
+      "device": 1,
+      "sustained_tflops": 307.089478011122
+    },
+    "fast_sustained": {
+      "host": "huawei-8node-copy-worker-4",
+      "device": 0,
+      "sustained_tflops": 313.2781959700451
+    }
+  },
+  "figures": [
+    "boxplot_three_metrics.png",
+    "heatmap_host_device_deviation.png",
+    "bar_host_mean_std.png",
+    "sustained_timeseries_slow_median.png",
+    "shape_tflops_vs_n.png"
+  ]
+}
