@@ -1,0 +1,52 @@
+# === 密钥与敏感信息（绝不能入库）===
+.ssh/
+*.pem
+*.key
+.env
+.env.*
+!.env.example
+credentials.json
+**/secrets/
+
+# === 机器态 / IDE / 工具缓存 ===
+.cursor/
+.cursor-server/
+.paseo/
+.npm/
+.cache/
+.local/
+.config/
+.cargo/
+node/
+
+# === 依赖与构建产物 ===
+node_modules/
+__pycache__/
+*.pyc
+.venv/
+venv/
+dist/
+build/
+*.egg-info/
+.target/
+target/
+
+# === 数据 / 模型 / 日志（体积大，按需本地保留）===
+logs/
+*.log
+*.ckpt
+*.pt
+*.pth
+*.bin
+*.safetensors
+data/
+datasets/
+checkpoints/
+outputs/
+wandb/
+
+# === 系统杂项 ===
+.DS_Store
+Thumbs.db
+*.swp
+*~
