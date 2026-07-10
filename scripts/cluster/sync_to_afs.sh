@@ -27,7 +27,8 @@ echo "==> AFS_DEST=$AFS_DEST"
 echo "==> POD=$CLUSTER_POD via $CLUSTER_SSH_HOST"
 
 # 1) 准备 main worktree（与 ops/cluster 分离）
-if [[ ! -d "$MAIN_TREE/.git" ]]; then
+# 注意：git worktree 下 .git 是文件不是目录
+if [[ ! -e "$MAIN_TREE/.git" ]]; then
   echo "==> 创建 main worktree: $MAIN_TREE"
   git -C "$OPS_ROOT" fetch origin main
   git -C "$OPS_ROOT" worktree add -B main "$MAIN_TREE" origin/main
