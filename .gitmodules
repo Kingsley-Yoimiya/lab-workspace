@@ -4,9 +4,11 @@
 [submodule "projects/Probing_plus"]
 	path = projects/Probing_plus
 	url = git@github.com:Kingsley-Yoimiya/Probing.git
+	branch = kingsley/ascend-lab
 [submodule "projects/probing-test"]
 	path = projects/probing-test
 	url = git@github.com:Kingsley-Yoimiya/probing-test.git
 [submodule "projects/CARD_SCREEN"]
 	path = projects/CARD_SCREEN
 	url = git@github.com:ShilohYu/CARD_SCREEN.git
+	branch = montyyin_develop
