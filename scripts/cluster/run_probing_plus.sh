@@ -32,11 +32,17 @@ git log -1 --oneline 2>/dev/null || true
 
 echo '==> toolchain'
 python -V
+# 优先 AFS 上的 rust（install_rust_afs.sh 安装）
+if [[ -f /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh ]]; then
+  # shellcheck disable=SC1091
+  source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh
+  echo 'sourced AFS rust-env.sh'
+fi
 if command -v rustc >/dev/null 2>&1; then
   rustc -V
   echo RUSTC_OK
 else
-  echo 'PROBING_BLOCKED: rustc missing on this image (need rustup/cargo for build)'
+  echo 'PROBING_BLOCKED: rustc missing (run install_rust_afs.sh or use rust image)'
 fi
 command -v cargo >/dev/null 2>&1 && cargo -V || true
 command -v maturin >/dev/null 2>&1 && maturin --version || true

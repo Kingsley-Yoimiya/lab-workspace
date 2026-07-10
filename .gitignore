@@ -50,3 +50,6 @@ wandb/
 Thumbs.db
 *.swp
 *~
+
+# === 集群构建缓存（本机下载的 aarch64 二进制）===
+scripts/cluster/docker/rustup-init

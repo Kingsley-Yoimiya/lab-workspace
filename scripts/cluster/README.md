@@ -14,6 +14,17 @@
 ## 脚本
 
 ```bash
+# 本机 Clash → weibozhen:18080 反代（装 rustup / docker build 用）
+./scripts/cluster/egress_tunnel.sh start
+./scripts/cluster/egress_tunnel.sh test
+
+# 把 rust 装到 AFS（当前 job 立刻可用，不换镜像）
+./scripts/cluster/install_rust_afs.sh
+
+# 打带 rustup 的镜像（默认基于本地 a3-cann）
+./scripts/cluster/build_image.sh
+PUSH=1 ./scripts/cluster/build_image.sh
+
 # 带宽/连通性探测
 ./scripts/cluster/probe_net.sh
 
@@ -24,10 +35,6 @@
 ./scripts/cluster/run_card_screen.sh
 ./scripts/cluster/run_probing_plus.sh
 
-# 镜像骨架（默认不 push）
-./scripts/cluster/build_image.sh
-PUSH=1 ./scripts/cluster/build_image.sh
-
 # 辅助
 ./scripts/cluster/job_helpers.sh pods
 ```
@@ -37,9 +44,13 @@ PUSH=1 ./scripts/cluster/build_image.sh
 - `CLUSTER_SSH_HOST`（默认 `weibozhen`）
 - `CLUSTER_JOB` / `CLUSTER_POD`
 - `AFS_WORKSPACE`
+- `LOCAL_PROXY`（默认 `http://127.0.0.1:7897` Clash）
+- `REMOTE_PORT` / `REMOTE_PROXY_PORT`（默认 `18080`）
 - `LOG_DIR`（默认写到仓库上两级的 `logs/cluster-*`，即 `random-thing/logs/`）
 
 ## 注意
 
 - `ssh weibozhen` 登录容器上的 `/afs-a3-weight-share` 是假挂载，写不进 worker 真盘。
 - AFS 多节点共享，同步一次即可。
+- 登录机直连 GitHub/大文件 CDN 常超时；用 `egress_tunnel.sh` 走本机 Clash。
+- `scripts/cluster/docker/rustup-init` 为 aarch64 二进制，不入库，构建时自动下载。
