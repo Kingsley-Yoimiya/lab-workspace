@@ -76,8 +76,12 @@ REMOTE
 )
 
 # 注意：vcctl 无 TTY；用 bash -c 读 stdin
+# macOS 避免 AppleDouble / xattr 污染 AFS
+export COPYFILE_DISABLE=1
 tar -C "$MAIN_TREE" -cf - \
   --exclude='.DS_Store' \
+  --exclude='._*' \
+  --exclude='**/._*' \
   --exclude='**/__pycache__' \
   --exclude='**/.venv' \
   --exclude='**/node_modules' \

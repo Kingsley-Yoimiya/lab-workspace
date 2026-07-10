@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# 在 master pod 上冒烟 Probing_plus（安装/help；完整 make develop 可能较久）
+# 在 master pod 上冒烟 Probing_plus
+# MODE=smoke（默认）: 校验源码树 + 工具链，缺 rust 则明确阻塞、不长时间 pip
+# MODE=develop: 尝试 make develop（需 rustc/maturin，可能很久）
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -13,7 +15,7 @@ mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/probing_plus.log") 2>&1
 
 PP_DIR="${AFS_WORKSPACE}/projects/Probing_plus"
-MODE="${MODE:-smoke}"   # smoke | develop
+MODE="${MODE:-smoke}"
 echo "==> LOG_DIR=$LOG_DIR"
 echo "==> PP_DIR=$PP_DIR MODE=$MODE POD=$CLUSTER_POD"
 
@@ -21,44 +23,36 @@ cluster_pod_exec "$CLUSTER_POD" "
 set -euo pipefail
 cd '$PP_DIR'
 pwd
-ls -la | head
+test -f README.md && test -f Cargo.toml && test -f pyproject.toml
+echo PROBING_TREE_OK
+ls -la | head -20
+# submodule 可能无完整 .git；有则打印
 git rev-parse --abbrev-ref HEAD 2>/dev/null || true
 git log -1 --oneline 2>/dev/null || true
 
-echo '==> python/rust toolchain'
+echo '==> toolchain'
 python -V
-which rustc cargo maturin 2>/dev/null || true
-rustc -V 2>/dev/null || echo 'rustc missing'
+if command -v rustc >/dev/null 2>&1; then
+  rustc -V
+  echo RUSTC_OK
+else
+  echo 'PROBING_BLOCKED: rustc missing on this image (need rustup/cargo for build)'
+fi
+command -v cargo >/dev/null 2>&1 && cargo -V || true
+command -v maturin >/dev/null 2>&1 && maturin --version || true
+command -v probing >/dev/null 2>&1 && probing --help 2>&1 | head -20 && echo PROBING_HELP_OK || echo 'probing binary not installed'
 
 if [[ '$MODE' == 'develop' ]]; then
-  echo '==> make develop (可能很久)'
+  if ! command -v rustc >/dev/null 2>&1; then
+    echo 'MODE=develop but rustc missing; abort develop'
+    exit 2
+  fi
   python3 -m pip install -q maturin
   make develop 2>&1 | tail -80
-fi
-
-# 优先已安装的 probing；否则尝试 pip 可编辑/帮助路径
-if command -v probing >/dev/null 2>&1; then
   probing --help 2>&1 | head -40
-  echo PROBING_HELP_OK
-elif [[ -f pyproject.toml ]]; then
-  echo '==> try pip install -e . (may fail without rust)'
-  set +e
-  python -m pip install -e . 2>&1 | tee /tmp/probing_pip.log | tail -40
-  PIP_RC=\${PIPESTATUS[0]}
-  set -e
-  if command -v probing >/dev/null 2>&1; then
-    probing --help 2>&1 | head -40
-    echo PROBING_HELP_OK
-  else
-    echo \"PROBING_INSTALL_BLOCKED rc=\$PIP_RC\" 
-    tail -20 /tmp/probing_pip.log || true
-    # 至少验证源码树可读
-    test -f README.md && echo PROBING_TREE_OK
-  fi
-else
-  echo PROBING_TREE_MISSING
-  exit 1
+  echo PROBING_DEVELOP_OK
 fi
+echo PROBING_SMOKE_DONE
 " | tee "$LOG_DIR/probing_plus.remote.log"
 
 echo "==> Probing_plus 冒烟结束 → $LOG_DIR"
