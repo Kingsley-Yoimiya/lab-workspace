@@ -8,7 +8,7 @@
 
 | 图目录 | SVG 数 | 绘图入口 | 原始数据 |
 |--------|--------|----------|----------|
-| `card_constitution_muxi_20260711_figs/` | 91 | `reports/plot_card_constitution.py` | `logs/muxi-constitution-20260711_140024-muxi-constitution128/results/constitution128.merged.jsonl` |
+| `card_constitution_muxi_20260711_figs/` | 108 | `reports/plot_card_constitution.py` | `logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl` |
 | `constitution_extra_muxi_20260711_figs/` | 12 | `reports/plot_constitution_extra.py` | 同上 merged JSONL |
 | `nccl_campaign_muxi_20260711_figs/` | 23 | （若有）NCCL 同构 plot 入口 | `logs/muxi-nccl-campaign-20260711/nccl-results/scale_*.jsonl`；AFS `/afs-a3-weight-share/montyyin/results/nccl-20260711_142129` |
 
@@ -16,7 +16,7 @@
 
 ### 0.1 体质采集公共条件
 
-- **Launch**（`logs/muxi-constitution-20260711_140024-muxi-constitution128/launch_one.sh`）：
+- **Launch**（`logs/muxi-constitution-20260711_232400-muxi-constitution128/launch_one.sh`）：
   ```text
   python screen.py --device all --config config.constitution128.yaml \
     --sdc-rounds 5 --gemm-n 8192 --sustained-s 30 \
@@ -30,9 +30,10 @@
 
 ### 0.2 本批明确缺口
 
-- **无 BNMK sample**（无 `gemm_bnmk_sample` / 无 `bnmk_shapes_*_figs`）
-- **无 board_temp / util 接线**（`board_temp_c`、`*_util_pct` 等出图 skip）
+- **有 BNMK sample**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）
+- **board_temp / GPU util / XCORE clk 已落盘**（出图可见）
 - NCCL 跨节点走 **`SOCKET_IFNAME=eth0`**；拓扑可见 mlx5/xscale，本批未切 IB 数据面
+- master 8 卡 **contended**（preflight 撞到残留 compute 进程）；worker-12:0 **bad**
 
 ## 1. NCCL 数据路径
 

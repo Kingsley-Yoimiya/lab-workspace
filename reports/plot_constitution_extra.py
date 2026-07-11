@@ -48,6 +48,36 @@ METRIC_LABEL: dict[str, str] = {
     "launch_burst_per_kernel_p50_us": "Burst/kernel p50 (μs)",
 }
 
+MUXI_METRIC_LABEL = {
+    "func_tflops": "GEMM func TFLOPS",
+    "vector_gflops": "Vector FMA GFLOPS",
+    "mte_gbps": "DMA copy GB/s",
+    "cube_vector_tflops": "GEMM+epilogue TFLOPS",
+}
+
+CORR_METRICS = [
+    ("func_tflops", "Cube"),
+    ("vector_gflops", "Vector"),
+    ("sfu_gflops", "SFU"),
+    ("mte_gbps", "MTE"),
+]
+
+MUXI_CORR_METRICS = [
+    ("func_tflops", "GEMM"),
+    ("vector_gflops", "Vector"),
+    ("sfu_gflops", "SFU"),
+    ("mte_gbps", "DMA"),
+]
+
+
+def apply_muxi_extra_labels() -> None:
+    METRIC_LABEL.update(MUXI_METRIC_LABEL)
+    CORR_METRICS[:] = list(MUXI_CORR_METRICS)
+    for i, (key, label) in enumerate(SMALL_MULTIPLE_METRICS):
+        if key in MUXI_METRIC_LABEL:
+            SMALL_MULTIPLE_METRICS[i] = (key, MUXI_METRIC_LABEL[key])
+
+
 # 雷达/平行坐标用（越高越好；launch 类取倒数归一化）
 RADAR_METRICS = [
     "func_tflops",
@@ -65,13 +95,6 @@ HBM_MODES = [
     ("hbm_mode_strided_gbps", "跨步"),
     ("hbm_mode_read_heavy_gbps", "读密集"),
     ("hbm_mode_write_heavy_gbps", "写密集"),
-]
-
-CORR_METRICS = [
-    ("func_tflops", "Cube"),
-    ("vector_gflops", "Vector"),
-    ("sfu_gflops", "SFU"),
-    ("mte_gbps", "MTE"),
 ]
 
 LAUNCH_KEYS = [
@@ -353,7 +376,7 @@ def plot_corr_heatmap(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
                 fontsize=annot_fontsize_for_grid(n, n),
                 color="white" if abs(corr[i, j]) > 0.6 else "black",
             )
-    ax.set_title("Cube / Vector / SFU / MTE 相关矩阵", fontsize=14)
+    ax.set_title("GEMM / Vector / SFU / DMA 相关矩阵", fontsize=14)
     fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Pearson r")
     style_heatmap_axes(ax, tick_fs=12)
     fig.tight_layout()
@@ -597,8 +620,8 @@ def plot_sustained_vs_func(cards: list[dict], fig_dir: Path, plt) -> str | None:
     ax.plot([lo, hi], [lo * med_ratio, hi * med_ratio], color="#F58518", linestyle=":",
             linewidth=1.2, label=f"中位比 sustained/func = {med_ratio:.3f}")
 
-    ax.set_xlabel("Cube func TFLOPS")
-    ax.set_ylabel("Sustained TFLOPS")
+    ax.set_xlabel(METRIC_LABEL.get("func_tflops", "func TFLOPS"))
+    ax.set_ylabel(METRIC_LABEL.get("sustained_tflops", "Sustained TFLOPS"))
     ax.set_title("Sustained vs Func 散点 · 稳定性分析", fontsize=13)
     ax.legend(fontsize=7, loc="best")
     style_axes(ax)
@@ -681,6 +704,9 @@ def generate(
     cards = load_cards(jsonl)
     if not cards:
         raise SystemExit(f"无 record=card 行：{jsonl}")
+    if any(str(c.get("backend", "")).lower() in {"metax", "muxi", "maca"}
+           for c in cards):
+        apply_muxi_extra_labels()
 
     report_path = out_dir / f"{stamp}.md"
     fig_dir = out_dir / f"{stamp}_figs"

@@ -58,6 +58,23 @@ NUMERIC_METRICS: list[tuple[str, str]] = [
 
 METRIC_LABEL = dict(NUMERIC_METRICS)
 
+# MetaX / Muxi figure labels: same JSONL keys, XCORE/MACA wording (not Ascend Cube/MTE).
+MUXI_METRIC_LABEL = {
+    "func_tflops": "GEMM func TFLOPS",
+    "vector_gflops": "Vector FMA GFLOPS",
+    "mte_gbps": "DMA copy GB/s",
+    "cube_vector_tflops": "GEMM+epilogue TFLOPS",
+    "aicore_freq_mhz": "XCORE clk (MHz)",
+    "aicore_util_pct": "GPU util %",
+}
+
+MUXI_SCATTER_TITLES = {
+    ("func_tflops", "vector_gflops"): "GEMM × Vector FMA",
+    ("hbm_gbps", "mte_gbps"): "HBM × DMA copy",
+    ("power_w", "func_tflops"): "Power × GEMM",
+    ("health_power_w", "func_tflops"): "Health power × GEMM",
+}
+
 # 正交散点：缺任一轴则跳过
 SCATTER_PAIRS: list[tuple[str, str, str]] = [
     ("func_tflops", "vector_gflops", "Cube × Vector"),
@@ -68,6 +85,21 @@ SCATTER_PAIRS: list[tuple[str, str, str]] = [
     ("health_power_w", "hbm_gbps", "Health power × HBM"),
     ("launch_host_overhead_p50_us", "ctrlcpu_util_pct", "Launch overhead × CtrlCPU"),
 ]
+
+
+def apply_muxi_labels() -> None:
+    """Rewrite in-place labels for MetaX C-series reports."""
+    for i, (key, label) in enumerate(NUMERIC_METRICS):
+        NUMERIC_METRICS[i] = (key, MUXI_METRIC_LABEL.get(key, label))
+    METRIC_LABEL.clear()
+    METRIC_LABEL.update(dict(NUMERIC_METRICS))
+    for i, (xk, yk, title) in enumerate(SCATTER_PAIRS):
+        SCATTER_PAIRS[i] = (xk, yk, MUXI_SCATTER_TITLES.get((xk, yk), title))
+
+
+def detect_muxi_cards(cards: list[dict]) -> bool:
+    return any(str(c.get("backend", "")).lower() in {"metax", "muxi", "maca"}
+               for c in cards)
 
 # heatmap / box / sorted_bar 优先画这些；其余有数据也画
 CORE_FOR_LAYOUT = [
@@ -597,6 +629,8 @@ def generate(
     cards = records["card"]
     if not cards:
         raise SystemExit(f"无 record=card 行：{paths}")
+    if detect_muxi_cards(cards):
+        apply_muxi_labels()
 
     stamp = stamp or datetime.now().strftime("%Y%m%d_%H%M%S")
     report_path = out_dir / f"card_constitution_{stamp}.md"

@@ -14,7 +14,7 @@
 |--------|------|------|
 | G0 双集群隔离 | **完成** | `huawei.env` / `muxi.env`；不覆盖默认 kubeconfig |
 | G1 快慢卡冒烟 128 | **完成** | good=106 / slow=19 / bad=1 / contended=2 |
-| G2 体质 constitution | **完成** | 127/128 有效；func 中位 **279.3 TFLOPS**；含义优先图 91 SVG |
+| G2 体质 constitution | **完成** | 127/128 有效；func 中位 **279.9 TFLOPS**；含义优先图 108 SVG |
 | G3 拓扑 | **完成** | 16/16 `mx-smi`；机内 MetaXLink；NIC mlx5+xscale |
 | G4 NCCL collective | **完成** | 8→128；单机 AR@256M ≈**190.5 GB/s**；跨节点保持率 ~**0.13%** |
 | G5 NCCL P2P | **完成** | ring 16/128；机内 16M ≈30–33 GB/s；跨节点 ≈0.35 |
@@ -25,7 +25,7 @@
 | G10 报告对齐 | **完成** | 本文件 + 语义手册 + 溯源 + 含义优先分报告 |
 
 **计划达成度：GOAL 主路径 100%。**  
-剩余为 **可选增强**：跨节点切 IB/`net*` 重测；TE fused attn 符号补齐后冲高真训练 MFU；metax 遥测 util / board_temp 接线；BNMK sample。
+剩余为 **可选增强**：跨节点切 IB/`net*` 重测；TE fused attn 符号补齐后冲高真训练 MFU；master contended / worker-12:0 单卡复测。
 
 ---
 
@@ -35,19 +35,22 @@
 
 | 指标 | 中位 | 覆盖 |
 |------|------|------|
-| 方阵 GEMM func TFLOPS | **279.3** | 127/128 |
-| Sustained TFLOPS | **279.5** | 127/128 |
-| HBM GB/s | **1470** | 127/128 |
-| Vector GFLOPS | **122.1** | 127/128 |
-| SFU（Gops/s 量级） | **176.8** | 127/128 |
-| MTE GB/s | **1387** | 127/128 |
-| Cube+Vector TFLOPS | **195.1** | 127/128 |
-| 空闲功耗 health_power_w | **94.83 W** | 128/128 |
-| 满载功耗 power_w | **467 W** | 127/128 |
+| 方阵 GEMM func TFLOPS | **279.9** | 127/128 |
+| Sustained TFLOPS | **280** | 127/128 |
+| HBM GB/s | **1469** | 127/128 |
+| Vector GFLOPS | **122.2** | 127/128 |
+| SFU（Gops/s 量级） | **177.4** | 127/128 |
+| 纯 copy / DMA GB/s | **1387** | 127/128 |
+| GEMM+epilogue TFLOPS | **195.2** | 127/128 |
+| 空闲功耗 health_power_w | **94.84 W** | 128/128 |
+| 满载功耗 power_w | **471 W** | 127/128 |
 | 功耗墙 power_limit_w | **550 W** | 127/128 |
-| 健康温度 health_temp_c | **38.75 °C** | 128/128 |
-| 冒烟判定 | good **106** / slow 19 / bad **1** | 128 |
-| BNMK | **无本批 sample** | — |
+| 健康温度 health_temp_c | **38.5 °C** | 128/128 |
+| GPU util（aicore_util_pct） | **98%** | 127/128 |
+| XCORE clk（aicore_freq_mhz） | **1500** | 127/128 |
+| board_temp_c | **54 °C** | 127/128 |
+| 判定（本批体质） | good **119** / contended **8** / bad **1** | 128 |
+| BNMK | **有 sample** | 本批已开 |
 
 ### 通信（All-Reduce @ 256MB bus_bw 保持率 vs **w8**，现算）
 
@@ -89,7 +92,7 @@
 
 ### 体质主报告
 - [`card_constitution_muxi_20260711.md`](card_constitution_muxi_20260711.md)
-- [`card_constitution_muxi_20260711_figs/`](card_constitution_muxi_20260711_figs/)（**91** svg）
+- [`card_constitution_muxi_20260711_figs/`](card_constitution_muxi_20260711_figs/)（**108** svg）
   - 注意：`timeseries_sustained_p05_p50.svg` = **跨卡** p05/p50（按 iter 对齐），不是代表卡时序
 
 ### 体质增强
@@ -110,7 +113,7 @@
 - 昇腾总汇报：[`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)
 
 ### 原始数据
-- 体质: `logs/muxi-constitution-20260711_140024-muxi-constitution128/results/constitution128.merged.jsonl`
+- 体质: `logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl`
 - NCCL 本地: `logs/muxi-nccl-campaign-20260711/nccl-results/`
 - NCCL AFS: `/afs-a3-weight-share/montyyin/results/nccl-20260711_142129`
 - 冒烟: `logs/muxi-card-screen-20260711_133828-muxi-smoke/`
@@ -127,13 +130,13 @@
 6. **AFS 写结果**：经 pod 写；登录机假挂载不可用。
 7. **G9 nvcc**：`CUDA_HOME/bin/nvcc` ← symlink `cucc`；TE fused attn 缺符号 → `local/unfused`。
 8. **假成功**：`torchrun | tee` 必须用 `PIPESTATUS[0]`。
-9. **遥测缺口**：本批无 board_temp/util 接线、无 BNMK sample——报告勿假装有图。
+9. **遥测缺口**：本批历史 JSONL 无 board_temp/GPU util/XCORE clk（采集层已补线：usage + `-j` static TTL）、无 BNMK sample——报告勿假装有图。
 
 ---
 
 ## 5. 一眼叙事
 
-这批 128 张 C550 **机内算力很齐**（func 中位 **279.3 TFLOPS**，覆盖 127/128），HBM 中位高但有整节点掉速簇；冒烟有 1 张正确性坏卡。
+这批 128 张 C550 **机内算力很齐**（func 中位 **279.9 TFLOPS**，覆盖 127/128），HBM 中位高但有整节点掉速簇；冒烟有 1 张正确性坏卡。
 
 通信上 **单机 All-Reduce@256MB 中位 ≈190.5 GB/s**，但 **一跨节点保持率就掉到 ~0.13%**（w128 ≈0.13%），
 P2P/MFU 同步复现同一断崖——根因是当前走 **eth0 socket**，不是 MetaXLink 坏了。拓扑已看到 mlx5/xscale，下一步应切 IB 重测。

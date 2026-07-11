@@ -1,6 +1,6 @@
 # Constitution 增强图 · Muxi · 20260711
 
-字段含义见 [`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)。同一 constitution merged JSONL（`muxi-constitution-20260711_140024-…`）。
+字段含义见 [`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)。同一 constitution merged JSONL（`muxi-constitution-20260711_232400-…`）。
 
 **box_launch_by_host.svg**：Launch 延迟分 host：空 sync p99、host 发射开销 p99、突发总时延 p50。**含义**：同上的 p99（µs）。看调度抖动尾延迟。  **底层**：同 launch_latency 探针。
 
@@ -22,7 +22,7 @@
 
 ![hbm_modes_grouped_bar.svg](constitution_extra_muxi_20260711_figs/hbm_modes_grouped_bar.svg)
 
-**heatmap_host_device_mte_gbps.svg**：host×device 上的 **`mte_gbps` 绝对值**。**含义**：纯拷贝带宽（GB/s）。代理 DMA/搬运通路，用来拆「算发访存」vs「纯搬运」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。
+**heatmap_host_device_mte_gbps.svg**：host×device 上的 **`mte_gbps` 绝对值**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![heatmap_host_device_mte_gbps.svg](constitution_extra_muxi_20260711_figs/heatmap_host_device_mte_gbps.svg)
 
@@ -34,7 +34,7 @@
 
 ![heatmap_host_device_sfu_gflops.svg](constitution_extra_muxi_20260711_figs/heatmap_host_device_sfu_gflops.svg)
 
-**heatmap_host_device_vector_gflops.svg**：host×device 上的 **`vector_gflops` 绝对值**。**含义**：Vector 单元 FMA 吞吐（GFLOPS）。代理宽并行向量通路，不是方阵 GEMM 主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**heatmap_host_device_vector_gflops.svg**：host×device 上的 **`vector_gflops` 绝对值**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
 
 ![heatmap_host_device_vector_gflops.svg](constitution_extra_muxi_20260711_figs/heatmap_host_device_vector_gflops.svg)
 

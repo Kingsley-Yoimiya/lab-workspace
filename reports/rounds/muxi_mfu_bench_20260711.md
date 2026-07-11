@@ -2,7 +2,7 @@
 
 时间: 2026-07-11  
 AFS: `/afs-a3-weight-share/montyyin/results/mfu-dense-20260711_152200`  
-峰值分母: constitution Cube func median **279 TFLOPS/卡**
+峰值分母: constitution GEMM func median **279 TFLOPS/卡**
 
 ## dense 全档
 

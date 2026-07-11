@@ -11,7 +11,7 @@ from pathlib import Path
 ROUNDS = Path(__file__).resolve().parent / "rounds"
 MERGED = Path(
     "/Users/yinjinrun/random-thing/logs/"
-    "muxi-constitution-20260711_140024-muxi-constitution128/results/"
+    "muxi-constitution-20260711_232400-muxi-constitution128/results/"
     "constitution128.merged.jsonl"
 )
 NCCL_DIR = Path(
@@ -40,7 +40,7 @@ SEM: dict[str, tuple[str, str]] = {
         "Event 计时中位。默认 1024MB，w20/i50。",
     ),
     "vector_gflops": (
-        "Vector 单元 FMA 吞吐（GFLOPS）。代理宽并行向量通路，不是方阵 GEMM 主路径。",
+        "宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。",
         "逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。",
     ),
     "scalar_elems_per_s": (
@@ -48,12 +48,13 @@ SEM: dict[str, tuple[str, str]] = {
         "`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。",
     ),
     "mte_gbps": (
-        "纯拷贝带宽（GB/s）。代理 DMA/搬运通路，用来拆「算发访存」vs「纯搬运」。",
-        "`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。",
+        "纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。",
+        "`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。",
     ),
     "cube_vector_tflops": (
-        "方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。看主算力→Vector 衔接。",
-        "`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。数值通常低于纯 `func_tflops`。",
+        "方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。"
+        "字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。",
+        "`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。",
     ),
     "sfu_gflops": (
         "特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。",
@@ -109,34 +110,33 @@ SEM: dict[str, tuple[str, str]] = {
         "同上。",
     ),
     "health_temp_c": (
-        "健康/开测路径温度快照（°C）。",
-        "`mx-smi` 温度解析（`MxSmiProvider`）。与负载中 board_temp **不同时刻**；"
-        "本批 board_temp 未接线。",
+        "健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。",
+        "`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；"
+        "本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。",
     ),
     "health_power_w": (
         "健康/轻载路径实时功耗（W），常近空闲。",
         "`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。",
     ),
     "board_temp_c": (
-        "板温（°C），昇腾侧取自负载遥测缓存。",
-        "沐曦本批 **无 board_temp util 接线**（字段常空 / 出图 skip）；"
-        "有值时应来自 `mx-smi`，不是 `npu-smi`。",
+        "板温（°C）。跨厂商通用键名；本批取 Board Temperature 传感器峰值。",
+        "`mx-smi --show-temperature` TTL 合并（不覆盖 dmon hotspot/power）。本批已落盘。",
     ),
     "aicore_util_pct": (
-        "算力利用率（%）。昇腾字段名 AICore；沐曦侧应对 `mx-smi` usages。",
-        "本批 **未接线 / 全空**。",
+        "GPU 利用率（%）。JSONL 键名 `aicore_*` 为昇腾同构兼容；沐曦语义是 GPU util。",
+        "`mx-smi --show-usage`（TTL）。本批已落盘；别名 `gpu_util_pct`。",
     ),
     "aicpu_util_pct": (
-        "AICPU 利用率（%）。",
-        "本批 **未接线 / 全空**。",
+        "昇腾 AICPU 利用率（%）。沐曦无对应单元；字段保留兼容，常空。",
+        "勿与 `vpu_util_pct`（视频处理单元）混读。",
     ),
     "ctrlcpu_util_pct": (
-        "CtrlCPU 利用率（%）。",
-        "本批 **未接线 / 全空**。",
+        "昇腾 CtrlCPU 利用率（%）。沐曦路径通常空。",
+        "本批 **未采集 / 全空**。",
     ),
     "mem_bw_util_pct": (
-        "HBM Bandwidth Usage Rate（%）。",
-        "本批 **未接线 / 全空**。",
+        "显存带宽利用率（%）。",
+        "可用 `mx-smi --show-hbm-bandwidth` 对照；本批体质 JSONL **未接线**。",
     ),
     "power_w": (
         "负载探针时段实时功耗（W）。",
@@ -144,19 +144,19 @@ SEM: dict[str, tuple[str, str]] = {
     ),
     "power_limit_w": (
         "功耗上限 / 功耗墙（W）。",
-        "`mx-smi` 解析；本批中位 550 W。",
+        "`mx-smi --show-board-power`；本批中位 550 W。",
     ),
     "shape_sweep_peak_tflops": (
         "名义「shape sweep 峰值」。",
-        "本批 **无 BNMK sample / 无 shape_sweep 回填**；字段常空。",
+        "本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。",
     ),
     "aicore_freq_mhz": (
-        "算力核频率（MHz）。",
-        "`mx-smi` 解析；本批常空。",
+        "XCORE 时钟（MHz）。键名 `aicore_*` 兼容昇腾；沐曦来自 `clocks.XCORE.XCORE_CLK`。",
+        "负载路径 TTL 合并 `mx-smi -j`；别名 `xcore_clk_mhz` / `sm_clock_mhz`。本批已落盘。",
     ),
     "hbm_temp_c": (
         "HBM 温度（°C）。",
-        "遥测解析；本批常空。",
+        "`mx-smi` 多传感器；本批历史数据常空。",
     ),
 }
 
@@ -255,13 +255,14 @@ def write_constitution(cards: list[dict]) -> int:
         "",
         "指标「是什么 / 底层 API」详见 "
         f"[`{SEM_LINK}`]({SEM_LINK})。",
-        "数据：`logs/muxi-constitution-20260711_140024-muxi-constitution128/results/"
+        "数据：`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/"
         "constitution128.merged.jsonl`；"
         "job `yushan-muxi-card-screen-128-cp-copy` **16×8=128**；"
         "`screen.py` + `config.constitution128.yaml`；"
         "`--sdc-rounds 5 --gemm-n 8192 --sustained-s 30`。",
         "计时：CUDA/MACA Event（`torch.cuda`）；遥测：`mx-smi`。"
-        "本批 **无 BNMK sample**；**无 board_temp / util 接线**。",
+        "本批 **有 BNMK sample**；board_temp / GPU util / XCORE clk **已落盘**。"
+        "架构对齐见 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)。",
         "",
         "## 关键中位",
         "",
@@ -337,7 +338,7 @@ def write_extra(cards: list[dict]) -> int:
         "# Constitution 增强图 · Muxi · 20260711",
         "",
         f"字段含义见 [`{SEM_LINK}`]({SEM_LINK})。"
-        "同一 constitution merged JSONL（`muxi-constitution-20260711_140024-…`）。",
+        "同一 constitution merged JSONL（`muxi-constitution-20260711_232400-…`）。",
         "",
     ]
     caps = {
@@ -540,7 +541,7 @@ def write_provenance(n_const: int, n_extra: int, n_nccl: int) -> None:
         "| 图目录 | SVG 数 | 绘图入口 | 原始数据 |",
         "|--------|--------|----------|----------|",
         f"| `card_constitution_muxi_20260711_figs/` | {n_const} | `reports/plot_card_constitution.py` | "
-        "`logs/muxi-constitution-20260711_140024-muxi-constitution128/results/constitution128.merged.jsonl` |",
+        "`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl` |",
         f"| `constitution_extra_muxi_20260711_figs/` | {n_extra} | `reports/plot_constitution_extra.py` | 同上 merged JSONL |",
         f"| `nccl_campaign_muxi_20260711_figs/` | {n_nccl} | （若有）NCCL 同构 plot 入口 | "
         "`logs/muxi-nccl-campaign-20260711/nccl-results/scale_*.jsonl`；"
@@ -550,7 +551,7 @@ def write_provenance(n_const: int, n_extra: int, n_nccl: int) -> None:
         "",
         "### 0.1 体质采集公共条件",
         "",
-        "- **Launch**（`logs/muxi-constitution-20260711_140024-muxi-constitution128/launch_one.sh`）：",
+        "- **Launch**（`logs/muxi-constitution-20260711_232400-muxi-constitution128/launch_one.sh`）：",
         "  ```text",
         "  python screen.py --device all --config config.constitution128.yaml \\",
         "    --sdc-rounds 5 --gemm-n 8192 --sustained-s 30 \\",
@@ -564,9 +565,10 @@ def write_provenance(n_const: int, n_extra: int, n_nccl: int) -> None:
         "",
         "### 0.2 本批明确缺口",
         "",
-        "- **无 BNMK sample**（无 `gemm_bnmk_sample` / 无 `bnmk_shapes_*_figs`）",
-        "- **无 board_temp / util 接线**（`board_temp_c`、`*_util_pct` 等出图 skip）",
+        "- **有 BNMK sample**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）",
+        "- **board_temp / GPU util / XCORE clk 已落盘**（出图可见）",
         "- NCCL 跨节点走 **`SOCKET_IFNAME=eth0`**；拓扑可见 mlx5/xscale，本批未切 IB 数据面",
+        "- master 8 卡 **contended**（preflight 撞到残留 compute 进程）；worker-12:0 **bad**",
         "",
         "## 1. NCCL 数据路径",
         "",
@@ -666,7 +668,7 @@ def write_campaign(
         "",
         "**计划达成度：GOAL 主路径 100%。**  ",
         "剩余为 **可选增强**：跨节点切 IB/`net*` 重测；TE fused attn 符号补齐后冲高真训练 MFU；"
-        "metax 遥测 util / board_temp 接线；BNMK sample。",
+        "重跑体质以落盘 GPU util / 多传感器温度；BNMK sample。",
         "",
         "---",
         "",
@@ -681,8 +683,8 @@ def write_campaign(
         f"| HBM GB/s | **{fmt(m('hbm_gbps'))}** | {cov('hbm_gbps')} |",
         f"| Vector GFLOPS | **{fmt(m('vector_gflops'))}** | {cov('vector_gflops')} |",
         f"| SFU（Gops/s 量级） | **{fmt(m('sfu_gflops'))}** | {cov('sfu_gflops')} |",
-        f"| MTE GB/s | **{fmt(m('mte_gbps'))}** | {cov('mte_gbps')} |",
-        f"| Cube+Vector TFLOPS | **{fmt(m('cube_vector_tflops'))}** | {cov('cube_vector_tflops')} |",
+        f"| 纯 copy / DMA GB/s | **{fmt(m('mte_gbps'))}** | {cov('mte_gbps')} |",
+        f"| GEMM+epilogue TFLOPS | **{fmt(m('cube_vector_tflops'))}** | {cov('cube_vector_tflops')} |",
         f"| 空闲功耗 health_power_w | **{fmt(m('health_power_w'))} W** | {cov('health_power_w')} |",
         f"| 满载功耗 power_w | **{fmt(m('power_w'))} W** | {cov('power_w')} |",
         f"| 功耗墙 power_limit_w | **{fmt(m('power_limit_w'))} W** | {cov('power_limit_w')} |",
@@ -744,7 +746,7 @@ def write_campaign(
         "- 昇腾总汇报：[`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)",
         "",
         "### 原始数据",
-        "- 体质: `logs/muxi-constitution-20260711_140024-muxi-constitution128/results/constitution128.merged.jsonl`",
+        "- 体质: `logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl`",
         "- NCCL 本地: `logs/muxi-nccl-campaign-20260711/nccl-results/`",
         "- NCCL AFS: `/afs-a3-weight-share/montyyin/results/nccl-20260711_142129`",
         "- 冒烟: `logs/muxi-card-screen-20260711_133828-muxi-smoke/`",
@@ -761,7 +763,8 @@ def write_campaign(
         "6. **AFS 写结果**：经 pod 写；登录机假挂载不可用。",
         "7. **G9 nvcc**：`CUDA_HOME/bin/nvcc` ← symlink `cucc`；TE fused attn 缺符号 → `local/unfused`。",
         "8. **假成功**：`torchrun | tee` 必须用 `PIPESTATUS[0]`。",
-        "9. **遥测缺口**：本批无 board_temp/util 接线、无 BNMK sample——报告勿假装有图。",
+        "9. **遥测缺口**：本批历史 JSONL 无 board_temp/GPU util/XCORE clk"
+        "（采集层已补线：usage + `-j` static TTL）、无 BNMK sample——报告勿假装有图。",
         "",
         "---",
         "",
@@ -815,7 +818,7 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         "`MetaxAdapter` / `MxSmiProvider`；`scripts/cluster/nccl_torch_bench.py`、"
         "`nccl_p2p_bench.py`、`mfu_train_bench_nccl.py`。  ",
         "> **本批数据路径**：  ",
-        "> - 体质 merged：`logs/muxi-constitution-20260711_140024-muxi-constitution128/results/"
+        "> - 体质 merged：`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/"
         "constitution128.merged.jsonl`  ",
         "> - NCCL 本地：`logs/muxi-nccl-campaign-20260711/nccl-results/scale_*.jsonl`  ",
         "> - NCCL AFS：`/afs-a3-weight-share/montyyin/results/nccl-20260711_142129`  ",
@@ -823,7 +826,9 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         "> **遥测统一命令**：`mx-smi`（温度/功耗/拓扑/MetaXLink）；"
         "**禁止**把昇腾 `npu-smi -t …` 套到沐曦。  ",
         "> **计时**：CUDA/MACA Event（`torch.cuda`），不是 NPU Event。  ",
-        "> **缺口**：无 BNMK sample；无 board_temp / util 接线。",
+        "> **架构对齐**：[`../research/METAX_ARCH_ALIGNMENT_20260711.md`]"
+        "(../research/METAX_ARCH_ALIGNMENT_20260711.md)（XCORE / MACA / MCCL / mx-smi）。  ",
+        "> **缺口**：有 BNMK sample；board_temp / GPU util / XCORE clk 已落盘。",
         "",
         "---",
         "",
@@ -844,7 +849,7 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         " `launch_one.sh`：`--gemm-n 8192 --sdc-rounds 5 --sustained-s 30`）。",
         f"- **本批中位**：**{mv('func_tflops')} TFLOPS**（覆盖 {cov('func_tflops')}）。",
         "- **注意**：短窗峰值；与 `sustained_tflops` 对比看热稳态。"
-        "勿与昇腾 Cube 绝对值直接当「谁更快」——硬件代差与探针参数需对齐后再比。",
+        "勿与昇腾 Cube/矩阵绝对值直接当「谁更快」——硬件代差与探针参数需对齐后再比。",
         "",
         "---",
         "",
@@ -874,9 +879,9 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         "- **是什么**：Vector FMA、cumsum 串行链、纯 `copy_`、`exp` SFU、GEMM+epilogue 流水"
         "（与昇腾同构字段名）。",
         "- **怎么得到**：对应 stage_c 探针；CUDA Event 中位。",
-        "- **关键参数**：Vector/SFU 64M fp32；Scalar 16M；MTE 512MB；pipeline N=4096 bf16。",
-        f"- **本批中位**：Vector **{mv('vector_gflops')}** GFLOPS；MTE **{mv('mte_gbps')}** GB/s；"
-        f"SFU **{mv('sfu_gflops')}**；Cube+Vector **{mv('cube_vector_tflops')}** TFLOPS；"
+        "- **关键参数**：Vector/SFU 64M fp32；Scalar 16M；DMA copy 512MB；pipeline N=4096 bf16。",
+        f"- **本批中位**：Vector **{mv('vector_gflops')}** GFLOPS；DMA copy **{mv('mte_gbps')}** GB/s；"
+        f"SFU **{mv('sfu_gflops')}**；GEMM+epilogue **{mv('cube_vector_tflops')}** TFLOPS；"
         f"Scalar **{mv('scalar_elems_per_s')}** elems/s。",
         "- **注意**：`sfu_gflops` 仍按 1 op/元素计，实质偏 Gops/s；勿与 Vector FMA 按 2× 换算。",
         "",
@@ -904,8 +909,8 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         f"负载 power **{mv('power_w')} W**；power limit **{mv('power_limit_w')} W**。",
         "- **注意**：",
         "  - **不要**把 health 与 load power 相减当降频证据。",
-        "  - 本批 `board_temp_c` / `*_util_pct` 等多数字段在 metax 路径上 **缺失或未接线**"
-        "（出图 skip）——不等于硬件没有，是采集覆盖缺口。",
+        "  - 本批历史 JSONL 中 `board_temp_c` / `*_util_pct` **未采集**"
+        "（≠硬件无；`mx-smi --show-usage` 已接线；出图 skip）。",
         "  - 相对昇腾：空闲/满载功耗量级不同（昇腾满载中位 ~872 W；沐曦 ~467 W / 550 W 墙）。",
         "",
         "---",
@@ -1007,7 +1012,7 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         else "| P2P vs AR | 协议不同，勿 1:1 |",
         "| eth0 0.2 GB/s vs MetaXLink | 跨节点当前路径 vs 机内路径；不是「卡不行」 |",
         "| `nvcc` shim | cu-bridge 用 `cucc`；Megatron fused_kernels 硬查 `nvcc` |",
-        "| BNMK / board_temp / util | **本批无 sample / 未接线** |",
+        "| BNMK / board_temp / GPU util | **本批无 sample / 历史未采集（代码已补线）** |",
         "",
         "---",
         "",
