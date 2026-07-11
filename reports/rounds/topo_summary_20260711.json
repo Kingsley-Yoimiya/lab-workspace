@@ -1,0 +1,103 @@
+{
+  "generated_at": "2026-07-11T14:04:54",
+  "source_dir": "/Users/yinjinrun/random-thing/logs/pipeline-comm-20260711_134811/hccl-topo/raw",
+  "per_host": [
+    {
+      "host": "master-0",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "master-0.raw.txt"
+    },
+    {
+      "host": "worker-0",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-0.raw.txt"
+    },
+    {
+      "host": "worker-1",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-1.raw.txt"
+    },
+    {
+      "host": "worker-2",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-2.raw.txt"
+    },
+    {
+      "host": "worker-3",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-3.raw.txt"
+    },
+    {
+      "host": "worker-4",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-4.raw.txt"
+    },
+    {
+      "host": "worker-5",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-5.raw.txt"
+    },
+    {
+      "host": "worker-6",
+      "n_phy": 16,
+      "npu_count": 8,
+      "sio_pairs": 8,
+      "hccs_sw_edges": 112,
+      "matrix_ok": true,
+      "hccn_conf_present": false,
+      "hccn_tool_present": false,
+      "source": "worker-6.raw.txt"
+    }
+  ],
+  "cluster": {
+    "n_hosts": 8,
+    "topo_tier_hint": "8n128",
+    "hccn_conf_present": false,
+    "hccn_tool_present": false,
+    "all_matrix_ok": true,
+    "npu_per_host": 8,
+    "phy_per_host": 16
+  }
+}

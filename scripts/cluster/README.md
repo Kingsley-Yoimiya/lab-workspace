@@ -2,14 +2,44 @@
 
 本机 pull → 经 `ssh weibozhen` + `vcctl pod exec` 写入真 AFS；**不要**在登录机/worker 上直连 GitHub。
 
+## 双集群并存（华为 Ascend + 沐曦 Muxi）
+
+两套集群共用跳板 `weibozhen`，但 **kubeconfig 必须隔离**，禁止互相 `cp` 覆盖 `~/.kube/config`（会踢掉另一边正在用的会话）。
+
+| Profile | 独立 kubeconfig（跳板上） | Job 示例 | AFS | 拓扑 |
+|---------|---------------------------|----------|-----|------|
+| `huawei.env` | `/root/.kube/config.huawei-a3-241ceshi` | `huawei-8node-copy*` | `/afs-a3-241ceshi-shared/...` | 8×16 NPU |
+| `muxi.env` | `/root/.kube/config.muxi-mohe` | `yushan-muxi-card-screen-128-cp-copy` | `/afs-a3-weight-share/...` | 16×8 MetaX |
+
+```bash
+# 查看两个 profile 文件是否齐全（不改默认 config）
+./scripts/cluster/switch_kube_context.sh status
+./scripts/cluster/switch_kube_context.sh ensure
+
+# 切华为 / 沐曦：只影响当前 shell 的 vcctl
+source scripts/cluster/huawei.env
+./scripts/cluster/job_helpers.sh pods
+
+source scripts/cluster/muxi.env
+./scripts/cluster/run_card_screen_muxi.sh          # master 冒烟
+CLUSTER_FANOUT_PARALLEL=6 ./scripts/cluster/run_card_screen_muxi.sh all
+```
+
+约定：
+
+- 默认 `~/.kube/config` **保持华为**，供其他同事/会话；本仓库脚本一律走 `CLUSTER_KUBECONFIG`。
+- 扇出并发默认有界（muxi=6），避免 16 路 SSH 把跳板打成 `Connection closed by UNKNOWN port`。
+- `egress_tunnel.sh` 的 18080 端口两边共用，同时只开一条即可。
+
 ## 路径约定
 
 | 位置 | 路径 |
 |------|------|
 | 本机 ops 仓库 | `project/lab-workspace`（本分支） |
 | 本机 main worktree | `project/lab-workspace-main`（`sync_to_afs.sh` 自动创建） |
-| AFS 工作区 | `/afs-a3-241ceshi-shared/montyyin/lab-workspace` |
-| 默认 job/pod | `huawei-8node-copy` / `…-master-0` |
+| 华为 AFS 工作区 | `/afs-a3-241ceshi-shared/montyyin/lab-workspace` |
+| 沐曦 AFS 结果 | `/afs-a3-weight-share/montyyin/results` |
+| 默认 job/pod（华为） | `huawei-8node-copy` / `…-master-0` |
 
 ## 脚本
 
@@ -65,14 +95,16 @@ python3 reports/gen_train_mfu_128_report.py
 ## 环境变量
 
 - `CLUSTER_SSH_HOST`（默认 `weibozhen`）
-- `CLUSTER_JOB` / `CLUSTER_POD`
-- `AFS_WORKSPACE`
+- `CLUSTER_KUBECONFIG`（跳板上独立 kubeconfig；由 `huawei.env` / `muxi.env` 强制设置）
+- `CLUSTER_JOB` / `CLUSTER_POD` / `DEVICES_PER_NODE` / `CLUSTER_FANOUT_PARALLEL`
+- `AFS_WORKSPACE` / `AFS_CS` / `AFS_RESULTS`
 - `LOCAL_PROXY`（默认 `http://127.0.0.1:7897` Clash）
 - `REMOTE_PORT` / `REMOTE_PROXY_PORT`（默认 `18080`）
 - `LOG_DIR`（默认写到仓库上两级的 `logs/cluster-*`，即 `random-thing/logs/`）
 
 ## 注意
 
+- **双集群**：只 `source *.env`，不要覆盖 `~/.kube/config`。
 - `ssh weibozhen` 登录容器上的 `/afs-a3-weight-share` 是假挂载，写不进 worker 真盘。
 - AFS 多节点共享，同步一次即可。
 - 登录机直连 GitHub/大文件 CDN 常超时；用 `egress_tunnel.sh` 走本机 Clash。
