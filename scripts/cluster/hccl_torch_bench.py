@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """PyTorch HCCL collective microbenchmark (替代未编译的 hccl_test)。
 
+每 rank 各自落盘计时（非 rank0-only），供 128 卡 host×device 热力图 P1 保底:
+  {out}.rank{R}.jsonl  （下游可 cat 合并为 {out}）
+
 单机: torchrun --nproc_per_node=16 hccl_torch_bench.py --out ...
 多机: 各节点 torchrun --nnodes=N --node_rank=R --master_addr=... --nproc_per_node=16 ...
 """
@@ -9,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import socket
 import time
 from pathlib import Path
 
@@ -43,10 +47,31 @@ def main() -> None:
     import torch_npu  # noqa: F401
 
     dist.init_process_group(backend="hccl")
+    try:
+        _run_bench(args)
+    finally:
+        if dist.is_initialized():
+            try:
+                torch.npu.synchronize()
+                dist.barrier()
+            except Exception:
+                pass
+            try:
+                dist.destroy_process_group()
+            except Exception:
+                pass
+
+
+def _run_bench(args: argparse.Namespace) -> None:
+    import torch
+    import torch.distributed as dist
+
     rank = dist.get_rank()
     world = dist.get_world_size()
     local_rank = int(os.environ.get("LOCAL_RANK", rank % 16))
     torch.npu.set_device(local_rank)
+    host = socket.gethostname()
+    device = f"npu:{local_rank}"
 
     dtype = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}[args.dtype]
     ops = [x.strip() for x in args.ops.split(",") if x.strip()]
@@ -63,16 +88,16 @@ def main() -> None:
 
         for op in ops:
             if op == "all_reduce":
-                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
+                t = torch.randn(n_elem, device=device, dtype=dtype)
             elif op == "broadcast":
-                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
+                t = torch.randn(n_elem, device=device, dtype=dtype)
             elif op == "all_gather":
                 chunk = n_elem // world
-                t = torch.randn(chunk, device=f"npu:{local_rank}", dtype=dtype)
-                out = [torch.empty(chunk, device=f"npu:{local_rank}", dtype=dtype) for _ in range(world)]
+                t = torch.randn(chunk, device=device, dtype=dtype)
+                out = [torch.empty(chunk, device=device, dtype=dtype) for _ in range(world)]
             elif op == "reduce_scatter":
-                t = torch.randn(n_elem, device=f"npu:{local_rank}", dtype=dtype)
-                out = torch.empty(n_elem // world, device=f"npu:{local_rank}", dtype=dtype)
+                t = torch.randn(n_elem, device=device, dtype=dtype)
+                out = torch.empty(n_elem // world, device=device, dtype=dtype)
             else:
                 continue
 
@@ -120,6 +145,8 @@ def main() -> None:
                 "op": op,
                 "world_size": world,
                 "rank": rank,
+                "host": host,
+                "local_rank": local_rank,
                 "nbytes": data_bytes,
                 "avg_s": avg_s,
                 "alg_bw_GBps": alg_bw,
@@ -133,15 +160,14 @@ def main() -> None:
                     f"avg_ms={avg_s*1e3:.3f} alg={alg_bw:.2f} bus={bus_bw:.2f} GB/s"
                 )
 
-    if rank == 0:
-        path = Path(args.out)
-        path.parent.mkdir(parents=True, exist_ok=True)
-        with path.open("a") as f:
-            for r in results:
-                f.write(json.dumps(r) + "\n")
-        print(f"wrote {path}")
-
-    dist.destroy_process_group()
+    # 每 rank 各自 append 计时（P1：打破 rank0-only，供 host×device 热力图）
+    path = Path(args.out)
+    path.parent.mkdir(parents=True, exist_ok=True)
+    rank_path = path.parent / f"{path.stem}.rank{rank}{path.suffix}"
+    with rank_path.open("a") as f:
+        for r in results:
+            f.write(json.dumps(r) + "\n")
+    print(f"rank{rank} wrote {rank_path} ({len(results)} lines)")
 
 
 if __name__ == "__main__":

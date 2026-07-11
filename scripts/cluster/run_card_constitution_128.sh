@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# 经 vcctl 扇出 CARD_SCREEN 到 8 个 pod（128 卡），结果写 AFS 再可 pull
+# 128 卡「体质」筛查：Cube + HBM + sustained + Vector/Scalar 吞吐 + launch 延迟
 # 用法:
-#   ./scripts/cluster/run_card_screen_128.sh
-#   SDC_ROUNDS=5 SUSTAINED_S=30 ./scripts/cluster/run_card_screen_128.sh
+#   ./scripts/cluster/run_card_constitution_128.sh
+#   SDC_ROUNDS=5 SUSTAINED_S=30 ./scripts/cluster/run_card_constitution_128.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-CASE_NAME="${CASE_NAME:-perf128}"
+CASE_NAME="${CASE_NAME:-constitution128}"
 RUN_ID="${RUN_ID:-${STAMP}-${CASE_NAME}}"
 AFS_CS="${AFS_WORKSPACE}/projects/CARD_SCREEN"
 AFS_OUT_ROOT="${AFS_RESULTS:-/afs-a3-241ceshi-shared/montyyin/results}"
@@ -21,10 +21,11 @@ SDC_ROUNDS="${SDC_ROUNDS:-5}"
 GEMM_N="${GEMM_N:-8192}"
 SUSTAINED_S="${SUSTAINED_S:-30}"
 IDLE_MAX_MIB="${IDLE_MAX_MIB:-1024}"
-CONFIG_NAME="${CONFIG_NAME:-config.perf128.yaml}"
+CONFIG_SRC="${CONFIG_SRC:-$SCRIPT_DIR/../../projects/CARD_SCREEN/config.constitution128.yaml}"
+CONFIG_NAME="${CONFIG_NAME:-config.constitution128.yaml}"
 
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/card-screen-128-${RUN_ID}}"
+LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/card-constitution-128-${RUN_ID}}"
 mkdir -p "$LOG_DIR"
 exec > >(tee -a "$LOG_DIR/fanout.log") 2>&1
 
@@ -39,93 +40,32 @@ PODS=(
   "${CLUSTER_JOB}-worker-6"
 )
 
-echo "==> RUN_ID=$RUN_ID"
+echo "==> RUN_ID=$RUN_ID CASE_NAME=$CASE_NAME"
 echo "==> AFS_OUT_DIR=$AFS_OUT_DIR"
 echo "==> LOG_DIR=$LOG_DIR"
-echo "==> SDC_ROUNDS=$SDC_ROUNDS GEMM_N=$GEMM_N SUSTAINED_S=$SUSTAINED_S"
+echo "==> CONFIG_SRC=$CONFIG_SRC"
 
-# 轻量配置：开 shape_sweep，缩短单 shape 封顶
+# 把体质配置推到 AFS（经 master pod）
+if [[ ! -f "$CONFIG_SRC" ]]; then
+  echo "ERROR: missing $CONFIG_SRC" >&2
+  exit 1
+fi
+
+# 经跳板把本地 yaml 写到 AFS
+TMP_B64="$(base64 < "$CONFIG_SRC" | tr -d '\n')"
 cluster_pod_exec "${PODS[0]}" "
 set -euo pipefail
-mkdir -p '$AFS_OUT_DIR'
-cat > '$AFS_CS/$CONFIG_NAME' <<'YAML'
-func_perf:
-  gemm_n: 8192
-  iters: 50
-  warmup: 20
-  dtype: bf16
-  tol: 0.02
-hbm:
-  mb: 1024
-  iters: 50
-  warmup: 20
-sustained:
-  seconds: 30.0
-  window: 50
-  flatline_min_samples: 20
-  flatline_iter_ms_range: 0.001
-shape_sweep:
-  start: 128
-  stop: 16880
-  min_seconds: 3.0
-  min_windows: 3
-  max_seconds: 20.0
-  window: 50
-  warmup: 10
-  dtype: bf16
-bnmk_sweep:
-  min_seconds: 2.0
-  min_windows: 3
-  max_seconds: 10.0
-  window: 50
-  warmup: 10
-  dtype: bf16
-  layout: NN
-  shapes:
-    - {B: 1, M: 8192, N: 8192, K: 8192}
-    - {B: 1, M: 4096, N: 4096, K: 11008}
-    - {B: 8, M: 2048, N: 2048, K: 2048}
-    - {B: 1, M: 16384, N: 1024, K: 1024}
-sdc:
-  rounds: 5
-health:
-  ecc_uncorrected_max: 0
-  telemetry_interval_s: 0.5
-preflight:
-  require_idle: true
-  max_memory_used_mib: 1024.0
-probes:
-  health:
-    enabled: true
-  func_perf:
-    enabled: true
-  hbm:
-    enabled: true
-  sustained:
-    enabled: true
-  shape_sweep:
-    enabled: true
-  bnmk_sweep:
-    enabled: true
-  sdc_cube_gemm:
-    enabled: true
-  sdc_vector_fma:
-    enabled: true
-  sdc_sfu_identity:
-    enabled: true
-  sdc_mem_pattern:
-    enabled: true
-  sdc_reduce_chain:
-    enabled: true
-YAML
+mkdir -p '$AFS_OUT_DIR' '$AFS_CS'
+echo '$TMP_B64' | base64 -d > '$AFS_CS/$CONFIG_NAME'
+# 同步增强后的 CARD_SCREEN 代码（若 AFS 已有旧树，用本机 sync 更稳；此处至少保证 config 到位）
 ls -la '$AFS_CS/$CONFIG_NAME' '$AFS_OUT_DIR'
+head -n 5 '$AFS_CS/$CONFIG_NAME'
 "
 
 run_one() {
   local pod="$1"
   local logf="$LOG_DIR/${pod}.log"
   echo "==> start $pod"
-  # shellcheck disable=SC2029
   ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" \
     "vcctl pod exec ${pod} -- bash -lc $(printf '%q' "
 set -euo pipefail
@@ -141,7 +81,7 @@ python screen.py \
   --idle-max-memory-mib $IDLE_MAX_MIB \
   --out '$OUT_JSONL' \
   --no-plot
-echo SCREEN_DONE_${pod}
+echo CONSTITUTION_DONE_${pod}
 ")" >"$logf" 2>&1 || {
     echo "FAIL $pod (see $logf)"
     return 1
@@ -169,7 +109,6 @@ python - <<'PY'
 from card_screen.cluster.aggregate import aggregate
 from pathlib import Path
 out = Path('$OUT_JSONL')
-# aggregate expects the base out path; it globs result.<host>.jsonl siblings
 summary = aggregate(str(out), slow_frac=0.2)
 print('n_cards', summary.get('n_cards'))
 print('summary', summary.get('summary'))
@@ -179,7 +118,6 @@ ls -la '$AFS_OUT_DIR' | head -40
 "
 
 echo "==> pull to $LOG_DIR"
-# 经 master 打包再 scp
 ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
   "vcctl pod exec -i ${PODS[0]} -- bash -c 'tar -C $AFS_OUT_DIR -cf - .' " \
   > "$LOG_DIR/results.tar" || true
@@ -191,4 +129,5 @@ if [[ "$FAIL" -ne 0 ]]; then
   echo "部分节点失败，检查 $LOG_DIR/*.log"
   exit 1
 fi
-echo "CARD_SCREEN_128_OK → $AFS_OUT_DIR / $LOG_DIR"
+echo "CARD_CONSTITUTION_128_OK → $AFS_OUT_DIR / $LOG_DIR"
+echo "NOTE: 跑前请先 sync 含 stage_c.py 的 CARD_SCREEN 到 AFS（sync_to_afs.sh）"

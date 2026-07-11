@@ -1,0 +1,604 @@
+{
+  "n_samples": 512,
+  "n_shapes": 4,
+  "inputs": [
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-master-0.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-0.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-1.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-2.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-3.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-4.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-5.jsonl",
+    "/Users/yinjinrun/random-thing/logs/card-diff-r1-20260710_234740/results/perf128bnmk.huawei-8node-copy-worker-6.jsonl"
+  ],
+  "shapes": {
+    "B1_M16384_N1024_K1024_NN_bf16": {
+      "shape_key": "B1_M16384_N1024_K1024_NN_bf16",
+      "B": 1,
+      "M": 16384,
+      "N": 1024,
+      "K": 1024,
+      "layout": "NN",
+      "dtype": "bf16",
+      "metric": "tflops",
+      "stats": {
+        "n": 128,
+        "mean": 310.2374907649304,
+        "median": 310.22409830229446,
+        "std": 0.18242994617944652,
+        "min": 309.7056642266235,
+        "max": 310.83534174319806,
+        "cv_pct": 0.05880332055601728
+      },
+      "topk_slow": [
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 9,
+          "tflops": 309.7056642266235,
+          "rel_med_pct": -0.16711599082987952
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 4,
+          "tflops": 309.8687861748321,
+          "rel_med_pct": -0.11453401892593301
+        },
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 11,
+          "tflops": 309.90455531868304,
+          "rel_med_pct": -0.1030039205078298
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 1,
+          "tflops": 309.91687119710326,
+          "rel_med_pct": -0.09903392640111036
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 7,
+          "tflops": 309.91908389370775,
+          "rel_med_pct": -0.09832066891511976
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 4,
+          "tflops": 309.920203583547,
+          "rel_med_pct": -0.09795973955941521
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 6,
+          "tflops": 309.9414525647627,
+          "rel_med_pct": -0.09111018102028454
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 2,
+          "tflops": 309.9828391191614,
+          "rel_med_pct": -0.07776932367710168
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 6,
+          "tflops": 310.0007358264486,
+          "rel_med_pct": -0.07200036266306477
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 4,
+          "tflops": 310.01417971978333,
+          "rel_med_pct": -0.06766675563243427
+        }
+      ],
+      "topk_fast": [
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 4,
+          "tflops": 310.83534174319806,
+          "rel_med_pct": 0.1970328688998149
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 6,
+          "tflops": 310.8252052283871,
+          "rel_med_pct": 0.19376538746738903
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 6,
+          "tflops": 310.74874679862444,
+          "rel_med_pct": 0.16911919454391824
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 1,
+          "tflops": 310.74089397839396,
+          "rel_med_pct": 0.1665878566261172
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 12,
+          "tflops": 310.62065872197246,
+          "rel_med_pct": 0.1278303077833665
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 11,
+          "tflops": 310.600441122216,
+          "rel_med_pct": 0.12131321260375579
+        },
+        {
+          "host": "huawei-8node-copy-worker-2",
+          "device": 11,
+          "tflops": 310.55439231030243,
+          "rel_med_pct": 0.1064694876431284
+        },
+        {
+          "host": "huawei-8node-copy-worker-2",
+          "device": 14,
+          "tflops": 310.52072106787506,
+          "rel_med_pct": 0.09561564275756326
+        },
+        {
+          "host": "huawei-8node-copy-worker-2",
+          "device": 5,
+          "tflops": 310.51959703470146,
+          "rel_med_pct": 0.09525331333836357
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 4,
+          "tflops": 310.4825620170542,
+          "rel_med_pct": 0.08331516351378694
+        }
+      ],
+      "figures": {
+        "heatmap": "heatmap_host_device_relmed_B1_M16384_N1024_K1024_NN_bf16.png",
+        "bar_sorted": "bar_sorted_cards_B1_M16384_N1024_K1024_NN_bf16.png"
+      }
+    },
+    "B1_M4096_N4096_K11008_NN_bf16": {
+      "shape_key": "B1_M4096_N4096_K11008_NN_bf16",
+      "B": 1,
+      "M": 4096,
+      "N": 4096,
+      "K": 11008,
+      "layout": "NN",
+      "dtype": "bf16",
+      "metric": "tflops",
+      "stats": {
+        "n": 128,
+        "mean": 277.2973492736098,
+        "median": 277.30026961545866,
+        "std": 0.3593878765001182,
+        "min": 276.4731909105389,
+        "max": 278.1515827876603,
+        "cv_pct": 0.12960379081933074
+      },
+      "topk_slow": [
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 14,
+          "tflops": 276.4731909105389,
+          "rel_med_pct": -0.2982610532859177
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 2,
+          "tflops": 276.56353000329744,
+          "rel_med_pct": -0.26568297722280504
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 9,
+          "tflops": 276.61712960778806,
+          "rel_med_pct": -0.24635389234130006
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 12,
+          "tflops": 276.68906029619546,
+          "rel_med_pct": -0.22041425351326918
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 6,
+          "tflops": 276.690167214363,
+          "rel_med_pct": -0.22001507677642088
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 14,
+          "tflops": 276.72413809516775,
+          "rel_med_pct": -0.20776450058626159
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 12,
+          "tflops": 276.7518523651178,
+          "rel_med_pct": -0.19777018287841594
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 6,
+          "tflops": 276.764635702604,
+          "rel_med_pct": -0.1931602567849858
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 0,
+          "tflops": 276.79432038222046,
+          "rel_med_pct": -0.18245537010829962
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 9,
+          "tflops": 276.8089118817306,
+          "rel_med_pct": -0.17719338477725308
+        }
+      ],
+      "topk_fast": [
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 15,
+          "tflops": 278.1515827876603,
+          "rel_med_pct": 0.3070004848470476
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 11,
+          "tflops": 278.0161008145338,
+          "rel_med_pct": 0.2581429870471429
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 1,
+          "tflops": 277.98229084381444,
+          "rel_med_pct": 0.24595043823850607
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 7,
+          "tflops": 277.9810458744115,
+          "rel_med_pct": 0.24550147747670828
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 9,
+          "tflops": 277.9200560311616,
+          "rel_med_pct": 0.22350732531289103
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 13,
+          "tflops": 277.8685977255017,
+          "rel_med_pct": 0.20495043543633454
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 11,
+          "tflops": 277.8528099399597,
+          "rel_med_pct": 0.1992570455366847
+        },
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 11,
+          "tflops": 277.8311564815042,
+          "rel_med_pct": 0.19144837716232038
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 3,
+          "tflops": 277.8262139707558,
+          "rel_med_pct": 0.18966600935026148
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 11,
+          "tflops": 277.8053298184805,
+          "rel_med_pct": 0.18213476810615406
+        }
+      ],
+      "figures": {
+        "heatmap": "heatmap_host_device_relmed_B1_M4096_N4096_K11008_NN_bf16.png",
+        "bar_sorted": "bar_sorted_cards_B1_M4096_N4096_K11008_NN_bf16.png"
+      }
+    },
+    "B1_M8192_N8192_K8192_NN_bf16": {
+      "shape_key": "B1_M8192_N8192_K8192_NN_bf16",
+      "B": 1,
+      "M": 8192,
+      "N": 8192,
+      "K": 8192,
+      "layout": "NN",
+      "dtype": "bf16",
+      "metric": "tflops",
+      "stats": {
+        "n": 128,
+        "mean": 277.59400282165615,
+        "median": 277.60720420551144,
+        "std": 0.4060593821468832,
+        "min": 276.4832445326469,
+        "max": 278.4232404768729,
+        "cv_pct": 0.14627815371348685
+      },
+      "topk_slow": [
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 1,
+          "tflops": 276.4832445326469,
+          "rel_med_pct": -0.4048741011895647
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 5,
+          "tflops": 276.7013594451777,
+          "rel_med_pct": -0.3263044858386207
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 13,
+          "tflops": 276.7351946640475,
+          "rel_med_pct": -0.3141163227227941
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 7,
+          "tflops": 276.79861547642463,
+          "rel_med_pct": -0.29127080163532515
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 15,
+          "tflops": 276.9283965845738,
+          "rel_med_pct": -0.24452089522687612
+        },
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 1,
+          "tflops": 276.9557938193515,
+          "rel_med_pct": -0.23465183046102556
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 1,
+          "tflops": 277.0415969121939,
+          "rel_med_pct": -0.2037437374639739
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 3,
+          "tflops": 277.04302421869005,
+          "rel_med_pct": -0.20322959140632624
+        },
+        {
+          "host": "huawei-8node-copy-worker-2",
+          "device": 15,
+          "tflops": 277.0464966824744,
+          "rel_med_pct": -0.20197873633781305
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 11,
+          "tflops": 277.05410232138,
+          "rel_med_pct": -0.19923902397070473
+        }
+      ],
+      "topk_fast": [
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 12,
+          "tflops": 278.4232404768729,
+          "rel_med_pct": 0.2939535642444395
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 4,
+          "tflops": 278.39228241899804,
+          "rel_med_pct": 0.28280181551247113
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 2,
+          "tflops": 278.26557461839707,
+          "rel_med_pct": 0.23715897963449187
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 4,
+          "tflops": 278.2635329292518,
+          "rel_med_pct": 0.23642351992223862
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 2,
+          "tflops": 278.2401093765257,
+          "rel_med_pct": 0.22798585967017454
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 14,
+          "tflops": 278.2264438775356,
+          "rel_med_pct": 0.2230632572365557
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 0,
+          "tflops": 278.2196975695232,
+          "rel_med_pct": 0.22063309407429083
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 10,
+          "tflops": 278.215035503246,
+          "rel_med_pct": 0.21895371896925778
+        },
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 4,
+          "tflops": 278.1988591301109,
+          "rel_med_pct": 0.21312664644015578
+        },
+        {
+          "host": "huawei-8node-copy-worker-6",
+          "device": 2,
+          "tflops": 278.17785198733145,
+          "rel_med_pct": 0.20555942827678422
+        }
+      ],
+      "figures": {
+        "heatmap": "heatmap_host_device_relmed_B1_M8192_N8192_K8192_NN_bf16.png",
+        "bar_sorted": "bar_sorted_cards_B1_M8192_N8192_K8192_NN_bf16.png"
+      }
+    },
+    "B8_M2048_N2048_K2048_NN_bf16": {
+      "shape_key": "B8_M2048_N2048_K2048_NN_bf16",
+      "B": 8,
+      "M": 2048,
+      "N": 2048,
+      "K": 2048,
+      "layout": "NN",
+      "dtype": "bf16",
+      "metric": "tflops",
+      "stats": {
+        "n": 128,
+        "mean": 308.8574122099852,
+        "median": 308.8186881045176,
+        "std": 0.40561037170007264,
+        "min": 307.6472755226099,
+        "max": 309.9736115201841,
+        "cv_pct": 0.13132609277458662
+      },
+      "topk_slow": [
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 12,
+          "tflops": 307.6472755226099,
+          "rel_med_pct": -0.3793204967930069
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 6,
+          "tflops": 307.79884796658854,
+          "rel_med_pct": -0.3302391264559442
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 10,
+          "tflops": 307.9213030024053,
+          "rel_med_pct": -0.2905863979995264
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 8,
+          "tflops": 307.96491577792045,
+          "rel_med_pct": -0.2764639445357008
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 0,
+          "tflops": 308.03395291261234,
+          "rel_med_pct": -0.25410871237160415
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 5,
+          "tflops": 308.05631367630133,
+          "rel_med_pct": -0.24686797061914062
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 1,
+          "tflops": 308.1065779826339,
+          "rel_med_pct": -0.23059165436345042
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 4,
+          "tflops": 308.14776584096586,
+          "rel_med_pct": -0.21725442448763846
+        },
+        {
+          "host": "huawei-8node-copy-worker-1",
+          "device": 14,
+          "tflops": 308.196952717125,
+          "rel_med_pct": -0.20132699585272393
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 6,
+          "tflops": 308.2301218637326,
+          "rel_med_pct": -0.1905863419074524
+        }
+      ],
+      "topk_fast": [
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 3,
+          "tflops": 309.9736115201841,
+          "rel_med_pct": 0.37398106402019227
+        },
+        {
+          "host": "huawei-8node-copy-worker-2",
+          "device": 10,
+          "tflops": 309.7609423629726,
+          "rel_med_pct": 0.30511568591863303
+        },
+        {
+          "host": "huawei-8node-copy-worker-3",
+          "device": 3,
+          "tflops": 309.6827705849131,
+          "rel_med_pct": 0.2798025228651489
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 5,
+          "tflops": 309.5834620282644,
+          "rel_med_pct": 0.24764496230486652
+        },
+        {
+          "host": "huawei-8node-copy-worker-4",
+          "device": 9,
+          "tflops": 309.5736995942238,
+          "rel_med_pct": 0.24448374362974534
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 7,
+          "tflops": 309.56893830345376,
+          "rel_med_pct": 0.24294196816296315
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 13,
+          "tflops": 309.5329806586887,
+          "rel_med_pct": 0.23129835780189173
+        },
+        {
+          "host": "huawei-8node-copy-worker-0",
+          "device": 9,
+          "tflops": 309.50926169709146,
+          "rel_med_pct": 0.22361781173687761
+        },
+        {
+          "host": "huawei-8node-copy-worker-5",
+          "device": 1,
+          "tflops": 309.4535151800389,
+          "rel_med_pct": 0.20556627560908286
+        },
+        {
+          "host": "huawei-8node-copy-master-0",
+          "device": 1,
+          "tflops": 309.45213307044025,
+          "rel_med_pct": 0.20511872834206982
+        }
+      ],
+      "figures": {
+        "heatmap": "heatmap_host_device_relmed_B8_M2048_N2048_K2048_NN_bf16.png",
+        "bar_sorted": "bar_sorted_cards_B8_M2048_N2048_K2048_NN_bf16.png"
+      }
+    }
+  }
+}

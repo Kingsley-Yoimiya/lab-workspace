@@ -1,0 +1,237 @@
+{
+  "data_dir": "/Users/yinjinrun/random-thing/logs/hccl-cluster-r0-20260710_235358/results",
+  "n_raw_lines": 176,
+  "n_edges_dedup": 88,
+  "world_size": 16,
+  "nbytes_lat": 65536,
+  "nbytes_bw": 16777216,
+  "ok_rate": 1.0,
+  "lat_us": {
+    "mean": 247.57237512279642,
+    "median": 245.11795490980148,
+    "std": 37.26084718490684,
+    "min": 186.12053245306015,
+    "max": 311.6525709629059,
+    "cv_pct": 15.050486616863202
+  },
+  "bw_GBps": {
+    "mean": 50.603467583266436,
+    "median": 50.8779009530585,
+    "std": 5.537456815871472,
+    "min": 23.175191527492284,
+    "max": 59.266955338504026,
+    "cv_pct": 10.942840639843029
+  },
+  "topk_slow_lat": [
+    {
+      "src": 6,
+      "dst": 7,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 311.6525709629059,
+      "relmed_pct": 27.143917742618168,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 2,
+      "dst": 3,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 308.6185082793236,
+      "relmed_pct": 25.906120746188925,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 0,
+      "dst": 2,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 307.61659145355225,
+      "relmed_pct": 25.49737189458398,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 2,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 303.99952083826065,
+      "relmed_pct": 24.0217269885947,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 4,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 298.0174496769905,
+      "relmed_pct": 21.581240259064245,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 13,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 297.05241322517395,
+      "relmed_pct": 21.187537377457033,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 0,
+      "dst": 1,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 295.5724485218525,
+      "relmed_pct": 20.5837608389876,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 5,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 284.5223993062973,
+      "relmed_pct": 16.07570706560271,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 1,
+      "dst": 2,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 282.8208729624748,
+      "relmed_pct": 15.381540722525717,
+      "ok": true,
+      "nbytes": 65536
+    },
+    {
+      "src": 4,
+      "dst": 5,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "lat_us": 281.28940612077713,
+      "relmed_pct": 14.756753018882693,
+      "ok": true,
+      "nbytes": 65536
+    }
+  ],
+  "topk_slow_bw": [
+    {
+      "src": 0,
+      "dst": 15,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 23.175191527492284,
+      "relmed_pct": -54.449395330058096,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 8,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 44.01080850049445,
+      "relmed_pct": -13.497200796274674,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 13,
+      "dst": 14,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 44.23496736713715,
+      "relmed_pct": -13.056618809903972,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 2,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 44.28295357738317,
+      "relmed_pct": -12.962302398756645,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 5,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 45.629741882515724,
+      "relmed_pct": -10.315203599662823,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 5,
+      "dst": 6,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 45.88594156939486,
+      "relmed_pct": -9.811645705017144,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 13,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 46.75280606522614,
+      "relmed_pct": -8.107832301569005,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 6,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 48.21677236743286,
+      "relmed_pct": -5.230421333774911,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 4,
+      "dst": 0,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 48.570508613382245,
+      "relmed_pct": -4.535156318270924,
+      "ok": true,
+      "nbytes": 16777216
+    },
+    {
+      "src": 2,
+      "dst": 3,
+      "src_host": "huawei-8node-copy-master-0",
+      "dst_host": "huawei-8node-copy-master-0",
+      "bw_GBps": 48.65107523271596,
+      "relmed_pct": -4.376803442416141,
+      "ok": true,
+      "nbytes": 16777216
+    }
+  ],
+  "figures": [
+    "heatmap_host_host_lat.png",
+    "heatmap_rank_rank_lat.png",
+    "bar_slow_edges_topk_lat.png",
+    "heatmap_host_host_bw.png",
+    "heatmap_rank_rank_bw.png",
+    "bar_slow_edges_topk_bw.png"
+  ]
+}

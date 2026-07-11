@@ -42,9 +42,16 @@ PUSH=1 ./scripts/cluster/build_image.sh
 ./scripts/cluster/run_hccl_scale.sh
 ./scripts/cluster/run_link_health.sh
 
-# 训练 MFU 微基准（dense / moe）
+# 训练 MFU 微基准（dense / moe）— 非完整 Qwen
 MODE=dense ./scripts/cluster/run_mfu_bench_scale.sh
 MODE=moe MASTER_PORT=31001 ./scripts/cluster/run_mfu_bench_scale.sh
+
+# 真 MindSpeed Qwen 训练 MFU（C0：默认 Ascend wrapper，dense=8B / moe=30B-A3B）
+MODE=dense SCALES=16 TRAIN_ITERS=5 ./scripts/cluster/run_train_mfu_scale.sh
+# Peak 分母（card-screen median func_tflops）
+python3 scripts/cluster/peak_from_card_screen.py --world-size 16
+# Probing AFS 就绪检查
+./scripts/cluster/check_probing_afs.sh
 
 # 报告（本机）
 python3 reports/gen_card_screen_128_report.py
