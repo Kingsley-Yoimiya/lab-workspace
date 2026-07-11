@@ -1,0 +1,10 @@
+{"id":"d_tp8pp1_rest","mode":"dense","scales":"64,128","tp":8,"pp":1,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P0 Dense TP8PP1 续 64/128（16/32已完成）"}
+{"id":"d_tp8pp2","mode":"dense","scales":"16,32,64,128","tp":8,"pp":2,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P0 Dense TP8PP2 扩DP"}
+{"id":"d_tp4pp2","mode":"dense","scales":"16,32,64,128","tp":4,"pp":2,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P1 Dense TP4PP2 扩DP"}
+{"id":"d_tp4pp4","mode":"dense","scales":"16,32,64,128","tp":4,"pp":4,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P1 Dense TP4PP4 扩DP"}
+{"id":"d_tp2pp4","mode":"dense","scales":"16,32,64,128","tp":2,"pp":4,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P1 Dense TP2PP4 扩DP"}
+{"id":"d_tp8pp4","mode":"dense","scales":"32,64,128","tp":8,"pp":4,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P2 Dense TP8PP4"}
+{"id":"d_tp2pp2","mode":"dense","scales":"16,32,64,128","tp":2,"pp":2,"ep":1,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"对照 Dense TP2PP2"}
+{"id":"m_tp1pp4ep4","mode":"moe","scales":"16,32,64,128","tp":1,"pp":4,"ep":4,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P0 MoE 默认族扩DP"}
+{"id":"m_tp2pp2ep4","mode":"moe","scales":"16,32,64,128","tp":2,"pp":2,"ep":4,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P1 MoE TP2PP2EP4"}
+{"id":"m_tp1pp2ep8","mode":"moe","scales":"16,32,64,128","tp":1,"pp":2,"ep":8,"mbs":1,"gbs":2048,"seq":4096,"iters":5,"note":"P1 MoE TP1PP2EP8"}
