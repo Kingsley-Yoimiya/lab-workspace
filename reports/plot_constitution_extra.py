@@ -14,6 +14,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from plot_style import (
+    apply_plot_style,
+    annot_fontsize_for_grid,
+    hatch_bar_kwargs,
+    natural_host_key,
+    save_fig,
+    short_host_label,
+    style_axes,
+    style_heatmap_axes,
+)
+
 # ── 指标定义 ──────────────────────────────────────────────────────────────
 
 METRIC_LABEL: dict[str, str] = {
@@ -94,16 +105,11 @@ SMALL_MULTIPLE_METRICS = [
     ("sfu_gflops", "SFU GFLOPS"),
 ]
 
-DPI = 150
-
 
 # ── 工具函数 ──────────────────────────────────────────────────────────────
 
 def short_host(host: str) -> str:
-    for prefix in ("whj4stu-copy-copy-copy-", "huawei-8node-copy-", "huawei-8node-", "ascend-"):
-        if host.startswith(prefix):
-            return host[len(prefix):]
-    return host
+    return short_host_label(host)
 
 
 def fmt(v: Any) -> str:
@@ -166,7 +172,7 @@ def load_cards(path: Path) -> list[dict]:
 
 
 def card_label(c: dict) -> str:
-    return f"{short_host(c.get('host', '?'))}:d{c.get('device')}"
+    return f"{short_host(c.get('host', '?'))}.{c.get('device')}"
 
 
 def _try_plt():
@@ -175,17 +181,14 @@ def _try_plt():
         import numpy as np
     except ImportError:
         return None, None
-    plt.rcParams["font.sans-serif"] = [
-        "PingFang SC", "Heiti SC", "Arial Unicode MS", "SimHei", "DejaVu Sans",
-    ]
-    plt.rcParams["axes.unicode_minus"] = False
+    apply_plot_style()
     return plt, np
 
 
 # ── 图 1：雷达 + 平行坐标 ────────────────────────────────────────────────
 
 def plot_radar_and_parallel(cards: list[dict], fig_dir: Path, plt, np) -> list[str]:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     if len(hosts) < 2:
         return []
 
@@ -218,7 +221,7 @@ def plot_radar_and_parallel(cards: list[dict], fig_dir: Path, plt, np) -> list[s
     angles = np.linspace(0, 2 * np.pi, n_axes, endpoint=False).tolist()
     angles += angles[:1]
 
-    fig, ax = plt.subplots(figsize=(10, 10), subplot_kw=dict(polar=True))
+    fig, ax = plt.subplots(figsize=(11, 9), subplot_kw=dict(polar=True))
     cmap = plt.get_cmap("tab10")
     for i, h in enumerate(hosts):
         vals = host_norm[h] + host_norm[h][:1]
@@ -229,14 +232,13 @@ def plot_radar_and_parallel(cards: list[dict], fig_dir: Path, plt, np) -> list[s
     ax.set_ylim(0.85, 1.15)
     ax.axhline(1.0, color="#888", linestyle="--", linewidth=0.8, alpha=0.6)
     ax.set_title("各 Host 多指标中位数归一化雷达图\n（1.0 = 集群中位）", fontsize=13, pad=20)
-    ax.legend(loc="upper right", bbox_to_anchor=(1.35, 1.1), fontsize=8)
-    fig.tight_layout()
-    name_radar = "radar_host_median_norm.png"
-    fig.savefig(fig_dir / name_radar, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    ax.legend(loc="upper left", bbox_to_anchor=(1.12, 1.05), fontsize=9, framealpha=0.5)
+    fig.subplots_adjust(right=0.78)
+    name_radar = "radar_host_median_norm.svg"
+    save_fig(fig, fig_dir / name_radar)
 
     # 平行坐标
-    fig2, ax2 = plt.subplots(figsize=(14, 6))
+    fig2, ax2 = plt.subplots(figsize=(14, 6.5))
     x = range(n_axes)
     for i, h in enumerate(hosts):
         ax2.plot(x, host_norm[h], marker="o", markersize=5, linewidth=1.5,
@@ -247,20 +249,20 @@ def plot_radar_and_parallel(cards: list[dict], fig_dir: Path, plt, np) -> list[s
                         rotation=25, ha="right", fontsize=8)
     ax2.set_ylabel("相对集群中位数比值")
     ax2.set_title("各 Host 多指标中位数平行坐标对比", fontsize=13)
-    ax2.legend(fontsize=7, ncol=2, loc="upper left")
+    ax2.legend(fontsize=8, ncol=4, loc="upper center", bbox_to_anchor=(0.5, -0.18), framealpha=0.5)
     ax2.grid(True, alpha=0.3)
     ax2.set_ylim(0.85, 1.15)
+    style_axes(ax2)
     fig2.tight_layout()
-    name_par = "parallel_host_median_norm.png"
-    fig2.savefig(fig_dir / name_par, dpi=DPI, bbox_inches="tight")
-    plt.close(fig2)
+    name_par = "parallel_host_median_norm.svg"
+    save_fig(fig2, fig_dir / name_par)
     return [name_radar, name_par]
 
 
 # ── 图 2：HBM 四模式 grouped bar ─────────────────────────────────────────
 
 def plot_hbm_modes_grouped(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     mode_labels = [m[1] for m in HBM_MODES]
     n_modes = len(HBM_MODES)
 
@@ -285,24 +287,22 @@ def plot_hbm_modes_grouped(cards: list[dict], fig_dir: Path, plt, np) -> str | N
     n_groups = len(host_labels)
     x = np.arange(n_groups)
     width = 0.18
-    colors = ["#4C78A8", "#F58518", "#E45756", "#72B7B2"]
 
     fig, ax = plt.subplots(figsize=(max(12, n_groups * 1.2), 6))
     for j in range(n_modes):
         offset = (j - (n_modes - 1) / 2) * width
-        bars = host_med[j] if False else [host_med[i][j] for i in range(n_groups)]
-        ax.bar(x + offset, bars, width, label=mode_labels[j], color=colors[j], alpha=0.88)
+        bars = [host_med[i][j] for i in range(n_groups)]
+        ax.bar(x + offset, bars, **hatch_bar_kwargs(j, width=width), label=mode_labels[j])
 
     ax.set_xticks(x)
-    ax.set_xticklabels(host_labels, rotation=30, ha="right", fontsize=9)
+    ax.set_xticklabels(host_labels, rotation=30, ha="right", fontsize=14)
     ax.set_ylabel("带宽 (GB/s)")
     ax.set_title("HBM 四模式带宽 · 全卡中位 & 各 Host 中位", fontsize=13)
-    ax.legend(fontsize=9)
-    ax.grid(True, axis="y", alpha=0.3)
+    ax.legend(fontsize=14)
+    style_axes(ax)
     fig.tight_layout()
-    name = "hbm_modes_grouped_bar.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "hbm_modes_grouped_bar.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -344,25 +344,28 @@ def plot_corr_heatmap(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
     im = ax.imshow(corr, cmap="RdBu_r", vmin=-1, vmax=1, aspect="auto")
     ax.set_xticks(range(n))
     ax.set_yticks(range(n))
-    ax.set_xticklabels(labels, fontsize=11)
-    ax.set_yticklabels(labels, fontsize=11)
+    ax.set_xticklabels(labels, fontsize=12)
+    ax.set_yticklabels(labels, fontsize=12)
     for i in range(n):
         for j in range(n):
-            ax.text(j, i, f"{corr[i, j]:.2f}", ha="center", va="center",
-                    fontsize=12, color="white" if abs(corr[i, j]) > 0.6 else "black")
-    ax.set_title("Cube / Vector / SFU / MTE 相关矩阵", fontsize=13)
+            ax.text(
+                j, i, f"{corr[i, j]:.2f}", ha="center", va="center",
+                fontsize=annot_fontsize_for_grid(n, n),
+                color="white" if abs(corr[i, j]) > 0.6 else "black",
+            )
+    ax.set_title("Cube / Vector / SFU / MTE 相关矩阵", fontsize=14)
     fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04, label="Pearson r")
+    style_heatmap_axes(ax, tick_fs=12)
     fig.tight_layout()
-    name = "corr_cube_vector_sfu_mte.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "corr_cube_vector_sfu_mte.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 # ── 图 4：launch boxplot ──────────────────────────────────────────────────
 
 def plot_launch_boxplot(cards: list[dict], fig_dir: Path, plt) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     n_metrics = len(LAUNCH_KEYS)
     fig, axes = plt.subplots(1, n_metrics, figsize=(5 * n_metrics, 5.5), sharey=False)
     if n_metrics == 1:
@@ -380,24 +383,27 @@ def plot_launch_boxplot(cards: list[dict], fig_dir: Path, plt) -> str | None:
             ax.set_visible(False)
             continue
         drawn = True
-        bp = ax.boxplot(series, patch_artist=True, widths=0.55,
+        # 离群点易把主体箱线挤扁：对数轴 + 短 host 名
+        bp = ax.boxplot(series, patch_artist=True, widths=0.55, showfliers=False,
                         boxprops=dict(facecolor="#4C78A8", alpha=0.7),
                         medianprops=dict(color="#E45756", linewidth=2))
         for i, vals in enumerate(series, start=1):
             ax.scatter([i] * len(vals), vals, alpha=0.3, s=12, color="#72B7B2", zorder=3)
-        ax.set_xticklabels(labels, rotation=35, ha="right", fontsize=8)
+        rot = 0 if max(len(x) for x in labels) <= 10 else 30
+        ax.set_xticklabels(labels, rotation=rot, ha="right" if rot else "center", fontsize=10)
         ax.set_ylabel("延迟 (μs)")
         ax.set_title(title, fontsize=11)
-        ax.grid(True, axis="y", alpha=0.3)
+        if key in ("launch_host_overhead_p99_us", "launch_burst_p50_us"):
+            ax.set_yscale("log")
+        style_axes(ax)
 
     if not drawn:
         plt.close(fig)
         return None
     fig.suptitle("Launch 延迟按 Host 分布", fontsize=13, y=1.02)
     fig.tight_layout()
-    name = "box_launch_by_host.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "box_launch_by_host.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -408,7 +414,7 @@ def plot_cdf_panel(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
     axes_flat = axes.flatten()
     drawn = 0
     cmap = plt.get_cmap("tab10")
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
 
     for ax, key in zip(axes_flat, CDF_METRICS):
         vals = values_for(cards, key)
@@ -425,7 +431,7 @@ def plot_cdf_panel(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
         ax.set_ylabel("累积概率")
         ax.set_title(METRIC_LABEL.get(key, key), fontsize=10)
         ax.legend(fontsize=7)
-        ax.grid(True, alpha=0.3)
+        style_axes(ax)
         drawn += 1
 
     if drawn == 0:
@@ -435,9 +441,8 @@ def plot_cdf_panel(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
         ax.set_visible(False)
     fig.suptitle("核心指标累积分布函数 (CDF)", fontsize=14, y=1.01)
     fig.tight_layout()
-    name = "cdf_core_metrics.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "cdf_core_metrics.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -471,31 +476,34 @@ def plot_extreme_cards(cards: list[dict], fig_dir: Path, plt, np) -> str | None:
             med = cluster_medians.get(key, statistics.median(vals))
             rel = [(v / med - 1) * 100 if med else 0 for v in vals]
             y_pos = range(len(rel))
-            bar_colors = [color if r >= 0 else "#E45756" for r in rel] if row == 1 else \
-                         ["#E45756" if r < 0 else color for r in rel]
-            ax.barh(y_pos, rel, color=bar_colors, alpha=0.85, height=0.7)
+            hatch = "//" if row == 0 else "\\\\"
+            for yi, rval in zip(y_pos, rel):
+                ec = color if (rval >= 0 if row == 1 else rval >= 0) else "#E45756"
+                if row == 0 and rval < 0:
+                    ec = "#E45756"
+                ax.barh(yi, rval, color="none", edgecolor=ec, hatch=hatch,
+                        linewidth=2.0, height=0.7)
             ax.axvline(0, color="#333", linewidth=0.8)
             ax.set_yticks(list(y_pos))
-            ax.set_yticklabels(labels, fontsize=6)
+            ax.set_yticklabels(labels, fontsize=10)
             ax.set_xlabel("相对集群中位偏差 (%)")
             if col == 0:
                 ax.set_ylabel(gtitle, fontsize=10)
             ax.set_title(mlabel, fontsize=9)
-            ax.grid(True, axis="x", alpha=0.3)
+            style_axes(ax)
             ax.invert_yaxis()
 
     fig.suptitle("最慢 vs 最快 10 卡 · 多指标相对偏差", fontsize=14, y=1.01)
     fig.tight_layout()
-    name = "extreme10_small_multiples.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "extreme10_small_multiples.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 # ── 图 7：host×device 绝对值热力图 ────────────────────────────────────────
 
 def plot_host_device_heatmap(cards: list[dict], key: str, fig_dir: Path, plt, np) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     devices = sorted({int(c["device"]) for c in cards if c.get("device") is not None})
     if not hosts or not devices:
         return None
@@ -518,27 +526,41 @@ def plot_host_device_heatmap(cards: list[dict], key: str, fig_dir: Path, plt, np
     if vmin == vmax:
         vmin, vmax = np.nanmin(matrix), np.nanmax(matrix)
 
-    fig, ax = plt.subplots(figsize=(max(10, len(devices) * 0.7), max(5, len(hosts) * 0.55)))
+    fig, ax = plt.subplots(figsize=(max(13.5, len(devices) * 0.85), max(6.0, len(hosts) * 0.78)))
     im = ax.imshow(matrix, aspect="auto", cmap="YlOrRd", vmin=vmin, vmax=vmax)
     ax.set_xticks(range(len(devices)))
-    ax.set_xticklabels([f"卡 {d}" for d in devices], fontsize=9)
+    ax.set_xticklabels([str(d) for d in devices])
     ax.set_yticks(range(len(hosts)))
-    ax.set_yticklabels([short_host(h) for h in hosts], fontsize=9)
+    ax.set_yticklabels([short_host(h) for h in hosts])
     ax.set_xlabel("Device")
     ax.set_ylabel("Host")
-    ax.set_title(f"{label} · Host × Device 热力图", fontsize=12)
+    ax.set_title(f"{label} · Host × Device（偏离中位 ≥0.5% 才标数）", fontsize=14)
+    annot_fs = 8.0
+    med = float(np.nanmedian(matrix))
+    mid = (float(vmin) + float(vmax)) / 2.0
     for i in range(len(hosts)):
         for j in range(len(devices)):
             v = matrix[i, j]
-            if not math.isnan(v):
-                txt = f"{v:.2g}" if v < 1e5 else f"{v/1e6:.2f}M"
-                ax.text(j, i, txt, ha="center", va="center", fontsize=6.5, color="black")
+            if math.isnan(v) or not med:
+                continue
+            if abs(v - med) / abs(med) < 0.005:
+                continue
+            if abs(v) >= 1e6:
+                txt = f"{v/1e6:.1f}M"
+            elif abs(v) >= 100:
+                txt = f"{v:.0f}"
+            else:
+                txt = f"{v:.2g}"
+            ax.text(
+                j, i, txt, ha="center", va="center", fontsize=annot_fs,
+                color="white" if v > mid else "black",
+            )
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
     cbar.set_label(label)
+    style_heatmap_axes(ax)
     fig.tight_layout()
-    name = f"heatmap_host_device_{key}.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = f"heatmap_host_device_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -579,12 +601,11 @@ def plot_sustained_vs_func(cards: list[dict], fig_dir: Path, plt) -> str | None:
     ax.set_ylabel("Sustained TFLOPS")
     ax.set_title("Sustained vs Func 散点 · 稳定性分析", fontsize=13)
     ax.legend(fontsize=7, loc="best")
-    ax.grid(True, alpha=0.3)
+    style_axes(ax)
     ax.set_aspect("equal", adjustable="box")
     fig.tight_layout()
-    name = "scatter_sustained_vs_func.png"
-    fig.savefig(fig_dir / name, dpi=DPI, bbox_inches="tight")
-    plt.close(fig)
+    name = "scatter_sustained_vs_func.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -627,14 +648,14 @@ def write_markdown(
             f"{fmt(st['min'])} | {fmt(st['max'])} |"
         )
 
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     lines += ["", "## 元数据", ""]
     lines.append(f"- hosts ({len(hosts)}): {', '.join(short_host(h) for h in hosts)}")
 
     if fig_names:
         lines += ["", "## 图表", ""]
         for fn in fig_names:
-            title = fn.replace(".png", "").replace("_", " ")
+            title = fn.replace(".svg", "").replace("_", " ")
             lines += [f"### {title}", "", f"![{title}]({fig_dir_name}/{fn})", ""]
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -746,10 +767,10 @@ def main() -> None:
     args = ap.parse_args()
 
     report_path, fig_dir = generate(args.jsonl, args.out_dir, stamp=args.stamp)
-    pngs = sorted(fig_dir.glob("*.png"))
+    svgs = sorted(fig_dir.glob("*.svg"))
     print(f"wrote {report_path}")
-    print(f"figs  {fig_dir} ({len(pngs)} png)")
-    for p in pngs:
+    print(f"figs  {fig_dir} ({len(svgs)} svg)")
+    for p in svgs:
         print(f"  {p.name}")
 
 

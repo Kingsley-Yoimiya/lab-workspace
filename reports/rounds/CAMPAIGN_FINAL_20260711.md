@@ -11,9 +11,9 @@
 | 计划项 | 状态 | 说明 |
 |--------|------|------|
 | 128 卡体质分布 | **完成** | 128/128 GOOD；Cube/HBM/Vector/Scalar/SFU/MTE/pipeline/launch/SDC |
-| 10 shape BNMK | **完成**（补采） | 10 labels × 128 卡；`gemm_bnmk_sample` 已落盘 |
+| 10 shape BNMK | **完成**（补采） | 10 labels × 128 卡 = **1280** 条 `gemm_bnmk_sample` |
 | 遥测温/功耗/util | **完成**（补采） | 修复 `npu-smi -t` 解析后重跑；功耗×性能图已出 |
-| 出图 | **完成** | 主图 112 + 增强 12 + BNMK 3 + HCCL 23 ≈ **150+ PNG** |
+| 出图 | **完成** | 主图 112 + 增强 12 + BNMK 3 + HCCL 23 + 机间 1 ≈ **151 SVG**（默认 `plot_style`） |
 | HCCL 拓扑 | **完成** | 8 节点 HCCS 矩阵；`topo_summary` JSON/MD；无 hccn（平台未挂） |
 | Collective 16→128 | **完成** | 四算子×四消息；保持率已算 |
 | P2P 16→128 | **完成** | 128 ring 通；慢边 TopK 已出 |
@@ -56,29 +56,32 @@
 
 ## 3. 产物索引（看图从这里进）
 
-### 体质主报告（含功耗/温度，最新）
-- 报告: [`card_constitution_20260711_141113.md`](card_constitution_20260711_141113.md)
-- 图目录: [`card_constitution_20260711_141113_figs/`](card_constitution_20260711_141113_figs/)（**112** 张）
-  - 推荐先看: `scatter_power_w_vs_func_tflops.png`, `hist_func_tflops.png`, `heatmap_relmed_func_tflops.png`, `scatter_hbm_gbps_vs_mte_gbps.png`
+> 出图默认 `reports/plot_style.py`（大字号 / 去顶右边框 / y 点线网格 / hatch 柱 / **SVG**）。  
+> **图注优先讲清：字段人话含义 + 底层 API/命令/算子**（不是「怎么画直方图」）。语义手册：[`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md)；采集链路审计：[`FIGURE_PROVENANCE_AUDIT_20260711.md`](FIGURE_PROVENANCE_AUDIT_20260711.md)。
 
-### 体质增强（雷达/CDF/相关/极端卡）
+### 体质主报告（含功耗/温度）
+- [`card_constitution_20260711.md`](card_constitution_20260711.md)
+- [`card_constitution_20260711_figs/`](card_constitution_20260711_figs/)（**112** svg）
+  - 注意：`timeseries_sustained_p05_p50.svg` = **跨卡** p05/p50（按 iter 对齐），不是代表卡时序
+
+### 体质增强
 - [`constitution_extra_fillgap_20260711.md`](constitution_extra_fillgap_20260711.md)
 - [`constitution_extra_fillgap_20260711_figs/`](constitution_extra_fillgap_20260711_figs/)（12）
 
 ### BNMK 10 shape
-- [`bnmk_shapes_20260711.md`](bnmk_shapes_20260711.md)
-- [`bnmk_shapes_20260711_figs/`](bnmk_shapes_20260711_figs/)（3）
+- [`bnmk_shapes_20260711.md`](bnmk_shapes_20260711.md) / [`bnmk_shapes_20260711_figs/`](bnmk_shapes_20260711_figs/)（3；样本 1280）
 
-### HCCL + P2P + 拓扑热力
-- [`hccl_campaign_20260711.md`](hccl_campaign_20260711.md)
-- [`hccl_campaign_20260711_figs/`](hccl_campaign_20260711_figs/)（23）
-- 拓扑摘要: [`topo_summary_20260711.md`](topo_summary_20260711.md) / [`topo_summary_20260711.json`](topo_summary_20260711.json)
+### HCCL + P2P + 拓扑
+- [`hccl_campaign_20260711.md`](hccl_campaign_20260711.md) / [`hccl_campaign_20260711_figs/`](hccl_campaign_20260711_figs/)（23）
+- [`topo_summary_20260711.md`](topo_summary_20260711.md)
+
+### 机间带宽
+- [`inter_bw_20260711.md`](inter_bw_20260711.md) / [`INTER_BW_PROBE_20260711.md`](INTER_BW_PROBE_20260711.md)
 
 ### 原始数据
 - 体质 fillgap: `logs/card-fillgap-20260711_140301/results/constitution128.merged.jsonl`
-- 通信: `logs/pipeline-comm-20260711_134811/{hccl-results,p2p-results,hccl-topo}/`
-
----
+- 通信: `logs/pipeline-comm-20260711_134811/`
+- 机间: `logs/inter-bw-20260711_141922/`
 
 ## 4. 本轮修过的坑（便于复现）
 
@@ -95,3 +98,5 @@
 这批 128 卡 **算力/带宽一致性很好**（多数 CV < 4%），判定全 GOOD。  
 通信上 **All-Reduce 到 128 仍保留约 89%**，但 **All-Gather / Reduce-Scatter 腰斩级下滑**，与机内 HCCS 健康、跨机扩展变差的图像一致。  
 功耗画像已打通：空闲 ~168 W，满载采样中位 ~872 W，可与 Cube/HBM 做交叉散点。
+
+> 索引更新时间：2026-07-11 20:18

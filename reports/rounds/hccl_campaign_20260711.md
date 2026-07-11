@@ -1,136 +1,111 @@
-# HCCL 通信战役报告 · 20260711
+# HCCL 通信 · 20260711
 
-> 生成时间：2026-07-11 14:00  
-> 数据源：`/Users/yinjinrun/random-thing/logs/pipeline-comm-20260711_134811`
+语义详见 [`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md) 通信章。
 
-## 摘要
+**alg_bw**：业务字节 / 平均时延 → GB/s（算法视角）。
+**bus_bw**：按 NCCL-tests 同构公式把多跳折成可与链路比的总线带宽——AllReduce `×2(n-1)/n`，AG/RS `×(n-1)/n`，Broadcast `=alg`。
+扩展叙事用 **bus_bw 保持率 = bus_N/bus_16**，不要用 (bus_N/bus_16)/(N/16)。
 
-本报告汇总 All-Reduce / All-Gather / Reduce-Scatter / Broadcast 四算子在 world=16/32/64/128 下的 Bus 带宽曲线，256 MB 大消息的扩展性阶梯图与保持率，Rank 级分布，以及 P2P 边级带宽对比。
+底层：`torch.distributed` + **HCCL**（`hccl_torch_bench.py`）；CPU `perf_counter` + `torch.npu.synchronize`；sizes 1M–256M；fp32；world 16→128。
 
-### 256 MB 保持率（相对 world=16）
+## 256MB bus_bw 保持率
 
-| 算子 | w=16 | w=32 | w=64 | w=128 |
-|------|------|------|------|-------|
-| All-Reduce | 100.0% | 96.8% | 94.9% | 89.4% |
-| All-Gather | 100.0% | 88.0% | 64.2% | 54.0% |
-| Reduce-Scatter | 100.0% | 91.8% | 71.0% | 46.4% |
-| Broadcast | 100.0% | 91.4% | 86.8% | 86.8% |
+| op | w32 | w64 | w128 |
+|---|---:|---:|---:|
+| All-Reduce | 96.8% | 94.9% | 89.4% |
+| Broadcast | 91.4% | 86.8% | 86.8% |
+| All-Gather | 88.0% | 64.2% | 54.0% |
+| Reduce-Scatter | 91.8% | 71.0% | 46.4% |
 
-### 256 MB 平均 Bus 带宽 (GB/s)
+**hccl_256mb_retention_bar.svg**：256MB 上各 collective 的 bus_bw 相对 world=16 的保持率（扩展健康度）。
 
-| 算子 | w=16 | w=32 | w=64 | w=128 |
-|------|------|------|------|-------|
-| All-Reduce | 154.80 | 149.79 | 146.97 | 138.44 |
-| All-Gather | 119.28 | 105.03 | 76.59 | 64.42 |
-| Reduce-Scatter | 110.46 | 101.43 | 78.41 | 51.26 |
-| Broadcast | 92.41 | 84.49 | 80.21 | 80.18 |
+![hccl_256mb_retention_bar.svg](hccl_campaign_20260711_figs/hccl_256mb_retention_bar.svg)
 
-- HCCL 记录数：1024
-- P2P 去重边数：122
-- 拓扑：已解析 `master-0.raw.txt`
+**hccl_256mb_step_bus_bw.svg**：固定 256MB，world 从 16→128 时 bus_bw 中位的阶梯变化。
 
-## 1. Collective · Bus 带宽 vs 消息大小
+![hccl_256mb_step_bus_bw.svg](hccl_campaign_20260711_figs/hccl_256mb_step_bus_bw.svg)
 
-### All-Reduce
+**hccl_256mb_step_per_op.svg**：固定 256MB，world 从 16→128 时 bus_bw 中位的阶梯变化。
 
-![All-Reduce](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_all_reduce.png)
+![hccl_256mb_step_per_op.svg](hccl_campaign_20260711_figs/hccl_256mb_step_per_op.svg)
 
-### All-Gather
+**hccl_bus_bw_vs_size_all_gather.svg**：**`all_gather` 的 bus_bw 随消息大小**。底层 `dist.all_gather`（all_gather/reduce_scatter 按 world 切分缓冲）；每点是该 (world,size) 下各 rank bus_bw 的中位。
 
-![All-Gather](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_all_gather.png)
+![hccl_bus_bw_vs_size_all_gather.svg](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_all_gather.svg)
 
-### Reduce-Scatter
+**hccl_bus_bw_vs_size_all_reduce.svg**：**`all_reduce` 的 bus_bw 随消息大小**。底层 `dist.all_reduce`（all_gather/reduce_scatter 按 world 切分缓冲）；每点是该 (world,size) 下各 rank bus_bw 的中位。
 
-![Reduce-Scatter](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_reduce_scatter.png)
+![hccl_bus_bw_vs_size_all_reduce.svg](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_all_reduce.svg)
 
-### Broadcast
+**hccl_bus_bw_vs_size_broadcast.svg**：**`broadcast` 的 bus_bw 随消息大小**。底层 `dist.broadcast`（all_gather/reduce_scatter 按 world 切分缓冲）；每点是该 (world,size) 下各 rank bus_bw 的中位。
 
-![Broadcast](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_broadcast.png)
+![hccl_bus_bw_vs_size_broadcast.svg](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_broadcast.svg)
 
-## 2. 256 MB 大消息扩展性
+**hccl_bus_bw_vs_size_reduce_scatter.svg**：**`reduce_scatter` 的 bus_bw 随消息大小**。底层 `dist.reduce_scatter`（all_gather/reduce_scatter 按 world 切分缓冲）；每点是该 (world,size) 下各 rank bus_bw 的中位。
 
-![阶梯图](hccl_campaign_20260711_figs/hccl_256mb_step_bus_bw.png)
+![hccl_bus_bw_vs_size_reduce_scatter.svg](hccl_campaign_20260711_figs/hccl_bus_bw_vs_size_reduce_scatter.svg)
 
-![分算子阶梯](hccl_campaign_20260711_figs/hccl_256mb_step_per_op.png)
+**hccl_rank_box_256mb_all_ops.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-![保持率](hccl_campaign_20260711_figs/hccl_256mb_retention_bar.png)
+![hccl_rank_box_256mb_all_ops.svg](hccl_campaign_20260711_figs/hccl_rank_box_256mb_all_ops.svg)
 
-## 3. Rank 分布（256 MB）
+**hccl_rank_hist_w128_256mb.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-### All-Reduce
+![hccl_rank_hist_w128_256mb.svg](hccl_campaign_20260711_figs/hccl_rank_hist_w128_256mb.svg)
 
-![violin](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_all_reduce.png)
+**hccl_rank_hist_w16_256mb.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-### All-Gather
+![hccl_rank_hist_w16_256mb.svg](hccl_campaign_20260711_figs/hccl_rank_hist_w16_256mb.svg)
 
-![violin](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_all_gather.png)
+**hccl_rank_hist_w32_256mb.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-### Reduce-Scatter
+![hccl_rank_hist_w32_256mb.svg](hccl_campaign_20260711_figs/hccl_rank_hist_w32_256mb.svg)
 
-![violin](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_reduce_scatter.png)
+**hccl_rank_hist_w64_256mb.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-### Broadcast
+![hccl_rank_hist_w64_256mb.svg](hccl_campaign_20260711_figs/hccl_rank_hist_w64_256mb.svg)
 
-![violin](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_broadcast.png)
+**hccl_rank_violin_256mb_all_gather.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-![箱线图汇总](hccl_campaign_20260711_figs/hccl_rank_box_256mb_all_ops.png)
+![hccl_rank_violin_256mb_all_gather.svg](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_all_gather.svg)
 
-### world=16
+**hccl_rank_violin_256mb_all_reduce.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-![hist w16](hccl_campaign_20260711_figs/hccl_rank_hist_w16_256mb.png)
+![hccl_rank_violin_256mb_all_reduce.svg](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_all_reduce.svg)
 
-### world=32
+**hccl_rank_violin_256mb_broadcast.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-![hist w32](hccl_campaign_20260711_figs/hccl_rank_hist_w32_256mb.png)
+![hccl_rank_violin_256mb_broadcast.svg](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_broadcast.svg)
 
-### world=64
+**hccl_rank_violin_256mb_reduce_scatter.svg**：同一 (op, world=?, 256MB) 下**每个 rank 各自的 bus_bw** 分布。看是否个别 rank 拖总线折算带宽。
 
-![hist w64](hccl_campaign_20260711_figs/hccl_rank_hist_w64_256mb.png)
+![hccl_rank_violin_256mb_reduce_scatter.svg](hccl_campaign_20260711_figs/hccl_rank_violin_256mb_reduce_scatter.svg)
 
-### world=128
+**p2p_box_compare_w16_w128_16777216.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-![hist w128](hccl_campaign_20260711_figs/hccl_rank_hist_w128_256mb.png)
+![p2p_box_compare_w16_w128_16777216.svg](hccl_campaign_20260711_figs/p2p_box_compare_w16_w128_16777216.svg)
 
-## 4. P2P
+**p2p_box_compare_w16_w128_65536.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-![p2p_bw_violin_by_kind_size.png](hccl_campaign_20260711_figs/p2p_bw_violin_by_kind_size.png)
+![p2p_box_compare_w16_w128_65536.svg](hccl_campaign_20260711_figs/p2p_box_compare_w16_w128_65536.svg)
 
-![p2p_box_compare_w16_w128_65536.png](hccl_campaign_20260711_figs/p2p_box_compare_w16_w128_65536.png)
+**p2p_bw_violin_by_kind_size.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-![p2p_box_compare_w16_w128_16777216.png](hccl_campaign_20260711_figs/p2p_box_compare_w16_w128_16777216.png)
+![p2p_bw_violin_by_kind_size.svg](hccl_campaign_20260711_figs/p2p_bw_violin_by_kind_size.svg)
 
-![p2p_slow_edges_top15_16mb.png](hccl_campaign_20260711_figs/p2p_slow_edges_top15_16mb.png)
+**p2p_fast_edges_top15_16mb.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-![p2p_fast_edges_top15_16mb.png](hccl_campaign_20260711_figs/p2p_fast_edges_top15_16mb.png)
+![p2p_fast_edges_top15_16mb.svg](hccl_campaign_20260711_figs/p2p_fast_edges_top15_16mb.svg)
 
-![p2p_kind_mean_compare_16mb.png](hccl_campaign_20260711_figs/p2p_kind_mean_compare_16mb.png)
+**p2p_kind_mean_compare_16mb.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-## 5. 机内拓扑
+![p2p_kind_mean_compare_16mb.svg](hccl_campaign_20260711_figs/p2p_kind_mean_compare_16mb.svg)
 
-![HCCS](hccl_campaign_20260711_figs/topo_hccs_heatmap_master0.png)
+**p2p_slow_edges_top15_16mb.svg**：**点对点 isend/irecv 单向带宽**（GB/s），不是 bus_bw 公式。边类型含 ring / star；大 world 默认仅 ring。底层 `hccl_p2p_bench.py`，严格串行单对。
 
-## 附录 · 图文件清单
+![p2p_slow_edges_top15_16mb.svg](hccl_campaign_20260711_figs/p2p_slow_edges_top15_16mb.svg)
 
-- `hccl_256mb_retention_bar.png`
-- `hccl_256mb_step_bus_bw.png`
-- `hccl_256mb_step_per_op.png`
-- `hccl_bus_bw_vs_size_all_gather.png`
-- `hccl_bus_bw_vs_size_all_reduce.png`
-- `hccl_bus_bw_vs_size_broadcast.png`
-- `hccl_bus_bw_vs_size_reduce_scatter.png`
-- `hccl_rank_box_256mb_all_ops.png`
-- `hccl_rank_hist_w128_256mb.png`
-- `hccl_rank_hist_w16_256mb.png`
-- `hccl_rank_hist_w32_256mb.png`
-- `hccl_rank_hist_w64_256mb.png`
-- `hccl_rank_violin_256mb_all_gather.png`
-- `hccl_rank_violin_256mb_all_reduce.png`
-- `hccl_rank_violin_256mb_broadcast.png`
-- `hccl_rank_violin_256mb_reduce_scatter.png`
-- `p2p_box_compare_w16_w128_16777216.png`
-- `p2p_box_compare_w16_w128_65536.png`
-- `p2p_bw_violin_by_kind_size.png`
-- `p2p_fast_edges_top15_16mb.png`
-- `p2p_kind_mean_compare_16mb.png`
-- `p2p_slow_edges_top15_16mb.png`
-- `topo_hccs_heatmap_master0.png`
+**topo_hccs_heatmap_master0.svg**：机内物理拓扑亲和：来自 **`npu-smi info -t topo`** 解析。S=SIO（die 内），空白=HCCS_SW（经交换机的 HCCS），·=self。这是静态拓扑关系，不是测速。
+
+![topo_hccs_heatmap_master0.svg](hccl_campaign_20260711_figs/topo_hccs_heatmap_master0.svg)
+

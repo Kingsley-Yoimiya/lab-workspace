@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """HCCL 通信战役 · 可视化与 Markdown 报告。
 
-读取 pipeline-comm 产出的 HCCL collective / P2P JSONL，生成中文标注 PNG 与 md 报告。
+读取 pipeline-comm 产出的 HCCL collective / P2P JSONL，生成中文标注 SVG 与 md 报告。
 """
 from __future__ import annotations
 
@@ -11,6 +11,15 @@ from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+
+from plot_style import (
+    apply_plot_style,
+    annot_fontsize_for_grid,
+    hatch_bar_kwargs,
+    save_fig,
+    style_axes,
+    style_heatmap_axes,
+)
 
 # ── 固定路径 ──────────────────────────────────────────────────────────────
 LOG_ROOT = Path("/Users/yinjinrun/random-thing/logs/pipeline-comm-20260711_134811")
@@ -77,37 +86,8 @@ def mean(vals: list[float]) -> float:
     return statistics.mean(vals) if vals else float("nan")
 
 
-def setup_mpl():
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    plt.rcParams.update({
-        "font.sans-serif": [
-            "PingFang SC", "Heiti SC", "STHeiti", "Arial Unicode MS",
-            "SimHei", "DejaVu Sans",
-        ],
-        "axes.unicode_minus": False,
-        "figure.dpi": 130,
-        "savefig.dpi": 150,
-        "font.size": 11,
-        "axes.titlesize": 14,
-        "axes.labelsize": 12,
-        "legend.fontsize": 10,
-        "xtick.labelsize": 10,
-        "ytick.labelsize": 10,
-    })
-    return plt, np
-
-
-def style_axes(ax) -> None:
-    ax.grid(True, linestyle="--", alpha=0.35, linewidth=0.6)
-    ax.set_axisbelow(True)
-
-
-def save_fig(fig, name: str) -> str:
-    FIG_DIR.mkdir(parents=True, exist_ok=True)
-    path = FIG_DIR / name
-    fig.savefig(path, bbox_inches="tight", facecolor="white")
+def _save(fig, name: str) -> str:
+    save_fig(fig, FIG_DIR / name)
     return name
 
 
@@ -240,9 +220,8 @@ def plot_hccl_curves(rows: list[dict], agg: dict, plt, np) -> list[str]:
         style_axes(ax)
         ax.legend(title="规模", loc="best")
         fig.tight_layout()
-        name = f"hccl_bus_bw_vs_size_{op}.png"
-        save_fig(fig, name)
-        plt.close(fig)
+        name = f"hccl_bus_bw_vs_size_{op}.svg"
+        _save(fig, name)
         figs.append(name)
     return figs
 
@@ -278,9 +257,8 @@ def plot_256mb_step_and_retention(means: dict, plt, np) -> tuple[list[str], dict
     style_axes(ax)
     ax.legend(loc="best")
     fig.tight_layout()
-    name = "hccl_256mb_step_bus_bw.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "hccl_256mb_step_bus_bw.svg"
+    _save(fig, name)
     figs.append(name)
 
     # 分算子阶梯图（更清晰）
@@ -291,7 +269,7 @@ def plot_256mb_step_and_retention(means: dict, plt, np) -> tuple[list[str], dict
         ax.scatter(x, ys, color=WORLD_COLORS[16], s=60, zorder=3)
         for i, (w, y) in enumerate(zip(WORLD_SCALES, ys)):
             ax.annotate(fmt_bw(y), (i, y), textcoords="offset points", xytext=(0, 8),
-                        ha="center", fontsize=9)
+                        ha="center", fontsize=11)
         ax.set_title(OP_CN[op])
         ax.set_ylabel("Bus 带宽 (GB/s)")
         style_axes(ax)
@@ -300,35 +278,33 @@ def plot_256mb_step_and_retention(means: dict, plt, np) -> tuple[list[str], dict
         ax.set_xlabel("World 规模")
     fig.suptitle("256 MB · 各算子 Bus 带宽阶梯图", fontsize=15, y=1.01)
     fig.tight_layout()
-    name = "hccl_256mb_step_per_op.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "hccl_256mb_step_per_op.svg"
+    _save(fig, name)
     figs.append(name)
 
     # 保持率柱状图
-    fig, ax = plt.subplots(figsize=(11, 6))
+    fig, ax = plt.subplots(figsize=(12, 6.5))
     width = 0.18
     ops_x = np.arange(len(OPS))
     for i, ws in enumerate(WORLD_SCALES):
         vals = [retention[op][ws] for op in OPS]
         offset = (i - 1.5) * width
-        bars = ax.bar(ops_x + offset, vals, width, label=f"world={ws}",
-                      color=WORLD_COLORS[ws], alpha=0.9)
+        bars = ax.bar(ops_x + offset, vals, **hatch_bar_kwargs(i, width=width),
+                      label=f"world={ws}")
         for bar, v in zip(bars, vals):
             if not np.isnan(v):
                 ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 0.5,
-                        fmt_pct(v), ha="center", va="bottom", fontsize=8, rotation=0)
+                        fmt_pct(v), ha="center", va="bottom", fontsize=10, rotation=0)
     ax.axhline(100, color="#666", linestyle=":", linewidth=1, alpha=0.7)
     ax.set_xticks(ops_x, [OP_CN[op] for op in OPS])
     ax.set_ylabel("保持率 (相对 world=16, %)")
     ax.set_title("256 MB · Bus 带宽保持率（基准 world=16 = 100%）")
     ax.set_ylim(0, max(110, max(retention[op][ws] for op in OPS for ws in WORLD_SCALES) + 8))
     style_axes(ax)
-    ax.legend(title="规模", ncol=4, loc="upper right")
+    ax.legend(title="规模", ncol=4, loc="upper center", bbox_to_anchor=(0.5, 1.18), framealpha=0.4)
     fig.tight_layout()
-    name = "hccl_256mb_retention_bar.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "hccl_256mb_retention_bar.svg"
+    _save(fig, name)
     figs.append(name)
 
     return figs, retention
@@ -360,9 +336,8 @@ def plot_rank_distribution(rows: list[dict], plt, np) -> list[str]:
         ax.set_title(f"{OP_CN[op]} · 256 MB Rank 分布（Violin）")
         style_axes(ax)
         fig.tight_layout()
-        name = f"hccl_rank_violin_256mb_{op}.png"
-        save_fig(fig, name)
-        plt.close(fig)
+        name = f"hccl_rank_violin_256mb_{op}.svg"
+        _save(fig, name)
         figs.append(name)
 
     # 256MB box：四算子合图
@@ -379,9 +354,8 @@ def plot_rank_distribution(rows: list[dict], plt, np) -> list[str]:
         style_axes(ax)
     fig.suptitle("256 MB · Rank Bus 带宽箱线图", fontsize=15, y=1.01)
     fig.tight_layout()
-    name = "hccl_rank_box_256mb_all_ops.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "hccl_rank_box_256mb_all_ops.svg"
+    _save(fig, name)
     figs.append(name)
 
     # 各 world × 算子 histogram
@@ -401,9 +375,8 @@ def plot_rank_distribution(rows: list[dict], plt, np) -> list[str]:
             style_axes(ax)
         fig.suptitle(f"world={ws} · 256 MB Rank 直方图", fontsize=15, y=1.01)
         fig.tight_layout()
-        name = f"hccl_rank_hist_w{ws}_256mb.png"
-        save_fig(fig, name)
-        plt.close(fig)
+        name = f"hccl_rank_hist_w{ws}_256mb.svg"
+        _save(fig, name)
         figs.append(name)
 
     return figs
@@ -440,9 +413,8 @@ def plot_p2p(edges: list[dict], plt, np) -> list[str]:
         style_axes(ax)
     fig.suptitle("P2P · 边类型带宽分布", fontsize=14, y=1.02)
     fig.tight_layout()
-    name = "p2p_bw_violin_by_kind_size.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "p2p_bw_violin_by_kind_size.svg"
+    _save(fig, name)
     figs.append(name)
 
     # 按消息大小汇总 box（world 分面）
@@ -465,9 +437,8 @@ def plot_p2p(edges: list[dict], plt, np) -> list[str]:
             ax.set_title(f"P2P · {P2P_SIZE_CN.get(sz, str(sz))} 带宽分布 (16 vs 128)")
             style_axes(ax)
             fig.tight_layout()
-            name = f"p2p_box_compare_w16_w128_{sz}.png"
-            save_fig(fig, name)
-            plt.close(fig)
+            name = f"p2p_box_compare_w16_w128_{sz}.svg"
+            _save(fig, name)
             figs.append(name)
 
     # 慢边 TopK（按 16MB 大消息）
@@ -479,16 +450,15 @@ def plot_p2p(edges: list[dict], plt, np) -> list[str]:
         labels = [f"w{e['world_size']} {e['edge_label']} ({e['edge_kind']})" for e in topk]
         vals = [float(e["bw_GBps"]) for e in topk]
         y = np.arange(len(topk))
-        ax.barh(y, vals, color="#E45756", alpha=0.85)
-        ax.set_yticks(y, labels, fontsize=9)
+        ax.barh(y, vals, color="none", edgecolor="#E45756", linewidth=2.0, hatch="//")
+        ax.set_yticks(y, labels, fontsize=10)
         ax.set_xlabel("带宽 (GB/s)")
         ax.set_title("P2P 慢边 Top-15（16 MB 消息，带宽升序）")
         style_axes(ax)
         ax.invert_yaxis()
         fig.tight_layout()
-        name = "p2p_slow_edges_top15_16mb.png"
-        save_fig(fig, name)
-        plt.close(fig)
+        name = "p2p_slow_edges_top15_16mb.svg"
+        _save(fig, name)
         figs.append(name)
 
         # 快边 TopK 对照
@@ -497,16 +467,15 @@ def plot_p2p(edges: list[dict], plt, np) -> list[str]:
         labels = [f"w{e['world_size']} {e['edge_label']} ({e['edge_kind']})" for e in fast]
         vals = [float(e["bw_GBps"]) for e in fast]
         y = np.arange(len(fast))
-        ax.barh(y, vals, color="#54A24B", alpha=0.85)
-        ax.set_yticks(y, labels, fontsize=9)
+        ax.barh(y, vals, color="none", edgecolor="#54A24B", linewidth=2.0, hatch="\\\\")
+        ax.set_yticks(y, labels, fontsize=10)
         ax.set_xlabel("带宽 (GB/s)")
         ax.set_title("P2P 快边 Top-15（16 MB 消息，带宽降序）")
         style_axes(ax)
         ax.invert_yaxis()
         fig.tight_layout()
-        name = "p2p_fast_edges_top15_16mb.png"
-        save_fig(fig, name)
-        plt.close(fig)
+        name = "p2p_fast_edges_top15_16mb.svg"
+        _save(fig, name)
         figs.append(name)
 
     # 16 vs 128 同边类型对比柱状（16MB）
@@ -521,25 +490,51 @@ def plot_p2p(edges: list[dict], plt, np) -> list[str]:
                   if e["edge_kind"] == k and int(e["world_size"]) == ws
                   and int(e["nbytes"]) == 16777216]
             vals.append(mean(ev) if ev else 0)
-        ax.bar(x + (i - 0.5) * width, vals, width, label=f"world={ws}",
-               color=WORLD_COLORS[ws], alpha=0.85)
+        ax.bar(x + (i - 0.5) * width, vals, **hatch_bar_kwargs(i, width=width),
+               label=f"world={ws}")
     ax.set_xticks(x, kinds, rotation=15, ha="right")
     ax.set_ylabel("平均带宽 (GB/s)")
     ax.set_title("P2P · 16 MB 边类型均值对比 (world 16 vs 128)")
     style_axes(ax)
     ax.legend()
     fig.tight_layout()
-    name = "p2p_kind_mean_compare_16mb.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "p2p_kind_mean_compare_16mb.svg"
+    _save(fig, name)
     figs.append(name)
 
     return figs
 
 
 def affinity_to_num(val: str) -> float:
-    m = {"HCCS": 4.0, "PIX": 3.0, "PHB": 2.0, "SYS": 1.0, "X": 0.0}
-    return m.get(val.strip(), 0.5)
+    v = val.strip().upper()
+    m = {
+        "SIO": 5.0,
+        "HCCS": 4.0,
+        "HCCS_SW": 3.5,
+        "PIX": 3.0,
+        "PXB": 2.5,
+        "PHB": 2.0,
+        "SYS": 1.0,
+        "X": 0.0,
+        "NA": -0.5,
+    }
+    return m.get(v, 0.5)
+
+
+def topo_abbrev(val: str) -> str:
+    """密网格用短标签，避免 HCCS_SW 撑爆格子。"""
+    v = val.strip().upper()
+    return {
+        "HCCS_SW": "Hs",
+        "HCCS": "H",
+        "SIO": "S",
+        "PIX": "Px",
+        "PXB": "Pb",
+        "PHB": "Ph",
+        "SYS": "Sy",
+        "X": "·",
+        "NA": "-",
+    }.get(v, v[:2])
 
 
 def plot_topo_heatmap(raw_path: Path, plt, np) -> str | None:
@@ -552,22 +547,33 @@ def plot_topo_heatmap(raw_path: Path, plt, np) -> str | None:
     for i, row in enumerate(matrix):
         for j, cell in enumerate(row[:n]):
             data[i, j] = affinity_to_num(cell)
-    fig, ax = plt.subplots(figsize=(9, 8))
-    im = ax.imshow(data, cmap="YlGnBu", vmin=0, vmax=4)
-    ax.set_xticks(range(n), [f"NPU{j}" for j in range(n)], rotation=45, ha="right")
-    ax.set_yticks(range(n), [f"NPU{i}" for i in range(n)])
+    fig, ax = plt.subplots(figsize=(10, 9))
+    im = ax.imshow(data, cmap="YlGnBu", vmin=0, vmax=5)
+    ax.set_xticks(range(n), [f"{j}" for j in range(n)], rotation=0)
+    ax.set_yticks(range(n), [f"{i}" for i in range(n)])
+    ax.set_xlabel("NPU")
+    ax.set_ylabel("NPU")
+    annot_fs = max(6.5, annot_fontsize_for_grid(n, n))
     for i in range(n):
         for j in range(n):
             if i < len(matrix) and j < len(matrix[i]):
-                ax.text(j, i, matrix[i][j], ha="center", va="center", fontsize=7,
-                        color="black" if data[i, j] < 2.5 else "white")
-    ax.set_title(f"机内 HCCS 拓扑热力图 · {raw_path.name}")
+                abbr = topo_abbrev(matrix[i][j])
+                # 主体是 Hs：只标对角 · 与 SIO(S)，避免 16×16 文字噪声
+                if abbr == "Hs":
+                    continue
+                ax.text(
+                    j, i, abbr,
+                    ha="center", va="center", fontsize=annot_fs,
+                    color="black" if data[i, j] < 2.8 else "white",
+                    fontweight="medium",
+                )
+    ax.set_title("机内拓扑 · master-0（空白=Hs/HCCS_SW；S=SIO；·=self）", fontsize=14)
     cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
-    cbar.set_label("亲和等级 (HCCS>PIX>PHB>SYS)")
+    cbar.set_label("亲和等级")
+    style_heatmap_axes(ax, tick_fs=10)
     fig.tight_layout()
-    name = "topo_hccs_heatmap_master0.png"
-    save_fig(fig, name)
-    plt.close(fig)
+    name = "topo_hccs_heatmap_master0.svg"
+    _save(fig, name)
     return name
 
 
@@ -626,32 +632,32 @@ def build_md(
         "",
     ]
     for op in OPS:
-        fn = f"hccl_bus_bw_vs_size_{op}.png"
+        fn = f"hccl_bus_bw_vs_size_{op}.svg"
         if fn in all_figs:
             lines += [f"### {OP_CN[op]}", "", f"![{OP_CN[op]}](hccl_campaign_20260711_figs/{fn})", ""]
 
     lines += [
         "## 2. 256 MB 大消息扩展性",
         "",
-        "![阶梯图](hccl_campaign_20260711_figs/hccl_256mb_step_bus_bw.png)",
+        "![阶梯图](hccl_campaign_20260711_figs/hccl_256mb_step_bus_bw.svg)",
         "",
-        "![分算子阶梯](hccl_campaign_20260711_figs/hccl_256mb_step_per_op.png)",
+        "![分算子阶梯](hccl_campaign_20260711_figs/hccl_256mb_step_per_op.svg)",
         "",
-        "![保持率](hccl_campaign_20260711_figs/hccl_256mb_retention_bar.png)",
+        "![保持率](hccl_campaign_20260711_figs/hccl_256mb_retention_bar.svg)",
         "",
         "## 3. Rank 分布（256 MB）",
         "",
     ]
     for op in OPS:
-        fn = f"hccl_rank_violin_256mb_{op}.png"
+        fn = f"hccl_rank_violin_256mb_{op}.svg"
         if fn in all_figs:
             lines += [f"### {OP_CN[op]}", "", f"![violin](hccl_campaign_20260711_figs/{fn})", ""]
     lines += [
-        "![箱线图汇总](hccl_campaign_20260711_figs/hccl_rank_box_256mb_all_ops.png)",
+        "![箱线图汇总](hccl_campaign_20260711_figs/hccl_rank_box_256mb_all_ops.svg)",
         "",
     ]
     for ws in WORLD_SCALES:
-        fn = f"hccl_rank_hist_w{ws}_256mb.png"
+        fn = f"hccl_rank_hist_w{ws}_256mb.svg"
         if fn in all_figs:
             lines += [f"### world={ws}", "", f"![hist w{ws}](hccl_campaign_20260711_figs/{fn})", ""]
 
@@ -661,7 +667,7 @@ def build_md(
             lines += [f"![{fn}](hccl_campaign_20260711_figs/{fn})", ""]
 
     if any(f.startswith("topo_") for f in all_figs):
-        lines += ["## 5. 机内拓扑", "", "![HCCS](hccl_campaign_20260711_figs/topo_hccs_heatmap_master0.png)", ""]
+        lines += ["## 5. 机内拓扑", "", "![HCCS](hccl_campaign_20260711_figs/topo_hccs_heatmap_master0.svg)", ""]
 
     lines += [
         "## 附录 · 图文件清单",
@@ -674,7 +680,10 @@ def build_md(
 
 
 def main() -> None:
-    plt, np = setup_mpl()
+    apply_plot_style()
+    import matplotlib.pyplot as plt
+    import numpy as np
+
     FIG_DIR.mkdir(parents=True, exist_ok=True)
 
     hccl_rows = load_hccl()

@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""汇总机内/机间 P2P 带宽探针 JSONL，输出摘要表 + 可选 PNG。"""
+"""汇总机内/机间 P2P 带宽探针 JSONL，输出摘要表 + 可选 SVG。"""
 from __future__ import annotations
 
 import argparse
 import json
 import statistics
+import sys
 from collections import defaultdict
 from pathlib import Path
+
+_REPORTS = Path(__file__).resolve().parents[2] / "reports"
+if str(_REPORTS) not in sys.path:
+    sys.path.insert(0, str(_REPORTS))
+
+from plot_style import apply_plot_style, hatch_bar_kwargs, save_fig, style_axes
 
 
 def load_rows(paths: list[Path], prefer_recv: bool = True) -> list[dict]:
@@ -125,6 +132,7 @@ def main() -> None:
         except ImportError:
             print("matplotlib missing, skip plot")
             return
+        apply_plot_style()
         kinds = sorted({s["kind"] for s in summary.values()})
         sizes = sorted({s["nbytes"] for s in summary.values()})
         x = range(len(sizes))
@@ -134,7 +142,8 @@ def main() -> None:
             ys = [
                 summary.get(f"{kind}@{sz}", {}).get("median_GBps", 0) for sz in sizes
             ]
-            ax.bar([xi + (i - 0.5) * width for xi in x], ys, width, label=kind)
+            ax.bar([xi + (i - 0.5) * width for xi in x], ys,
+                   **hatch_bar_kwargs(i, width=width), label=kind)
         ax.set_xticks(list(x))
         ax.set_xticklabels(
             [f"{sz/1024**2:.0f}M" if sz >= 1024**2 else f"{sz/1024:.0f}K" for sz in sizes]
@@ -143,10 +152,11 @@ def main() -> None:
         ax.set_xlabel("message size")
         ax.set_title("Intra vs Inter HCCL P2P bandwidth")
         ax.legend()
-        ax.grid(True, axis="y", alpha=0.3)
+        style_axes(ax)
         fig.tight_layout()
-        fig.savefig(args.plot, dpi=140)
-        print(f"wrote {args.plot}")
+        plot_path = Path(args.plot)
+        save_fig(fig, plot_path)
+        print(f"wrote {plot_path.with_suffix('.svg')}")
 
 
 if __name__ == "__main__":

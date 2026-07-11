@@ -1,82 +1,52 @@
-# Constitution 增强可视化报告
+# Constitution 增强图 · 20260711
 
-- 生成时间: 2026-07-11 14:11:35
-- 卡数: 128
-- 数据源: /Users/yinjinrun/random-thing/logs/card-fillgap-20260711_140301/results/constitution128.merged.jsonl
+字段含义见 [`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md)。同一 fillgap merged JSONL。
 
-> 补充 plot_card_constitution 未覆盖的多维对比、CDF、相关矩阵、快慢卡分析。
+**box_launch_by_host.svg**：Launch 延迟分 host：空 sync p99、host 发射开销 p99、突发总时延 p50。**含义**：同上的 p99（µs）。看调度抖动尾延迟。  **底层**：同 launch_latency 探针。
 
-## 核心指标 median / CV 摘要
+![box_launch_by_host.svg](constitution_extra_fillgap_20260711_figs/box_launch_by_host.svg)
 
-| 指标 | n | median | CV% | min | max |
-|------|---|--------|-----|-----|-----|
-| Cube func TFLOPS | 128 | 292.4 | 1.899 | 273.3 | 302.8 |
-| HBM GB/s | 128 | 1240.7 | 4.344 | 1012.4 | 1269.0 |
-| Sustained TFLOPS | 128 | 306.9 | 1.387 | 294.8 | 313.7 |
-| Vector GFLOPS | 128 | 98.82 | 0.311 | 98.05 | 99.47 |
-| Scalar elems/s | 128 | 2.80e+08 | 0.7733 | 2.62e+08 | 2.80e+08 |
-| MTE copy GB/s | 128 | 1267.9 | 0.2556 | 1255.3 | 1271.1 |
-| Cube+Vector TFLOPS | 128 | 240.2 | 2.544 | 225.3 | 254.6 |
-| SFU GFLOPS | 128 | 156.5 | 0.8917 | 152.3 | 159.2 |
-| HBM 顺序拷贝 GB/s | 128 | 1268.0 | 0.2729 | 1253.9 | 1271.2 |
-| HBM 跨步 GB/s | 128 | 20.04 | 0.1651 | 19.87 | 20.1 |
-| HBM 读密集 GB/s | 128 | 1454.5 | 0.7419 | 1419.3 | 1481.1 |
-| HBM 写密集 GB/s | 128 | 1468.1 | 0.5876 | 1436.6 | 1471.3 |
-| Launch sync p99 (μs) | 128 | 6.78 | 36.9 | 5.81 | 26.28 |
-| Host overhead p99 (μs) | 128 | 628.7 | 8.35 | 567.5 | 898.4 |
-| Burst total p50 (μs) | 128 | 472.5 | 16.73 | 364.7 | 794.5 |
+**cdf_core_metrics.svg**：核心吞吐指标的经验分布函数（CDF）。
 
-## 元数据
+![cdf_core_metrics.svg](constitution_extra_fillgap_20260711_figs/cdf_core_metrics.svg)
 
-- hosts (8): master-0, worker-0, worker-1, worker-2, worker-3, worker-4, worker-5, worker-6
+**corr_cube_vector_sfu_mte.svg**：Cube / Vector / SFU / MTE 四路吞吐的 Pearson 相关。看子系统是否同涨同跌；相关≈0 表示彼此相对独立。
 
-## 图表
+![corr_cube_vector_sfu_mte.svg](constitution_extra_fillgap_20260711_figs/corr_cube_vector_sfu_mte.svg)
 
-### radar host median norm
+**extreme10_small_multiples.svg**：按 `sustained_tflops` 最慢/最快各 10 卡，多指标相对集群中位偏差。用来对照「慢卡是否多项一起慢」。
 
-![radar host median norm](constitution_extra_fillgap_20260711_figs/radar_host_median_norm.png)
+![extreme10_small_multiples.svg](constitution_extra_fillgap_20260711_figs/extreme10_small_multiples.svg)
 
-### parallel host median norm
+**hbm_modes_grouped_bar.svg**：四种 HBM 访问模式带宽：`seq_copy` / `strided` / `read_heavy` / `write_heavy`。底层是 `hbm_modes_perf`（copy / 跨步 / sum / fill），单位 GB/s；**跨模式绝对值不可直接比「谁更好」**。
 
-![parallel host median norm](constitution_extra_fillgap_20260711_figs/parallel_host_median_norm.png)
+![hbm_modes_grouped_bar.svg](constitution_extra_fillgap_20260711_figs/hbm_modes_grouped_bar.svg)
 
-### hbm modes grouped bar
+**heatmap_host_device_mte_gbps.svg**：host×device 上的 **`mte_gbps` 绝对值**。**含义**：纯拷贝带宽（GB/s）。代理 MTE/DMA 搬运通路，用来拆「算发访存」vs「纯搬运」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。
 
-![hbm modes grouped bar](constitution_extra_fillgap_20260711_figs/hbm_modes_grouped_bar.png)
+![heatmap_host_device_mte_gbps.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_mte_gbps.svg)
 
-### corr cube vector sfu mte
+**heatmap_host_device_scalar_elems_per_s.svg**：host×device 上的 **`scalar_elems_per_s` 绝对值**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
-![corr cube vector sfu mte](constitution_extra_fillgap_20260711_figs/corr_cube_vector_sfu_mte.png)
+![heatmap_host_device_scalar_elems_per_s.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_scalar_elems_per_s.svg)
 
-### box launch by host
+**heatmap_host_device_sfu_gflops.svg**：host×device 上的 **`sfu_gflops` 绝对值**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
-![box launch by host](constitution_extra_fillgap_20260711_figs/box_launch_by_host.png)
+![heatmap_host_device_sfu_gflops.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_sfu_gflops.svg)
 
-### cdf core metrics
+**heatmap_host_device_vector_gflops.svg**：host×device 上的 **`vector_gflops` 绝对值**。**含义**：Vector 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行，不是 Cube。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；NPU Event 中位。w20/i50。
 
-![cdf core metrics](constitution_extra_fillgap_20260711_figs/cdf_core_metrics.png)
+![heatmap_host_device_vector_gflops.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_vector_gflops.svg)
 
-### extreme10 small multiples
+**parallel_host_median_norm.svg**：与雷达同一套 host 中位归一化，平行坐标展示。
 
-![extreme10 small multiples](constitution_extra_fillgap_20260711_figs/extreme10_small_multiples.png)
+![parallel_host_median_norm.svg](constitution_extra_fillgap_20260711_figs/parallel_host_median_norm.svg)
 
-### heatmap host device vector gflops
+**radar_host_median_norm.svg**：各 host 在多指标上的**中位相对集群中位**（1.0=集群水平）。用来看机间体质是否齐，不是单卡绝对值。
 
-![heatmap host device vector gflops](constitution_extra_fillgap_20260711_figs/heatmap_host_device_vector_gflops.png)
+![radar_host_median_norm.svg](constitution_extra_fillgap_20260711_figs/radar_host_median_norm.svg)
 
-### heatmap host device mte gbps
+**scatter_sustained_vs_func.svg**：横轴短测 Cube，纵轴稳态 Cube。**含义**：单卡 Cube 矩阵乘吞吐（TFLOPS）。测的是昇腾 Cube 主算力路径，越高说明方阵 GEMM 越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，NPU Event 计时取中位；N=8192，warmup=20，iters=50。 **含义**：稳态 Cube 吞吐（TFLOPS）。连续烤机后的可持续算力，用来看降频/争用，不是瞬时峰值。  **底层**：循环 `a@b` 跑满 ~30s，每窗 50 次 GEMM 用 NPU Event 计时；**卡级字段取最后一个时间窗**（非中位）。N=8192 bf16。
 
-![heatmap host device mte gbps](constitution_extra_fillgap_20260711_figs/heatmap_host_device_mte_gbps.png)
-
-### heatmap host device sfu gflops
-
-![heatmap host device sfu gflops](constitution_extra_fillgap_20260711_figs/heatmap_host_device_sfu_gflops.png)
-
-### heatmap host device scalar elems per s
-
-![heatmap host device scalar elems per s](constitution_extra_fillgap_20260711_figs/heatmap_host_device_scalar_elems_per_s.png)
-
-### scatter sustained vs func
-
-![scatter sustained vs func](constitution_extra_fillgap_20260711_figs/scatter_sustained_vs_func.png)
+![scatter_sustained_vs_func.svg](constitution_extra_fillgap_20260711_figs/scatter_sustained_vs_func.svg)
 

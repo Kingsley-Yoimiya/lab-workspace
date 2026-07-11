@@ -12,6 +12,17 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from plot_style import (
+    apply_plot_style,
+    annot_fontsize_for_grid,
+    hatch_bar_kwargs,
+    save_fig,
+    short_host_label,
+    style_axes,
+    style_heatmap_axes,
+)
+
+
 ROUND_STAMP = "20260711"
 FIG_DIR = Path(__file__).resolve().parent / "rounds" / f"bnmk_shapes_{ROUND_STAMP}_figs"
 MD_PATH = Path(__file__).resolve().parent / "rounds" / f"bnmk_shapes_{ROUND_STAMP}.md"
@@ -22,10 +33,7 @@ CONSTITUTION_GLOB = "card-constitution-128-*-constitution128/results"
 
 
 def short_host(h: str) -> str:
-    if not h:
-        return "?"
-    parts = h.split(".")
-    return parts[0] if parts else h
+    return short_host_label(h)
 
 
 def shape_label(row: dict[str, Any]) -> str:
@@ -86,46 +94,25 @@ def resolve_data_dir(data_dir: str | None) -> tuple[Path, list[Path]]:
         root = Path(data_dir).expanduser().resolve()
         if not root.is_dir():
             raise SystemExit(f"--data-dir 不存在：{root}")
+        # 优先单一 merged，避免与 per-host jsonl 双计
+        merged = sorted(root.glob("**/constitution128.merged.jsonl"))
+        if merged:
+            return root, [merged[0]]
         jsonls = sorted(root.glob("**/*.jsonl"))
         return root, jsonls
 
     for d in discover_jsonl_dirs():
+        merged = sorted(d.glob("**/constitution128.merged.jsonl"))
+        if merged:
+            return d, [merged[0]]
         jsonls = sorted(d.glob("**/*.jsonl"))
         if jsonls:
             return d, jsonls
     raise SystemExit("未找到 JSONL 数据目录，请指定 --data-dir")
 
 
-def setup_mpl():
-    import matplotlib.pyplot as plt
-    import numpy as np
-
-    plt.rcParams.update({
-        "font.sans-serif": [
-            "PingFang SC", "Heiti SC", "STHeiti", "Arial Unicode MS",
-            "SimHei", "DejaVu Sans",
-        ],
-        "axes.unicode_minus": False,
-        "figure.dpi": 130,
-        "savefig.dpi": 150,
-        "font.size": 11,
-        "axes.titlesize": 14,
-        "axes.labelsize": 12,
-        "legend.fontsize": 10,
-    })
-    return plt, np
-
-
-def style_axes(ax) -> None:
-    ax.grid(True, linestyle="--", alpha=0.35, linewidth=0.6)
-    ax.set_axisbelow(True)
-
-
-def save_fig(fig, name: str, plt) -> str:
-    FIG_DIR.mkdir(parents=True, exist_ok=True)
-    path = FIG_DIR / name
-    fig.savefig(path, bbox_inches="tight", facecolor="white")
-    plt.close(fig)
+def _save(fig, name: str) -> str:
+    save_fig(fig, FIG_DIR / name)
     return name
 
 
@@ -152,7 +139,7 @@ def plot_box_by_label(samples: list[dict], plt, np) -> str | None:
     ax.set_title("BNMK Shape · TFLOPS 箱线图（按 label）")
     style_axes(ax)
     fig.tight_layout()
-    return save_fig(fig, "bnmk_tflops_box_by_label.png", plt)
+    return _save(fig, "bnmk_tflops_box_by_label.svg")
 
 
 def plot_bar_median_by_label(samples: list[dict], plt, np) -> str | None:
@@ -170,16 +157,16 @@ def plot_bar_median_by_label(samples: list[dict], plt, np) -> str | None:
     fig_w = max(12, len(labels) * 0.55)
     fig, ax = plt.subplots(figsize=(fig_w, 7))
     x = np.arange(len(labels))
-    bars = ax.bar(x, medians, color="#54A24B", alpha=0.85, edgecolor="white")
+    bars = ax.bar(x, medians, **hatch_bar_kwargs(0, width=0.7))
     for bar, m in zip(bars, medians):
         ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + 1,
-                f"{m:.1f}", ha="center", va="bottom", fontsize=8)
+                f"{m:.1f}", ha="center", va="bottom", fontsize=11)
     ax.set_xticks(x, labels, rotation=35, ha="right", fontsize=9)
     ax.set_ylabel("TFLOPS（中位数）")
     ax.set_title("BNMK Shape · 各 label 中位 TFLOPS")
     style_axes(ax)
     fig.tight_layout()
-    return save_fig(fig, "bnmk_tflops_bar_median_by_label.png", plt)
+    return _save(fig, "bnmk_tflops_bar_median_by_label.svg")
 
 
 def plot_host_heatmap(samples: list[dict], plt, np) -> str | None:
@@ -205,26 +192,31 @@ def plot_host_heatmap(samples: list[dict], plt, np) -> str | None:
     if np.all(np.isnan(matrix)):
         return None
 
-    fig, ax = plt.subplots(figsize=(max(14, len(labels) * 0.45), max(5, len(hosts) * 0.55)))
+    fig, ax = plt.subplots(figsize=(max(14, len(labels) * 1.25), max(6.5, len(hosts) * 0.8)))
     vmin = float(np.nanpercentile(matrix, 5))
     vmax = float(np.nanpercentile(matrix, 95))
     im = ax.imshow(matrix, aspect="auto", cmap="YlOrRd", vmin=vmin, vmax=vmax)
     ax.set_xticks(range(len(labels)))
-    ax.set_xticklabels(labels, rotation=45, ha="right", fontsize=7)
+    ax.set_xticklabels(labels, rotation=35, ha="right", fontsize=9)
     ax.set_yticks(range(len(hosts)))
-    ax.set_yticklabels([short_host(h) for h in hosts], fontsize=8)
+    ax.set_yticklabels([short_host(h) for h in hosts], fontsize=10)
     ax.set_xlabel("Shape label")
     ax.set_ylabel("Host")
-    ax.set_title("BNMK · Host × Shape TFLOPS 热力图")
+    ax.set_title("BNMK · Host × Shape TFLOPS", fontsize=14)
+    annot_fs = 7.0
     for i in range(len(hosts)):
         for j in range(len(labels)):
             v = matrix[i, j]
             if not math.isnan(v):
-                ax.text(j, i, f"{v:.0f}", ha="center", va="center", fontsize=5.5,
-                        color="white" if v > (vmin + vmax) / 2 else "black")
+                ax.text(
+                    j, i, f"{v:.0f}", ha="center", va="center", fontsize=annot_fs,
+                    color="white" if v > (vmin + vmax) / 2 else "black",
+                )
     fig.colorbar(im, ax=ax, fraction=0.03, pad=0.02, label="TFLOPS")
+    style_heatmap_axes(ax, tick_fs=9)
+    fig.subplots_adjust(bottom=0.28)
     fig.tight_layout()
-    return save_fig(fig, "bnmk_host_shape_heatmap.png", plt)
+    return _save(fig, "bnmk_host_shape_heatmap.svg")
 
 
 def build_stats(samples: list[dict]) -> list[dict[str, Any]]:
@@ -302,9 +294,9 @@ def write_md(samples: list[dict], data_dir: Path, figs: list[str], stats: list[d
 
     lines += ["", "## 图表", ""]
     fig_titles = {
-        "bnmk_tflops_box_by_label.png": "TFLOPS 箱线图（按 label）",
-        "bnmk_tflops_bar_median_by_label.png": "各 label 中位 TFLOPS 柱状图",
-        "bnmk_host_shape_heatmap.png": "Host × Shape 热力图",
+        "bnmk_tflops_box_by_label.svg": "TFLOPS 箱线图（按 label）",
+        "bnmk_tflops_bar_median_by_label.svg": "各 label 中位 TFLOPS 柱状图",
+        "bnmk_host_shape_heatmap.svg": "Host × Shape 热力图",
     }
     for fn in figs:
         title = fig_titles.get(fn, fn)
@@ -333,7 +325,10 @@ def main() -> None:
         write_empty_md(data_dir, len(jsonl_paths))
         return
 
-    plt, np = setup_mpl()
+    apply_plot_style()
+    import matplotlib.pyplot as plt
+    import numpy as np
+
     figs: list[str] = []
     for plot_fn in (plot_box_by_label, plot_bar_median_by_label, plot_host_heatmap):
         name = plot_fn(samples, plt, np)

@@ -4,7 +4,8 @@
 **设立**: 2026-07-11  
 **Owner**: montyyin / Cursor agent  
 **成功标准**: 华为侧每条主能力在沐曦集群都有**可复跑脚本 + 落盘结果 + 对照报告**；双集群可并存互不踩 kubeconfig。  
-**进度板**: `GOAL_MUXI_MIGRATE_STATUS.md`
+**进度板**: `GOAL_MUXI_MIGRATE_STATUS.md`  
+**正式总汇报**: [`../rounds/CAMPAIGN_FINAL_MUXI_20260711.md`](../rounds/CAMPAIGN_FINAL_MUXI_20260711.md)（体例对齐昇腾 `CAMPAIGN_FINAL`；语义见 `METRIC_SEMANTICS_MUXI`）
 
 ## 范围（必须全部完成）
 

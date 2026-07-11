@@ -40,8 +40,7 @@
 
 ## 图
 
-见 `logs/inter-bw-20260711_141922/summary/inter_vs_intra_bw.png`
-
+默认 `plot_style` SVG 版本见 [`inter_bw_20260711.md`](inter_bw_20260711.md) 及其图目录 [`inter_bw_20260711_figs/inter_vs_intra_bw.svg`](inter_bw_20260711_figs/inter_vs_intra_bw.svg)；原始 PNG 见 `logs/inter-bw-20260711_141922/summary/inter_vs_intra_bw.png`。
 
 ## Ping-pong 交叉验证（已完成）
 

@@ -45,3 +45,18 @@ python3 reports/plot_card_constitution.py \
 ```
 
 期望：旧三指标的 hist / heatmap / box_by_host / sorted_bar 均能出；散点（Cube×Vector 等）在跳过说明中列出。
+
+## 沐曦战役交付（20260711）
+
+对标昇腾：`plot_*`（`plot_style` SVG）→ `rewrite_meaning_mds*`（含义+底层）→ 总汇报/语义/溯源。
+
+| 文件 | 用途 |
+|------|------|
+| `rounds/CAMPAIGN_FINAL_MUXI_20260711.md` | 总汇报 |
+| `rounds/METRIC_SEMANTICS_MUXI_20260711.md` | 指标语义字典 |
+| `rounds/FIGURE_PROVENANCE_MUXI_20260711.md` | 图↔脚本↔JSONL 溯源 |
+| `rounds/card_constitution_muxi_20260711.md` + `_figs/` | 体质（91 SVG，含义优先） |
+| `rounds/constitution_extra_muxi_20260711.md` + `_figs/` | 增强（12 SVG） |
+| `rounds/nccl_campaign_muxi_20260711.md` + `_figs/` | NCCL/P2P（23 SVG，保持率 vs w8） |
+| `reports/rewrite_meaning_mds_muxi.py` | 图注定稿 |
+| `reports/plot_nccl_campaign_muxi.py` | NCCL 出图 |

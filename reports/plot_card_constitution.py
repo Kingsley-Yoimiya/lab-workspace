@@ -15,6 +15,18 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from plot_style import (
+    apply_plot_style,
+    annot_fontsize_for_grid,
+    hatch_bar_kwargs,
+    natural_host_key,
+    save_fig,
+    short_host_label,
+    style_axes,
+    style_heatmap_axes,
+    TICK_FS_DENSE,
+)
+
 NUMERIC_METRICS: list[tuple[str, str]] = [
     ("func_tflops", "Cube func TFLOPS"),
     ("hbm_gbps", "HBM GB/s"),
@@ -119,10 +131,7 @@ def fmt(v: Any) -> str:
 
 
 def short_host(host: str) -> str:
-    for prefix in ("huawei-8node-copy-", "huawei-8node-", "ascend-"):
-        if host.startswith(prefix):
-            return host[len(prefix):]
-    return host
+    return short_host_label(host)
 
 
 def relmed(value: float, median: float) -> float:
@@ -190,10 +199,7 @@ def _try_plt():
         import numpy as np
     except ImportError:
         return None, None
-    plt.rcParams["font.sans-serif"] = [
-        "PingFang SC", "Heiti SC", "Arial Unicode MS", "SimHei", "DejaVu Sans",
-    ]
-    plt.rcParams["axes.unicode_minus"] = False
+    apply_plot_style()
     return plt, np
 
 
@@ -209,16 +215,16 @@ def plot_hist(cards: list[dict], key: str, label: str, st: dict, fig_dir: Path, 
     ax.set_xlabel(key)
     ax.set_ylabel("count")
     ax.legend(fontsize=8)
+    style_axes(ax)
     fig.tight_layout()
-    name = f"hist_{key}.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = f"hist_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 def plot_heatmap_relmed(cards: list[dict], key: str, label: str, median: float,
                         fig_dir: Path, plt, np) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     devices = sorted({int(c["device"]) for c in cards if c.get("device") is not None})
     if not hosts or not devices:
         return None
@@ -239,31 +245,35 @@ def plot_heatmap_relmed(cards: list[dict], key: str, label: str, median: float,
     finite = matrix[~np.isnan(matrix)]
     lim = float(max(5.0, np.percentile(np.abs(finite), 95))) if len(finite) else 5.0
 
-    fig, ax = plt.subplots(figsize=(max(8, len(devices) * 0.55), max(3.5, len(hosts) * 0.45)))
+    fig, ax = plt.subplots(figsize=(max(11, len(devices) * 0.95 + 1.5), max(5.5, len(hosts) * 0.42)))
     im = ax.imshow(matrix, aspect="auto", cmap="RdYlGn", vmin=-lim, vmax=lim)
     ax.set_xticks(range(len(devices)))
-    ax.set_xticklabels([str(d) for d in devices], fontsize=8)
+    ax.set_xticklabels([str(d) for d in devices])
     ax.set_yticks(range(len(hosts)))
-    ax.set_yticklabels([short_host(h) for h in hosts], fontsize=8)
+    ax.set_yticklabels([short_host(h) for h in hosts])
     ax.set_xlabel("device")
     ax.set_ylabel("host")
-    ax.set_title(f"{label}\n相对中位数偏差 (%)")
+    ax.set_title(f"{label} · 相对中位数偏差 (%)（|Δ|≥1% 才标数）", fontsize=14)
+    annot_fs = annot_fontsize_for_grid(len(hosts), len(devices))
     for i in range(len(hosts)):
         for j in range(len(devices)):
             v = matrix[i, j]
-            if not math.isnan(v):
-                ax.text(j, i, f"{v:+.1f}", ha="center", va="center", fontsize=5.5,
-                        color="black" if abs(v) < lim * 0.6 else "white")
-    fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+            if not math.isnan(v) and abs(v) >= 1.0:
+                ax.text(
+                    j, i, f"{v:+.1f}", ha="center", va="center", fontsize=annot_fs,
+                    color="black" if abs(v) < lim * 0.6 else "white",
+                )
+    cbar = fig.colorbar(im, ax=ax, fraction=0.046, pad=0.04)
+    cbar.ax.tick_params(labelsize=TICK_FS_DENSE)
+    style_heatmap_axes(ax)
     fig.tight_layout()
-    name = f"heatmap_relmed_{key}.png"
-    fig.savefig(fig_dir / name, dpi=130, bbox_inches="tight")
-    plt.close(fig)
+    name = f"heatmap_relmed_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 def plot_box_by_host(cards: list[dict], key: str, label: str, fig_dir: Path, plt) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     series = []
     labels = []
     for h in hosts:
@@ -274,21 +284,23 @@ def plot_box_by_host(cards: list[dict], key: str, label: str, fig_dir: Path, plt
             labels.append(short_host(h))
     if len(series) < 1:
         return None
-    fig, ax = plt.subplots(figsize=(max(7, len(labels) * 0.9), 4.5))
+    # m0/w12 极短：多数情况可不旋转
+    rot = 0 if max(len(x) for x in labels) <= 4 else 35
+    fig_h = 5.0
+    fig, ax = plt.subplots(figsize=(max(9, len(labels) * 0.65), fig_h))
     bp = ax.boxplot(series, patch_artist=True, widths=0.55,
                     boxprops=dict(facecolor="#4C78A8", alpha=0.7),
                     medianprops=dict(color="#E45756", linewidth=2))
     for i, vals in enumerate(series, start=1):
         ax.scatter([i] * len(vals), vals, alpha=0.35, s=14, color="#72B7B2", zorder=3)
     ax.set_xticks(range(1, len(labels) + 1))
-    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
+    ax.set_xticklabels(labels, rotation=rot, ha="right" if rot else "center", fontsize=12)
     ax.set_ylabel(label)
     ax.set_title(f"按 host 分布 · {label}")
-    ax.grid(True, axis="y", alpha=0.3)
+    style_axes(ax)
     fig.tight_layout()
-    name = f"box_by_host_{key}.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = f"box_by_host_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -298,12 +310,13 @@ def plot_sorted_bar(cards: list[dict], key: str, label: str, median: float,
     if len(rows) < 2:
         return None
     rows.sort(key=lambda x: x[1])
-    labels = [f"{short_host(c.get('host', '?'))}:d{c.get('device')}" for c, _ in rows]
+    labels = [f"{short_host(c.get('host', '?'))}.{c.get('device')}" for c, _ in rows]
     vals = [v for _, v in rows]
     fig_w = max(10, len(vals) * 0.08)
-    fig, ax = plt.subplots(figsize=(fig_w, 4.5))
-    colors = ["#E45756" if v < median else "#4C78A8" for v in vals]
-    ax.bar(range(len(vals)), vals, color=colors, width=0.85)
+    fig, ax = plt.subplots(figsize=(fig_w, 5.0))
+    for i, v in enumerate(vals):
+        kw = hatch_bar_kwargs(0 if v >= median else 1, width=0.85)
+        ax.bar(i, v, **kw)
     ax.axhline(median, color="#F58518", linestyle="--", linewidth=1.2,
                label=f"median={median:.4g}")
     ax.set_ylabel(label)
@@ -311,19 +324,18 @@ def plot_sorted_bar(cards: list[dict], key: str, label: str, median: float,
     step = max(1, len(vals) // 16)
     ax.set_xticks(range(0, len(vals), step))
     ax.set_xticklabels([labels[i] for i in range(0, len(vals), step)],
-                       rotation=60, ha="right", fontsize=7)
-    ax.legend(fontsize=8)
-    ax.grid(True, axis="y", alpha=0.3)
+                       rotation=45, ha="right", fontsize=9)
+    ax.legend(fontsize=12)
+    style_axes(ax)
     fig.tight_layout()
-    name = f"sorted_bar_{key}.png"
-    fig.savefig(fig_dir / name, dpi=120)
-    plt.close(fig)
+    name = f"sorted_bar_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 def plot_bar_host_mean_std(cards: list[dict], key: str, label: str,
                            fig_dir: Path, plt, np) -> str | None:
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     means, stds, labels = [], [], []
     for h in hosts:
         vals = values_for([c for c in cards if c.get("host") == h], key)
@@ -334,18 +346,18 @@ def plot_bar_host_mean_std(cards: list[dict], key: str, label: str,
         labels.append(short_host(h))
     if len(means) < 1:
         return None
-    fig, ax = plt.subplots(figsize=(max(7, len(labels) * 0.9), 4.5))
+    rot = 0 if max(len(x) for x in labels) <= 4 else 35
+    fig, ax = plt.subplots(figsize=(max(9, len(labels) * 0.65), 5.0))
     x = range(len(labels))
-    ax.bar(x, means, yerr=stds, capsize=3, color="#4C78A8", alpha=0.85, ecolor="#333")
+    ax.bar(x, means, yerr=stds, capsize=3, **hatch_bar_kwargs(0, width=0.7), ecolor="#333")
     ax.set_xticks(list(x))
-    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=8)
+    ax.set_xticklabels(labels, rotation=rot, ha="right" if rot else "center", fontsize=12)
     ax.set_ylabel(label)
     ax.set_title(f"host 均值 ± σ · {label}")
-    ax.grid(True, axis="y", alpha=0.3)
+    style_axes(ax)
     fig.tight_layout()
-    name = f"bar_host_mean_std_{key}.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = f"bar_host_mean_std_{key}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -374,11 +386,10 @@ def plot_scatter(cards: list[dict], xkey: str, ykey: str, title: str,
     ax.set_title(title)
     if len(hosts) <= 12:
         ax.legend(fontsize=7, loc="best")
-    ax.grid(True, alpha=0.3)
+    style_axes(ax)
     fig.tight_layout()
-    name = f"scatter_{xkey}_vs_{ykey}.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = f"scatter_{xkey}_vs_{ykey}.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -402,46 +413,56 @@ def plot_box_overview(avail: list[tuple[str, str, dict]], cards: list[dict],
         ax.set_xticklabels([f"n={len(vals)}"])
     fig.suptitle("核心指标总览箱线", fontsize=12, y=1.02)
     fig.tight_layout()
-    name = "box_overview.png"
-    fig.savefig(fig_dir / name, dpi=130, bbox_inches="tight")
-    plt.close(fig)
+    name = "box_overview.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
 def plot_sustained_timeseries(samples: list[dict], cards: list[dict],
                               fig_dir: Path, plt) -> str | None:
-    if not samples or not cards:
+    """跨卡分位时序：每个 iter 上对全部卡的 tflops 取 p05/p50。
+
+    注意：不是「挑一张 p05 代表卡 + 一张 p50 代表卡」的单卡曲线。
+    """
+    if not samples:
         return None
-    with_sus = [c for c in cards if c.get("sustained_tflops") is not None]
-    if len(with_sus) < 2:
-        return None
-    ordered = sorted(with_sus, key=lambda c: float(c["sustained_tflops"]))
-    picks = [
-        ("p05", ordered[max(0, int(len(ordered) * 0.05))]),
-        ("p50", ordered[len(ordered) // 2]),
-    ]
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4), sharey=True)
-    for ax, (tag, card) in zip(axes, picks):
-        host, dev = card["host"], card["device"]
-        pts = [s for s in samples if s.get("host") == host and s.get("device") == dev]
-        pts.sort(key=lambda s: s.get("t_s", 0))
-        if not pts:
-            ax.set_title(f"{tag} 无 sample")
+    from collections import defaultdict
+
+    by_iter: dict[int, list[float]] = defaultdict(list)
+    by_iter_t: dict[int, list[float]] = defaultdict(list)
+    for s in samples:
+        if s.get("tflops") is None or s.get("iter") is None:
             continue
-        ax.plot([s.get("t_s", i) for i, s in enumerate(pts)],
-                [s.get("tflops") for s in pts], color="#4C78A8", linewidth=1.2)
-        ax.axhline(float(card["sustained_tflops"]), color="#E45756", linestyle="--",
-                   label=f"汇总 {float(card['sustained_tflops']):.1f}")
-        ax.set_title(f"sustained {tag}\n{short_host(host)}:d{dev}")
-        ax.set_xlabel("t (s)")
-        ax.set_ylabel("TFLOPS")
-        ax.legend(fontsize=8)
-        ax.grid(True, alpha=0.3)
-    fig.suptitle("sustained 抽样时序（分位卡）", fontsize=12)
+        it = int(s["iter"])
+        by_iter[it].append(float(s["tflops"]))
+        if s.get("t_s") is not None:
+            by_iter_t[it].append(float(s["t_s"]))
+
+    # 只用覆盖足够广的 iter（避免末尾只剩 1 卡的假分位）
+    n_cards = len({(c.get("host"), c.get("device")) for c in cards}) or 128
+    min_n = max(8, int(0.9 * n_cards))
+    xs, p05s, p50s = [], [], []
+    for it in sorted(by_iter):
+        vals = sorted(by_iter[it])
+        if len(vals) < min_n:
+            continue
+        xs.append(statistics.median(by_iter_t[it]) if by_iter_t[it] else float(it))
+        p05s.append(vals[max(0, int(round((len(vals) - 1) * 0.05)))])
+        p50s.append(statistics.median(vals))
+    if len(xs) < 5:
+        return None
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    ax.plot(xs, p05s, color="#E45756", linewidth=1.6, label="cross-card p05")
+    ax.plot(xs, p50s, color="#4C78A8", linewidth=1.8, label="cross-card p50")
+    ax.set_xlabel("t (s)  ·  由各卡 sample.t_s 在同 iter 上取中位")
+    ax.set_ylabel("TFLOPS")
+    ax.set_title("Sustained GEMM 时序 · 跨卡 p05 / p50（按 iter 对齐）")
+    ax.legend(fontsize=12)
+    style_axes(ax)
     fig.tight_layout()
-    name = "timeseries_sustained_p05_p50.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = "timeseries_sustained_p05_p50.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -481,11 +502,10 @@ def plot_shape_curves(samples: list[dict], cards: list[dict],
     ax.set_ylabel("TFLOPS")
     ax.set_title("Shape Sweep: TFLOPS vs N")
     ax.legend(fontsize=8)
-    ax.grid(True, alpha=0.3)
+    style_axes(ax)
     fig.tight_layout()
-    name = "shape_tflops_vs_n.png"
-    fig.savefig(fig_dir / name, dpi=130)
-    plt.close(fig)
+    name = "shape_tflops_vs_n.svg"
+    save_fig(fig, fig_dir / name)
     return name
 
 
@@ -543,7 +563,7 @@ def write_markdown(
         )
 
     lines += ["", "## 元数据", ""]
-    hosts = sorted({c.get("host", "?") for c in cards})
+    hosts = sorted({c.get("host", "?") for c in cards}, key=natural_host_key)
     backends = sorted({str(c.get("backend", "?")) for c in cards})
     lines.append(f"- hosts ({len(hosts)}): {', '.join(short_host(h) for h in hosts[:16])}"
                  + (" …" if len(hosts) > 16 else ""))
@@ -556,7 +576,7 @@ def write_markdown(
     if fig_names:
         lines += ["", "## 图表", ""]
         for fn in fig_names:
-            title = fn.replace(".png", "").replace("_", " ")
+            title = fn.replace(".svg", "").replace("_", " ")
             lines += [f"### {title}", "", f"![{title}]({fig_dir_name}/{fn})", ""]
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
@@ -697,9 +717,9 @@ def main() -> None:
         stamp=args.stamp,
         include_optional=not args.no_optional,
     )
-    n_figs = len(list(fig_dir.glob("*.png")))
+    n_figs = len(list(fig_dir.glob("*.svg")))
     print(f"wrote {report_path}")
-    print(f"figs  {fig_dir} ({n_figs} png)")
+    print(f"figs  {fig_dir} ({n_figs} svg)")
 
 
 if __name__ == "__main__":
