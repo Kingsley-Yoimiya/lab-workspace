@@ -1,0 +1,2 @@
+{"id":"d_tp4pp2_g64_s2k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":64,"seq":2048,"iters":5,"note":"baseline-smoke-done"}
+{"id":"m_ep8_e8_k2","mode":"moe","tp":1,"pp":1,"ep":8,"gbs":64,"seq":2048,"iters":5,"experts":8,"topk":2,"note":"baseline-moe-smoke-pending"}

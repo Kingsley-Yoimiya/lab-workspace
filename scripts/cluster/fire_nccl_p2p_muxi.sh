@@ -46,12 +46,12 @@ while [[ "$r" -lt "$nnodes" ]]; do
 #!/usr/bin/env bash
 export PATH="/opt/conda/bin:\${PATH:-/usr/bin}"
 export PYTHONUNBUFFERED=1
-# 沐曦多机：强制 eth0 做 NCCL/MCCL socket；IB 用 mlx5（避免选错 net1-4）
+# 沐曦多机：强制 eth0 做 NCCL/MCCL socket；IB/RoCE 用 xscale（verbs 可见；mlx5 无 ibv）
 export NCCL_SOCKET_IFNAME=eth0
 export MCCL_SOCKET_IFNAME=eth0
 export GLOO_SOCKET_IFNAME=eth0
-export NCCL_IB_HCA=mlx5
-export MCCL_IB_HCA=mlx5
+export NCCL_IB_HCA="${NCCL_IB_HCA:-xscale}"
+export MCCL_IB_HCA="${MCCL_IB_HCA:-xscale}"
 export NCCL_DEBUG=\${NCCL_DEBUG:-WARN}
 export MCCL_DEBUG=\${MCCL_DEBUG:-WARN}
 export FORCE_ACTIVE_WAIT=\${FORCE_ACTIVE_WAIT:-2}

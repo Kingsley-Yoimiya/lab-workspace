@@ -1,0 +1,12 @@
+{"id":"d_tp4pp2_g64_s2k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":64,"seq":2048,"iters":5,"note":"smoke-ref"}
+{"id":"d_tp4pp2_g512_s2k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":512,"seq":2048,"iters":5,"note":"gbs-up"}
+{"id":"d_tp4pp2_g2048_s2k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":2048,"seq":2048,"iters":5,"note":"huawei-gbs"}
+{"id":"d_tp4pp1_g512_s2k","mode":"dense","tp":4,"pp":1,"ep":1,"gbs":512,"seq":2048,"iters":5,"note":"tp4pp1"}
+{"id":"d_tp2pp2_g512_s2k","mode":"dense","tp":2,"pp":2,"ep":1,"gbs":512,"seq":2048,"iters":5,"note":"tp2pp2"}
+{"id":"d_tp8pp1_g512_s2k","mode":"dense","tp":8,"pp":1,"ep":1,"gbs":512,"seq":2048,"iters":5,"note":"tp8pp1"}
+{"id":"d_tp4pp2_g512_s4k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":512,"seq":4096,"iters":5,"note":"seq4k"}
+{"id":"d_tp4pp2_g2048_s4k","mode":"dense","tp":4,"pp":2,"ep":1,"gbs":2048,"seq":4096,"iters":5,"note":"full-align-try"}
+{"id":"m_ep8_e8_k2","mode":"moe","tp":1,"pp":1,"ep":8,"gbs":64,"seq":2048,"iters":5,"experts":8,"topk":2,"note":"moe-smoke"}
+{"id":"m_ep4_pp2_e8","mode":"moe","tp":1,"pp":2,"ep":4,"gbs":64,"seq":2048,"iters":5,"experts":8,"topk":2,"note":"moe-pp2ep4"}
+{"id":"m_ep2_e8","mode":"moe","tp":1,"pp":1,"ep":2,"gbs":64,"seq":2048,"iters":5,"experts":8,"topk":2,"note":"ep-sweep"}
+{"id":"m_ep8_e16_k2","mode":"moe","tp":1,"pp":1,"ep":8,"gbs":64,"seq":2048,"iters":5,"experts":16,"topk":2,"note":"moe-experts16"}

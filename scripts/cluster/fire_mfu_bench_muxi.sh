@@ -49,8 +49,8 @@ export PYTHONUNBUFFERED=1
 export NCCL_SOCKET_IFNAME=eth0
 export MCCL_SOCKET_IFNAME=eth0
 export GLOO_SOCKET_IFNAME=eth0
-export NCCL_IB_HCA=mlx5
-export MCCL_IB_HCA=mlx5
+export NCCL_IB_HCA="${NCCL_IB_HCA:-xscale}"
+export MCCL_IB_HCA="${MCCL_IB_HCA:-xscale}"
 rm -f '$donef' '$failf'
 cp -f '$AFS_SCRIPTS/mfu_train_bench_nccl.py' /tmp/mfu_train_bench_nccl.py
 /opt/conda/bin/torchrun --nnodes=$nnodes --node_rank=$r --nproc_per_node=$NPROC \

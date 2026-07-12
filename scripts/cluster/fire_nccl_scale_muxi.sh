@@ -46,15 +46,27 @@ while [[ "$r" -lt "$nnodes" ]]; do
 #!/usr/bin/env bash
 export PATH="/opt/conda/bin:\${PATH:-/usr/bin}"
 export PYTHONUNBUFFERED=1
-# 沐曦多机：强制 eth0 做 NCCL/MCCL socket；IB 用 mlx5（避免选错 net1-4）
-export NCCL_SOCKET_IFNAME=eth0
-export MCCL_SOCKET_IFNAME=eth0
-export GLOO_SOCKET_IFNAME=eth0
-export NCCL_IB_HCA=mlx5
-export MCCL_IB_HCA=mlx5
-export NCCL_DEBUG=\${NCCL_DEBUG:-WARN}
-export MCCL_DEBUG=\${MCCL_DEBUG:-WARN}
-export FORCE_ACTIVE_WAIT=\${FORCE_ACTIVE_WAIT:-2}
+# 沐曦多机：强制 eth0 做 NCCL/MCCL socket；IB/RoCE 用 xscale（verbs 可见；mlx5 无 ibv）
+export NCCL_SOCKET_IFNAME=${NCCL_SOCKET_IFNAME:-eth0}
+export MCCL_SOCKET_IFNAME=${MCCL_SOCKET_IFNAME:-eth0}
+export GLOO_SOCKET_IFNAME=${GLOO_SOCKET_IFNAME:-eth0}
+# 默认 xscale（verbs Active）；IB 不通时可 NCCL_IB_DISABLE=1 回退 socket
+export NCCL_IB_HCA=${NCCL_IB_HCA:-xscale}
+export MCCL_IB_HCA=${MCCL_IB_HCA:-xscale}
+export NCCL_DEBUG=${NCCL_DEBUG:-WARN}
+export MCCL_DEBUG=${MCCL_DEBUG:-WARN}
+export FORCE_ACTIVE_WAIT=${FORCE_ACTIVE_WAIT:-2}
+# RoCE IPv4-mapped GID 默认 4（与 net1–4 地址一致）；可用环境覆盖
+export NCCL_IB_GID_INDEX=${NCCL_IB_GID_INDEX:-4}
+export MCCL_IB_GID_INDEX=${MCCL_IB_GID_INDEX:-4}
+# 将本机调用时的可选 env 固化进脚本（setsid 不会继承操作机 export）
+$( [[ -n "${NCCL_IB_DISABLE:-}" ]] && echo "export NCCL_IB_DISABLE=${NCCL_IB_DISABLE}" )
+$( [[ -n "${MCCL_IB_DISABLE:-}" ]] && echo "export MCCL_IB_DISABLE=${MCCL_IB_DISABLE}" )
+# 若调用方显式传了 GID，覆盖默认
+$( [[ -n "${NCCL_IB_GID_INDEX:-}" ]] && echo "export NCCL_IB_GID_INDEX=${NCCL_IB_GID_INDEX}" )
+$( [[ -n "${MCCL_IB_GID_INDEX:-}" ]] && echo "export MCCL_IB_GID_INDEX=${MCCL_IB_GID_INDEX}" )
+$( [[ -n "${NCCL_NET:-}" ]] && echo "export NCCL_NET=${NCCL_NET}" )
+$( [[ -n "${MCCL_NET:-}" ]] && echo "export MCCL_NET=${MCCL_NET}" )
 rm -f '$donef' '$failf'
 cp -f '$AFS_SCRIPTS/nccl_torch_bench.py' /tmp/nccl_torch_bench.py
 /opt/conda/bin/torchrun --nnodes=$nnodes --node_rank=$r --nproc_per_node=$NPROC \

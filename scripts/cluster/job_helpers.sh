@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
-# vcctl / weibozhen 常用封装（在本机 source 或直接调用）
+# vcctl / 跳板常用封装（在本机 source 或直接调用）
 #
 # 双集群并存（重要）:
-#   - 绝不覆盖 weibozhen:~/.kube/config
+#   - 绝不覆盖跳板默认 ~/.kube/config
 #   - 通过 CLUSTER_KUBECONFIG 指向独立文件，vcctl 前缀 KUBECONFIG=...
 #   - source huawei.env 或 muxi.env 后再调本文件的函数
+#   - 默认跳板 ais-cf3e61a5（见 docs/AIS_JUMP_CLUSTER.md）；旧 weibozhen 暂不可用
 #
 # 例:
 #   source scripts/cluster/muxi.env
@@ -12,7 +13,7 @@
 #   cluster_pod_exec 'mx-smi | head'
 set -euo pipefail
 
-CLUSTER_SSH_HOST="${CLUSTER_SSH_HOST:-weibozhen}"
+CLUSTER_SSH_HOST="${CLUSTER_SSH_HOST:-ais-cf3e61a5}"
 CLUSTER_JOB="${CLUSTER_JOB:-huawei-8node-copy}"
 CLUSTER_POD="${CLUSTER_POD:-${CLUSTER_JOB}-master-0}"
 CLUSTER_IMAGE="${CLUSTER_IMAGE:-registry2.d.pjlab.org.cn/ccr-yangxiaolei/mindspeed-llm:openeuler22.03-mindspeed-llm-2.3.0-a3-arm}"
