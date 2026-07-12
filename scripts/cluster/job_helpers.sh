@@ -147,7 +147,7 @@ cluster_fanout_run() {
   [[ ${#fail_pods[@]} -eq 0 ]]
 }
 
-if [[ "${BASH_SOURCE[0]}" == "$0" ]]; then
+if [[ "${BASH_SOURCE[0]:-}" == "$0" ]]; then
   case "${1:-}" in
     pods) cluster_pod_list ;;
     running)

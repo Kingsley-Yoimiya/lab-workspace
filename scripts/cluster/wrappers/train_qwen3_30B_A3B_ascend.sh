@@ -55,6 +55,7 @@ SEQ_LENGTH="${SEQ_LENGTH:-4096}"
 MAX_POSITION_EMBEDDINGS="${MAX_POSITION_EMBEDDINGS:-40960}"
 SKIP_SAVE="${SKIP_SAVE:-1}"
 SKIP_PROFILE="${SKIP_PROFILE:-1}"
+SKIP_TB="${SKIP_TB:-1}"
 
 if [[ -f warmup.sh ]]; then
   bash warmup.sh || true
@@ -145,9 +146,13 @@ OUTPUT_ARGS="
     --no-load-optim \
     --no-load-rng \
     --no-save-optim \
-    --log-throughput \
+    --log-throughput
+"
+if [[ "${SKIP_TB:-1}" != "1" ]]; then
+  OUTPUT_ARGS="${OUTPUT_ARGS} \\
     --tensorboard-dir ${TENSORBOARD_DIR}
 "
+fi
 
 RECOMPUTE_ARGS="
     --recompute-granularity full \
@@ -203,5 +208,6 @@ torchrun $DISTRIBUTED_ARGS pretrain_gpt.py \
     $RECOMPUTE_ARGS \
     "${EXTRA_ARGS[@]}" \
     2>&1 | tee -a "${LOG_FILE}"
-
-echo "TRAIN_MOE_RANK_${RANK}_DONE"
+rc=${PIPESTATUS[0]}
+echo "TRAIN_MOE_RANK_${RANK}_DONE rc=${rc}"
+exit "${rc}"

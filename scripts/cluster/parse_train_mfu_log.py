@@ -42,19 +42,41 @@ def parse_text(text: str) -> list[dict]:
     return rows
 
 
+def _pct(sorted_vals: list[float], p: float) -> float | None:
+    if not sorted_vals:
+        return None
+    if len(sorted_vals) == 1:
+        return sorted_vals[0]
+    k = (len(sorted_vals) - 1) * (p / 100.0)
+    f = int(k)
+    c = min(f + 1, len(sorted_vals) - 1)
+    if f == c:
+        return sorted_vals[f]
+    return sorted_vals[f] + (sorted_vals[c] - sorted_vals[f]) * (k - f)
+
+
 def steady(rows: list[dict], drop_first: int = 1) -> dict | None:
     if not rows:
         return None
     use = rows[drop_first:] if len(rows) > drop_first else rows
     vals = [r["tflops_per_gpu"] for r in use]
     mss = [r["ms"] for r in use if r.get("ms") is not None]
+    mss_sorted = sorted(mss)
+    vals_sorted = sorted(vals)
     return {
         "n": len(vals),
         "tflops_mean": statistics.fmean(vals),
         "tflops_median": statistics.median(vals),
         "tflops_min": min(vals),
         "tflops_max": max(vals),
+        "tflops_p50": _pct(vals_sorted, 50),
+        "tflops_p90": _pct(vals_sorted, 90),
+        "tflops_p99": _pct(vals_sorted, 99),
         "ms_mean": statistics.fmean(mss) if mss else None,
+        "ms_median": statistics.median(mss) if mss else None,
+        "ms_p50": _pct(mss_sorted, 50),
+        "ms_p90": _pct(mss_sorted, 90),
+        "ms_p99": _pct(mss_sorted, 99),
         "iters": use,
     }
 
@@ -100,6 +122,7 @@ def main() -> int:
             f"steady_tflops={st['tflops_mean']:.3f} "
             f"median={st['tflops_median']:.3f} "
             f"mfu={out['mfu_pct']:.2f}% "
+            f"ms_p50={st.get('ms_p50')} ms_p90={st.get('ms_p90')} ms_p99={st.get('ms_p99')} "
             f"n={st['n']} peak={args.peak}"
         )
     return 0 if st else 1
