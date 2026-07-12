@@ -1,10 +1,13 @@
 # 集群运维脚本（分支 `ops/cluster`）
 
-本机 pull → 经 `ssh weibozhen` + `vcctl pod exec` 写入真 AFS；**不要**在登录机/worker 上直连 GitHub。
+本机 pull → 经跳板 `vcctl pod exec` 写入真 AFS；**不要**在登录机/worker 上直连 GitHub。
+
+**网络 / 跳板 / 沐曦接入（必读）→ [`docs/AIS_JUMP_CLUSTER.md`](../../../../docs/AIS_JUMP_CLUSTER.md)**  
+**新手华为上机（config 已齐）→ [`HUAWEI_A3_ONBOARD.md`](./HUAWEI_A3_ONBOARD.md)**（把 `JUMP=weibozhen` 换成 `JUMP=ais-jump`）
 
 ## 双集群并存（华为 Ascend + 沐曦 Muxi）
 
-两套集群共用跳板 `weibozhen`，但 **kubeconfig 必须隔离**，禁止互相 `cp` 覆盖 `~/.kube/config`（会踢掉另一边正在用的会话）。
+两套集群共用跳板 **`ais-cf3e61a5`（`ais-jump`）**（旧 `weibozhen:49285` 已黑洞），但 **kubeconfig 必须隔离**，禁止互相 `cp` 覆盖 `~/.kube/config`。
 
 | Profile | 独立 kubeconfig（跳板上） | Job 示例 | AFS | 拓扑 |
 |---------|---------------------------|----------|-----|------|
