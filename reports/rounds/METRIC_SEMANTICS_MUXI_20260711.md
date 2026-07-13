@@ -10,8 +10,8 @@
 > - P2P AFS：`…/results/nccl-p2p-20260711_150700`  
 > **遥测统一命令**：`mx-smi`（温度/功耗/拓扑/MetaXLink）；**禁止**把昇腾 `npu-smi -t …` 套到沐曦。  
 > **计时**：CUDA/MACA Event（`torch.cuda`），不是 NPU Event。  
-> **架构对齐**：[`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)（XCORE / MACA / MCCL / mx-smi）。  
-> **缺口**：有 BNMK sample；board_temp / GPU util / XCORE clk 已落盘。
+> **架构对齐**：[`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)（XCORE / MACA / MCCL / mx-smi）；报告附录 [`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)。  
+> **本批状态**：有 BNMK；board_temp / GPU util / XCORE clk 已落盘。
 
 ---
 
@@ -27,7 +27,7 @@
 - **怎么得到**：探针 `func_perf`。`c = a @ b`（bf16）；理论 FLOPs = `2·N³`；CUDA/MACA Event 计时；卡级取各轮 tflops **中位数**。
 - **关键参数**：`N=8192`，warmup=20，iters=50（`config.constitution128.yaml` + `launch_one.sh`：`--gemm-n 8192 --sdc-rounds 5 --sustained-s 30`）。
 - **本批中位**：**279.9 TFLOPS**（覆盖 127/128）。
-- **注意**：短窗峰值；与 `sustained_tflops` 对比看热稳态。勿与昇腾 Cube/矩阵绝对值直接当「谁更快」——硬件代差与探针参数需对齐后再比。
+- **注意**：短窗峰值；与 `sustained_tflops` 对比看热稳态。键名可对照昇腾；沐曦实测走 MetaX/MACA 的 `a @ b`（GEMM）路径。勿把两侧数值直接当「谁更快」——硬件代差与探针参数需对齐后再比。
 
 ---
 
@@ -41,9 +41,9 @@
 
 ---
 
-### `hbm_gbps`（HBM GB/s）
+### `hbm_gbps`（HBM（高带宽外存） GB/s）
 
-- **是什么**：HBM 有效带宽代理（GB/s）。`dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按读+写计。
+- **是什么**：HBM（高带宽外存）有效带宽代理（GB/s）。`dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按读+写计。
 - **怎么得到**：探针 `hbm`；Event 中位；默认 1024MB，w20/i50。
 - **关键参数**：1024 MB fp32。
 - **本批中位**：**1469 GB/s**（127/128）；分布有双峰（部分节点掉到 ~1000–1050）。
@@ -53,11 +53,11 @@
 
 ### `vector_gflops` / `scalar_elems_per_s` / `mte_gbps` / `sfu_gflops` / `cube_vector_tflops`
 
-- **是什么**：Vector FMA、cumsum 串行链、纯 `copy_`、`exp` SFU、GEMM+epilogue 流水（与昇腾同构字段名）。
-- **怎么得到**：对应 stage_c 探针；CUDA Event 中位。
+- **是什么**：同构 JSON 键名遗留；沐曦实测走 MetaX/MACA 路径——`vector_gflops`=`a*b+c` FMA，`scalar_elems_per_s`=`cumsum`，`mte_gbps`=`Tensor.copy_`，`sfu_gflops`=`torch.exp`，`cube_vector_tflops`=GEMM+epilogue。
+- **怎么得到**：对应 stage_c 探针；CUDA/MACA Event 中位。
 - **关键参数**：Vector/SFU 64M fp32；Scalar 16M；DMA copy 512MB；pipeline N=4096 bf16。
 - **本批中位**：Vector **122.2** GFLOPS；DMA copy **1387** GB/s；SFU **177.4**；GEMM+epilogue **195.2** TFLOPS；Scalar **1.209e+11** elems/s。
-- **注意**：`sfu_gflops` 仍按 1 op/元素计，实质偏 Gops/s；勿与 Vector FMA 按 2× 换算。
+- **注意**：键名可对照昇腾，但不是 Ascend Cube/Vector/Scalar/MTE 硬件；见 `METAX_ARCH_ALIGNMENT_20260711.md`。`sfu_gflops` 按 1 op/元素计，实质偏 Gops/s；勿与 Vector FMA 按 2× 换算。
 
 ---
 
@@ -67,31 +67,38 @@
 - **怎么得到**：`launch_latency`；CPU `perf_counter` + `torch.cuda.synchronize` / Event 差分。
 - **关键参数**：samples=500，warmup=50，burst_count=64，timing_method=event。
 - **本批中位**：sync p50 **2.69 µs**；host overhead p50 **184 µs**；burst p50 **1318 µs**。
-- **注意**：CV 明显高于算力字段——更适合看尾延迟/驱动抖动，不宜当「卡体质主分」。
+- **注意**：CV 明显高于算力字段——更适合看尾延迟/驱动抖动，不宜作为主判定指标。
 
 ---
 
-### 遥测：`health_temp_c` / `health_power_w` / `power_w` / `power_limit_w`
+### 遥测：温度 / 功耗 / GPU 利用率 / XCORE 时钟
 
-- **是什么**：轻载 vs 负载功耗/温度快照。
-- **怎么得到（沐曦）**：`mx-smi` 解析（`MxSmiProvider`），不是 `npu-smi`。
-- **关键参数**：健康路径开测快照；负载末常取 vector_fma 末轮回填。
-- **本批中位**：health temp **38.5 °C**；health power **94.84 W**；负载 power **471 W**；power limit **550 W**。
+- **是什么**：轻载与负载阶段的功耗/温度快照，以及负载阶段的板温、GPU 利用率和 XCORE 时钟；兼容键分别为 `board_temp_c`、`aicore_util_pct`、`aicore_freq_mhz`。
+- **怎么得到（沐曦）**：统一解析 `mx-smi`（`MxSmiProvider`）：`--show-temperature` 取板温，`--show-usage` 取 GPU util，`-j` 的 `clocks.XCORE.XCORE_CLK` 取 XCORE clk。`aicore_*` 只是昇腾兼容 JSON 键，不表示沐曦使用 AICore 或 `npu-smi`。
+- **关键参数**：轻载开测快照（health≠健康分）；负载末常取 vector_fma 末轮回填。
+- **本批中位**：health temp **38.5 °C**；health power **94.84 W**；负载 power **471 W**；power limit **550 W**；board temp **54 °C**；GPU util **98%**；XCORE clk **1500 MHz**（后三项均覆盖 127/128）。
 - **注意**：
   - **不要**把 health 与 load power 相减当降频证据。
-  - 本批历史 JSONL 中 `board_temp_c` / `*_util_pct` **未采集**（≠硬件无；`mx-smi --show-usage` 已接线；出图 skip）。
+  - 本批 JSONL 中 `board_temp_c`、`aicore_util_pct`、`aicore_freq_mhz` **均已采集并落盘**；板温、利用率与时钟是采样时刻快照，不等同于完整热稳态或长期平均。
   - 相对昇腾：空闲/满载功耗量级不同（昇腾满载中位 ~872 W；沐曦 ~467 W / 550 W 墙）。
 
 ---
 
-### 判定字段（冒烟 `good/slow/bad`）
+### 判定字段（冒烟 vs 体质，勿混用）
 
 - **是什么**：相对集群中位的偏离 + 正确性/计时质量门控。
-- **怎么得到**：冒烟 job `logs/muxi-card-screen-20260711_133828-muxi-smoke/`。
-- **关键参数**：相对中位阈值 + `max_rel_err`。
-- **注意**：constitution 分布报告「不强调 slow/坏卡」；坏卡叙事以冒烟报告为准。本批冒烟 good=106 / slow=19 / bad=1 / contended=2。
+- **怎么得到**：冒烟 job `logs/muxi-card-screen-20260711_133828-muxi-smoke/`；体质判定来自 constitution merged。
+- **关键参数**：相对中位阈值 + `max_rel_err`（冒烟与体质规则不完全相同）。
+- **注意**：本批冒烟 good=106 / slow=19 / bad=1 / contended=2；体质 good=119 / contended=8 / bad=1。两者采样阶段与规则不同，勿混读。
 
 ---
+
+### `shape_sweep_peak_tflops`（名义 shape sweep · 本批=BNMK max）
+
+- **是什么**：名义「shape sweep 峰值 TFLOPS」；**名不副实**——本批关闭方阵 `shape_sweep`、以 `bnmk_sweep` / `gemm_bnmk_sample` 为主，该字段实为 **BNMK 各形状中位吞吐的最大值**。
+- **怎么得到**：`jsonl.py` 用 `max(BNMK tflops)` 回填此键。
+- **本批中位**：**286 TFLOPS**（覆盖见 constitution 摘要）。
+- **注意**：读图时按 **BNMK peak** 理解，不是方阵 2 幂 shape sweep。
 
 ## 二、通信字段（NCCL / MCCL）
 
@@ -169,13 +176,13 @@
 | P2P 机内 30 GB/s vs AR 190.5 GB/s | 协议不同；AR 是 collective bus 折算饱和区 |
 | eth0 0.2 GB/s vs MetaXLink | 跨节点当前路径 vs 机内路径；不是「卡不行」 |
 | `nvcc` shim | cu-bridge 用 `cucc`；Megatron fused_kernels 硬查 `nvcc` |
-| BNMK / board_temp / GPU util | **本批无 sample / 历史未采集（代码已补线）** |
+| BNMK / board_temp / GPU util / XCORE clk | **本批均有数据并已落盘**；BNMK 为 `gemm_bnmk_sample`，遥测来自 `mx-smi` |
 
 ---
 
 ## 六、与昇腾语义手册的关系
 
 - **字段名、公式、图注话术**尽量同构，便于对照阅读。
-- **差异只写清楚**：后端（NCCL/MCCL vs HCCL）、遥测（`mx-smi` vs `npu-smi`）、世界大小基线（8 vs 16）、计时设备（CUDA Event vs NPU Event）、本批缺测字段（BNMK / util / board_temp）。
+- **差异只写清楚**：后端（NCCL/MCCL vs HCCL）、遥测（沐曦 `mx-smi` vs 昇腾 `npu-smi`）、世界大小基线（8 vs 16）、计时设备（CUDA Event vs NPU Event），以及同构 JSON 键在两种架构上的真实含义；本批 BNMK、GPU util、board_temp 与 XCORE clk 均有数据。
 
 *文档版本：2026-07-11 · 由 `rewrite_meaning_mds_muxi.py` 现算中位 · 配套 [`CAMPAIGN_FINAL_MUXI_20260711.md`](CAMPAIGN_FINAL_MUXI_20260711.md) · [`FIGURE_PROVENANCE_MUXI_20260711.md`](FIGURE_PROVENANCE_MUXI_20260711.md)*

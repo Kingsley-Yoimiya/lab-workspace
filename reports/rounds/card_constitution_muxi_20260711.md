@@ -1,8 +1,8 @@
 # Card Constitution · Muxi · 20260711
 
-指标「是什么 / 底层 API」详见 [`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)。
-数据：`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl`；job `yushan-muxi-card-screen-128-cp-copy` **16×8=128**；`screen.py` + `config.constitution128.yaml`；`--sdc-rounds 5 --gemm-n 8192 --sustained-s 30`。
-计时：CUDA/MACA Event（`torch.cuda`）；遥测：`mx-smi`。本批 **有 BNMK sample**；board_temp / GPU util / XCORE clk **已落盘**。架构对齐见 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)。
+**怎么读**：关键缩写在正文括号附注；完整硬件词条附录：[`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)。测法：[`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)。  
+JSON 键里的 Cube / MTE / AICore 是昇腾同构壳；沐曦侧架构对齐见 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)（正文附注 + glossary 附录可并存）。下文在遗留键名后用括号附注沐曦对应语义，避免把同构键名误读为沐曦硬件名称。  
+数据：`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl`；16×8=128。
 
 ## 关键中位
 
@@ -10,15 +10,18 @@
 |---|---|---:|---:|
 | `func_tflops` | 方阵 GEMM / MetaX 主算力 | 279.9 | 127/128 |
 | `sustained_tflops` | 稳态 GEMM | 280 | 127/128 |
-| `hbm_gbps` | HBM 带宽代理 | 1469 | 127/128 |
-| `vector_gflops` | Vector FMA | 122.2 | 127/128 |
+| `hbm_gbps` | HBM（高带宽外存）带宽代理 | 1469 | 127/128 |
+| `vector_gflops` | MACA 向量路径 FMA | 122.2 | 127/128 |
 | `mte_gbps` | 纯 copy/DMA | 1387 | 127/128 |
 | `cube_vector_tflops` | GEMM+epilogue | 195.2 | 127/128 |
 | `sfu_gflops` | SFU（Gops/s 量级） | 177.4 | 127/128 |
-| `health_power_w` | 健康功耗 | 94.84 | 128/128 |
+| `health_power_w` | 轻载开测功耗快照（health≠健康分） | 94.84 | 128/128 |
 | `power_w` | 负载末功耗 | 471 | 127/128 |
 | `power_limit_w` | 功耗墙 | 550 | 127/128 |
-| `health_temp_c` | 健康温度 | 38.5 | 128/128 |
+| `health_temp_c` | 轻载开测温度快照（health≠健康分） | 38.5 | 128/128 |
+| `board_temp_c` | 板温 | 54 | 127/128 |
+| `aicore_util_pct` | GPU util（同构键） | 98% | 127/128 |
+| `aicore_freq_mhz` | XCORE clk（同构键） | 1500 | 127/128 |
 
 ## 逐图（含义优先）
 
@@ -26,39 +29,39 @@
 
 ![bar_host_mean_std_aicore_freq_mhz.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_aicore_freq_mhz.svg)
 
-**`cube_vector_tflops`**（分 host 均值±σ）。本批中位≈**195.2**。**含义**：方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
+**`cube_vector_tflops`**（分 host 均值±σ）。本批中位≈**195.2**。**含义**：GEMM 后接 epilogue（scale+bias）的端到端吞吐（TFLOPS）；字段名 `cube_*` 是昇腾同构遗留，沐曦实测是 GEMM+epilogue，不表示沐曦存在 Ascend Cube 硬件。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
 
 ![bar_host_mean_std_cube_vector_tflops.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_cube_vector_tflops.svg)
 
-**`func_tflops`**（分 host 均值±σ）。本批中位≈**279.9**。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+**`func_tflops`**（分 host 均值±σ）。本批中位≈**279.9**。**含义**：MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件，也不是热稳态或整网训练 MFU。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![bar_host_mean_std_func_tflops.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_func_tflops.svg)
 
-**`hbm_gbps`**（分 host 均值±σ）。本批中位≈**1469**。**含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+**`hbm_gbps`**（分 host 均值±σ）。本批中位≈**1469**。**含义**：HBM（高带宽外存）路径上的有效带宽代理（GB/s）。探针是「读+写 + 一次逐元素乘」，属于访存+轻算混合，不是纯 DMA，也不是 mx-smi 带宽占用率。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![bar_host_mean_std_hbm_gbps.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_hbm_gbps.svg)
 
-**`health_power_w`**（分 host 均值±σ）。本批中位≈**94.84**。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
+**`health_power_w`**（分 host 均值±σ）。本批中位≈**94.84**。**含义**：轻载开测功耗快照（W）；health≠健康分。与负载末 `power_w` 同源但不同时刻。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
 
 ![bar_host_mean_std_health_power_w.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_health_power_w.svg)
 
-**`health_temp_c`**（分 host 均值±σ）。本批中位≈**38.5**。**含义**：健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
+**`health_temp_c`**（分 host 均值±σ）。本批中位≈**38.5**。**含义**：轻载开测温度快照（°C）；health≠健康分。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
 
 ![bar_host_mean_std_health_temp_c.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_health_temp_c.svg)
 
-**`mte_gbps`**（分 host 均值±σ）。本批中位≈**1387**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
+**`mte_gbps`**（分 host 均值±σ）。本批中位≈**1387**。**含义**：纯 copy/DMA 带宽（GB/s）；字段名 `mte_*` 是昇腾同构遗留，沐曦实测不表示 MTE 硬件或其指令计数器。该指标用于和 `hbm_gbps`（带乘）对照「纯搬运 vs 访存+轻算」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![bar_host_mean_std_mte_gbps.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_mte_gbps.svg)
 
-**`power_w`**（分 host 均值±σ）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。
+**`power_w`**（分 host 均值±σ）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。
 
 ![bar_host_mean_std_power_w.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_power_w.svg)
 
-**`scalar_elems_per_s`**（分 host 均值±σ）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**`scalar_elems_per_s`**（分 host 均值±σ）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。同构 JSON 键名遗留；实测是 MetaX/MACA `torch.cumsum` 路径（控制流+同步代理），不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![bar_host_mean_std_scalar_elems_per_s.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_scalar_elems_per_s.svg)
 
-**`sfu_gflops`**（分 host 均值±σ）。本批中位≈**177.4**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
+**`sfu_gflops`**（分 host 均值±σ）。本批中位≈**177.4**。**含义**：特殊函数类吞吐代理。公开叙述里 exp/sqrt 等常归向量计算能力面；本字段实现是 torch.exp，按 1 op/元素计，量纲更接近 Gops/s。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
 ![bar_host_mean_std_sfu_gflops.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_sfu_gflops.svg)
 
@@ -66,7 +69,7 @@
 
 ![bar_host_mean_std_sustained_tflops.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_sustained_tflops.svg)
 
-**`vector_gflops`**（分 host 均值±σ）。本批中位≈**122.2**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**`vector_gflops`**（分 host 均值±σ）。本批中位≈**122.2**。**含义**：MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core，也不是矩阵乘主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![bar_host_mean_std_vector_gflops.svg](card_constitution_muxi_20260711_figs/bar_host_mean_std_vector_gflops.svg)
 
@@ -82,23 +85,23 @@
 
 ![box_by_host_board_temp_c.svg](card_constitution_muxi_20260711_figs/box_by_host_board_temp_c.svg)
 
-**`cube_vector_tflops`**（分 host 箱线）。本批中位≈**195.2**。**含义**：方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
+**`cube_vector_tflops`**（分 host 箱线）。本批中位≈**195.2**。**含义**：GEMM 后接 epilogue（scale+bias）的端到端吞吐（TFLOPS）；字段名 `cube_*` 是昇腾同构遗留，沐曦实测是 GEMM+epilogue，不表示沐曦存在 Ascend Cube 硬件。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
 
 ![box_by_host_cube_vector_tflops.svg](card_constitution_muxi_20260711_figs/box_by_host_cube_vector_tflops.svg)
 
-**`func_tflops`**（分 host 箱线）。本批中位≈**279.9**。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+**`func_tflops`**（分 host 箱线）。本批中位≈**279.9**。**含义**：MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件，也不是热稳态或整网训练 MFU。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![box_by_host_func_tflops.svg](card_constitution_muxi_20260711_figs/box_by_host_func_tflops.svg)
 
-**`hbm_gbps`**（分 host 箱线）。本批中位≈**1469**。**含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+**`hbm_gbps`**（分 host 箱线）。本批中位≈**1469**。**含义**：HBM（高带宽外存）路径上的有效带宽代理（GB/s）。探针是「读+写 + 一次逐元素乘」，属于访存+轻算混合，不是纯 DMA，也不是 mx-smi 带宽占用率。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![box_by_host_hbm_gbps.svg](card_constitution_muxi_20260711_figs/box_by_host_hbm_gbps.svg)
 
-**`health_power_w`**（分 host 箱线）。本批中位≈**94.84**。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
+**`health_power_w`**（分 host 箱线）。本批中位≈**94.84**。**含义**：轻载开测功耗快照（W）；health≠健康分。与负载末 `power_w` 同源但不同时刻。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
 
 ![box_by_host_health_power_w.svg](card_constitution_muxi_20260711_figs/box_by_host_health_power_w.svg)
 
-**`health_temp_c`**（分 host 箱线）。本批中位≈**38.5**。**含义**：健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
+**`health_temp_c`**（分 host 箱线）。本批中位≈**38.5**。**含义**：轻载开测温度快照（°C）；health≠健康分。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
 
 ![box_by_host_health_temp_c.svg](card_constitution_muxi_20260711_figs/box_by_host_health_temp_c.svg)
 
@@ -126,7 +129,7 @@
 
 ![box_by_host_launch_sync_p99_us.svg](card_constitution_muxi_20260711_figs/box_by_host_launch_sync_p99_us.svg)
 
-**`mte_gbps`**（分 host 箱线）。本批中位≈**1387**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
+**`mte_gbps`**（分 host 箱线）。本批中位≈**1387**。**含义**：纯 copy/DMA 带宽（GB/s）；字段名 `mte_*` 是昇腾同构遗留，沐曦实测不表示 MTE 硬件或其指令计数器。该指标用于和 `hbm_gbps`（带乘）对照「纯搬运 vs 访存+轻算」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![box_by_host_mte_gbps.svg](card_constitution_muxi_20260711_figs/box_by_host_mte_gbps.svg)
 
@@ -134,19 +137,19 @@
 
 ![box_by_host_power_limit_w.svg](card_constitution_muxi_20260711_figs/box_by_host_power_limit_w.svg)
 
-**`power_w`**（分 host 箱线）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。
+**`power_w`**（分 host 箱线）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。
 
 ![box_by_host_power_w.svg](card_constitution_muxi_20260711_figs/box_by_host_power_w.svg)
 
-**`scalar_elems_per_s`**（分 host 箱线）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**`scalar_elems_per_s`**（分 host 箱线）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。同构 JSON 键名遗留；实测是 MetaX/MACA `torch.cumsum` 路径（控制流+同步代理），不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![box_by_host_scalar_elems_per_s.svg](card_constitution_muxi_20260711_figs/box_by_host_scalar_elems_per_s.svg)
 
-**`sfu_gflops`**（分 host 箱线）。本批中位≈**177.4**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
+**`sfu_gflops`**（分 host 箱线）。本批中位≈**177.4**。**含义**：特殊函数类吞吐代理。公开叙述里 exp/sqrt 等常归向量计算能力面；本字段实现是 torch.exp，按 1 op/元素计，量纲更接近 Gops/s。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
 ![box_by_host_sfu_gflops.svg](card_constitution_muxi_20260711_figs/box_by_host_sfu_gflops.svg)
 
-**`shape_sweep_peak_tflops`**（分 host 箱线）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」。  **底层**：本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。
+**`shape_sweep_peak_tflops`**（分 host 箱线）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」，**名不副实**=本批 **BNMK 各形状中位吞吐的最大值**。  **底层**：方阵 shape_sweep 关闭；`jsonl.py` 用 max(BNMK tflops) 回填此键。
 
 ![box_by_host_shape_sweep_peak_tflops.svg](card_constitution_muxi_20260711_figs/box_by_host_shape_sweep_peak_tflops.svg)
 
@@ -154,7 +157,7 @@
 
 ![box_by_host_sustained_tflops.svg](card_constitution_muxi_20260711_figs/box_by_host_sustained_tflops.svg)
 
-**`vector_gflops`**（分 host 箱线）。本批中位≈**122.2**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**`vector_gflops`**（分 host 箱线）。本批中位≈**122.2**。**含义**：MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core，也不是矩阵乘主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![box_by_host_vector_gflops.svg](card_constitution_muxi_20260711_figs/box_by_host_vector_gflops.svg)
 
@@ -174,23 +177,23 @@
 
 ![heatmap_relmed_board_temp_c.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_board_temp_c.svg)
 
-**`cube_vector_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**195.2**。**含义**：方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
+**`cube_vector_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**195.2**。**含义**：GEMM 后接 epilogue（scale+bias）的端到端吞吐（TFLOPS）；字段名 `cube_*` 是昇腾同构遗留，沐曦实测是 GEMM+epilogue，不表示沐曦存在 Ascend Cube 硬件。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
 
 ![heatmap_relmed_cube_vector_tflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_cube_vector_tflops.svg)
 
-**`func_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**279.9**。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+**`func_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**279.9**。**含义**：MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件，也不是热稳态或整网训练 MFU。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![heatmap_relmed_func_tflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_func_tflops.svg)
 
-**`hbm_gbps`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1469**。**含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+**`hbm_gbps`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1469**。**含义**：HBM（高带宽外存）路径上的有效带宽代理（GB/s）。探针是「读+写 + 一次逐元素乘」，属于访存+轻算混合，不是纯 DMA，也不是 mx-smi 带宽占用率。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![heatmap_relmed_hbm_gbps.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_hbm_gbps.svg)
 
-**`health_power_w`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**94.84**。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
+**`health_power_w`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**94.84**。**含义**：轻载开测功耗快照（W）；health≠健康分。与负载末 `power_w` 同源但不同时刻。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
 
 ![heatmap_relmed_health_power_w.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_health_power_w.svg)
 
-**`health_temp_c`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**38.5**。**含义**：健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
+**`health_temp_c`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**38.5**。**含义**：轻载开测温度快照（°C）；health≠健康分。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
 
 ![heatmap_relmed_health_temp_c.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_health_temp_c.svg)
 
@@ -218,7 +221,7 @@
 
 ![heatmap_relmed_launch_sync_p99_us.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_launch_sync_p99_us.svg)
 
-**`mte_gbps`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1387**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
+**`mte_gbps`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1387**。**含义**：纯 copy/DMA 带宽（GB/s）；字段名 `mte_*` 是昇腾同构遗留，沐曦实测不表示 MTE 硬件或其指令计数器。该指标用于和 `hbm_gbps`（带乘）对照「纯搬运 vs 访存+轻算」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![heatmap_relmed_mte_gbps.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_mte_gbps.svg)
 
@@ -226,19 +229,19 @@
 
 ![heatmap_relmed_power_limit_w.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_power_limit_w.svg)
 
-**`power_w`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。
+**`power_w`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。
 
 ![heatmap_relmed_power_w.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_power_w.svg)
 
-**`scalar_elems_per_s`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**`scalar_elems_per_s`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。同构 JSON 键名遗留；实测是 MetaX/MACA `torch.cumsum` 路径（控制流+同步代理），不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![heatmap_relmed_scalar_elems_per_s.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_scalar_elems_per_s.svg)
 
-**`sfu_gflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**177.4**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
+**`sfu_gflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**177.4**。**含义**：特殊函数类吞吐代理。公开叙述里 exp/sqrt 等常归向量计算能力面；本字段实现是 torch.exp，按 1 op/元素计，量纲更接近 Gops/s。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
 ![heatmap_relmed_sfu_gflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_sfu_gflops.svg)
 
-**`shape_sweep_peak_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**286**。**含义**：名义「shape sweep 峰值」。  **底层**：本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。
+**`shape_sweep_peak_tflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**286**。**含义**：名义「shape sweep 峰值」，**名不副实**=本批 **BNMK 各形状中位吞吐的最大值**。  **底层**：方阵 shape_sweep 关闭；`jsonl.py` 用 max(BNMK tflops) 回填此键。
 
 ![heatmap_relmed_shape_sweep_peak_tflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_shape_sweep_peak_tflops.svg)
 
@@ -246,7 +249,7 @@
 
 ![heatmap_relmed_sustained_tflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_sustained_tflops.svg)
 
-**`vector_gflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**122.2**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**`vector_gflops`**（host×device 相对集群中位偏差%（|Δ|≥1% 才标数））。本批中位≈**122.2**。**含义**：MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core，也不是矩阵乘主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![heatmap_relmed_vector_gflops.svg](card_constitution_muxi_20260711_figs/heatmap_relmed_vector_gflops.svg)
 
@@ -262,23 +265,23 @@
 
 ![hist_board_temp_c.svg](card_constitution_muxi_20260711_figs/hist_board_temp_c.svg)
 
-**`cube_vector_tflops`**（全卡分布）。本批中位≈**195.2**。**含义**：方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
+**`cube_vector_tflops`**（全卡分布）。本批中位≈**195.2**。**含义**：GEMM 后接 epilogue（scale+bias）的端到端吞吐（TFLOPS）；字段名 `cube_*` 是昇腾同构遗留，沐曦实测是 GEMM+epilogue，不表示沐曦存在 Ascend Cube 硬件。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
 
 ![hist_cube_vector_tflops.svg](card_constitution_muxi_20260711_figs/hist_cube_vector_tflops.svg)
 
-**`func_tflops`**（全卡分布）。本批中位≈**279.9**。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+**`func_tflops`**（全卡分布）。本批中位≈**279.9**。**含义**：MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件，也不是热稳态或整网训练 MFU。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![hist_func_tflops.svg](card_constitution_muxi_20260711_figs/hist_func_tflops.svg)
 
-**`hbm_gbps`**（全卡分布）。本批中位≈**1469**。**含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+**`hbm_gbps`**（全卡分布）。本批中位≈**1469**。**含义**：HBM（高带宽外存）路径上的有效带宽代理（GB/s）。探针是「读+写 + 一次逐元素乘」，属于访存+轻算混合，不是纯 DMA，也不是 mx-smi 带宽占用率。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![hist_hbm_gbps.svg](card_constitution_muxi_20260711_figs/hist_hbm_gbps.svg)
 
-**`health_power_w`**（全卡分布）。本批中位≈**94.84**。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
+**`health_power_w`**（全卡分布）。本批中位≈**94.84**。**含义**：轻载开测功耗快照（W）；health≠健康分。与负载末 `power_w` 同源但不同时刻。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
 
 ![hist_health_power_w.svg](card_constitution_muxi_20260711_figs/hist_health_power_w.svg)
 
-**`health_temp_c`**（全卡分布）。本批中位≈**38.5**。**含义**：健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
+**`health_temp_c`**（全卡分布）。本批中位≈**38.5**。**含义**：轻载开测温度快照（°C）；health≠健康分。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
 
 ![hist_health_temp_c.svg](card_constitution_muxi_20260711_figs/hist_health_temp_c.svg)
 
@@ -306,7 +309,7 @@
 
 ![hist_launch_sync_p99_us.svg](card_constitution_muxi_20260711_figs/hist_launch_sync_p99_us.svg)
 
-**`mte_gbps`**（全卡分布）。本批中位≈**1387**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
+**`mte_gbps`**（全卡分布）。本批中位≈**1387**。**含义**：纯 copy/DMA 带宽（GB/s）；字段名 `mte_*` 是昇腾同构遗留，沐曦实测不表示 MTE 硬件或其指令计数器。该指标用于和 `hbm_gbps`（带乘）对照「纯搬运 vs 访存+轻算」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![hist_mte_gbps.svg](card_constitution_muxi_20260711_figs/hist_mte_gbps.svg)
 
@@ -314,19 +317,19 @@
 
 ![hist_power_limit_w.svg](card_constitution_muxi_20260711_figs/hist_power_limit_w.svg)
 
-**`power_w`**（全卡分布）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。
+**`power_w`**（全卡分布）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。
 
 ![hist_power_w.svg](card_constitution_muxi_20260711_figs/hist_power_w.svg)
 
-**`scalar_elems_per_s`**（全卡分布）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**`scalar_elems_per_s`**（全卡分布）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。同构 JSON 键名遗留；实测是 MetaX/MACA `torch.cumsum` 路径（控制流+同步代理），不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![hist_scalar_elems_per_s.svg](card_constitution_muxi_20260711_figs/hist_scalar_elems_per_s.svg)
 
-**`sfu_gflops`**（全卡分布）。本批中位≈**177.4**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
+**`sfu_gflops`**（全卡分布）。本批中位≈**177.4**。**含义**：特殊函数类吞吐代理。公开叙述里 exp/sqrt 等常归向量计算能力面；本字段实现是 torch.exp，按 1 op/元素计，量纲更接近 Gops/s。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
 ![hist_sfu_gflops.svg](card_constitution_muxi_20260711_figs/hist_sfu_gflops.svg)
 
-**`shape_sweep_peak_tflops`**（全卡分布）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」。  **底层**：本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。
+**`shape_sweep_peak_tflops`**（全卡分布）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」，**名不副实**=本批 **BNMK 各形状中位吞吐的最大值**。  **底层**：方阵 shape_sweep 关闭；`jsonl.py` 用 max(BNMK tflops) 回填此键。
 
 ![hist_shape_sweep_peak_tflops.svg](card_constitution_muxi_20260711_figs/hist_shape_sweep_peak_tflops.svg)
 
@@ -334,11 +337,11 @@
 
 ![hist_sustained_tflops.svg](card_constitution_muxi_20260711_figs/hist_sustained_tflops.svg)
 
-**`vector_gflops`**（全卡分布）。本批中位≈**122.2**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**`vector_gflops`**（全卡分布）。本批中位≈**122.2**。**含义**：MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core，也不是矩阵乘主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![hist_vector_gflops.svg](card_constitution_muxi_20260711_figs/hist_vector_gflops.svg)
 
-横轴 `func_tflops`，纵轴 `vector_gflops`（每卡一点）。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。 **含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+横轴 `func_tflops`，纵轴 `vector_gflops`（每卡一点）。**含义**：`func_tflops` 是 MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。 **含义**：`vector_gflops` 是 MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![scatter_func_tflops_vs_vector_gflops.svg](card_constitution_muxi_20260711_figs/scatter_func_tflops_vs_vector_gflops.svg)
 
@@ -346,19 +349,19 @@
 
 ![scatter_hbm_gbps_vs_mte_gbps.svg](card_constitution_muxi_20260711_figs/scatter_hbm_gbps_vs_mte_gbps.svg)
 
-横轴 `health_power_w`，纵轴 `func_tflops`（每卡一点）。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。 **含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+横轴 `health_power_w`，纵轴 `func_tflops`（每卡一点）。**含义**：`health_power_w` 是轻载开测功耗快照（W）；health≠健康分。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。 **含义**：`func_tflops` 是 MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![scatter_health_power_w_vs_func_tflops.svg](card_constitution_muxi_20260711_figs/scatter_health_power_w_vs_func_tflops.svg)
 
-横轴 `health_power_w`，纵轴 `hbm_gbps`（每卡一点）。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。 **含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+横轴 `health_power_w`，纵轴 `hbm_gbps`（每卡一点）。**含义**：`health_power_w` 是轻载开测功耗快照（W）；health≠健康分。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。 **含义**：`hbm_gbps` 是 HBM（高带宽外存）有效带宽代理（GB/s），反映高带宽内存读+写通路。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![scatter_health_power_w_vs_hbm_gbps.svg](card_constitution_muxi_20260711_figs/scatter_health_power_w_vs_hbm_gbps.svg)
 
-横轴 `power_w`，纵轴 `func_tflops`（每卡一点）。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。 **含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+横轴 `power_w`，纵轴 `func_tflops`（每卡一点）。**含义**：`power_w` 是负载探针时段的实时功耗（W），与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。 **含义**：`func_tflops` 是 MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![scatter_power_w_vs_func_tflops.svg](card_constitution_muxi_20260711_figs/scatter_power_w_vs_func_tflops.svg)
 
-横轴 `power_w`，纵轴 `hbm_gbps`（每卡一点）。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。 **含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+横轴 `power_w`，纵轴 `hbm_gbps`（每卡一点）。**含义**：`power_w` 是负载探针时段的实时功耗（W），与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。 **含义**：`hbm_gbps` 是 HBM（高带宽外存）有效带宽代理（GB/s），反映高带宽内存读+写通路。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![scatter_power_w_vs_hbm_gbps.svg](card_constitution_muxi_20260711_figs/scatter_power_w_vs_hbm_gbps.svg)
 
@@ -374,23 +377,23 @@
 
 ![sorted_bar_board_temp_c.svg](card_constitution_muxi_20260711_figs/sorted_bar_board_temp_c.svg)
 
-**`cube_vector_tflops`**（单卡升序一览）。本批中位≈**195.2**。**含义**：方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
+**`cube_vector_tflops`**（单卡升序一览）。本批中位≈**195.2**。**含义**：GEMM 后接 epilogue（scale+bias）的端到端吞吐（TFLOPS）；字段名 `cube_*` 是昇腾同构遗留，沐曦实测是 GEMM+epilogue，不表示沐曦存在 Ascend Cube 硬件。  **底层**：`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。
 
 ![sorted_bar_cube_vector_tflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_cube_vector_tflops.svg)
 
-**`func_tflops`**（单卡升序一览）。本批中位≈**279.9**。**含义**：单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
+**`func_tflops`**（单卡升序一览）。本批中位≈**279.9**。**含义**：MetaX 主算力路径的单卡方阵 GEMM 吞吐（TFLOPS）；键名可兼容昇腾口径，但沐曦实测不表示 Ascend Cube 硬件，也不是热稳态或整网训练 MFU。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；N=8192，warmup=20，iters=50。
 
 ![sorted_bar_func_tflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_func_tflops.svg)
 
-**`hbm_gbps`**（单卡升序一览）。本批中位≈**1469**。**含义**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
+**`hbm_gbps`**（单卡升序一览）。本批中位≈**1469**。**含义**：HBM（高带宽外存）路径上的有效带宽代理（GB/s）。探针是「读+写 + 一次逐元素乘」，属于访存+轻算混合，不是纯 DMA，也不是 mx-smi 带宽占用率。  **底层**：设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。
 
 ![sorted_bar_hbm_gbps.svg](card_constitution_muxi_20260711_figs/sorted_bar_hbm_gbps.svg)
 
-**`health_power_w`**（单卡升序一览）。本批中位≈**94.84**。**含义**：健康/轻载路径实时功耗（W），常近空闲。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
+**`health_power_w`**（单卡升序一览）。本批中位≈**94.84**。**含义**：轻载开测功耗快照（W）；health≠健康分。与负载末 `power_w` 同源但不同时刻。  **底层**：`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。
 
 ![sorted_bar_health_power_w.svg](card_constitution_muxi_20260711_figs/sorted_bar_health_power_w.svg)
 
-**`health_temp_c`**（单卡升序一览）。本批中位≈**38.5**。**含义**：健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
+**`health_temp_c`**（单卡升序一览）。本批中位≈**38.5**。**含义**：轻载开测温度快照（°C）；health≠健康分。沐曦侧默认是 hotspot/结温代理。  **底层**：`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。
 
 ![sorted_bar_health_temp_c.svg](card_constitution_muxi_20260711_figs/sorted_bar_health_temp_c.svg)
 
@@ -418,7 +421,7 @@
 
 ![sorted_bar_launch_sync_p99_us.svg](card_constitution_muxi_20260711_figs/sorted_bar_launch_sync_p99_us.svg)
 
-**`mte_gbps`**（单卡升序一览）。本批中位≈**1387**。**含义**：纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
+**`mte_gbps`**（单卡升序一览）。本批中位≈**1387**。**含义**：纯 copy/DMA 带宽（GB/s）；字段名 `mte_*` 是昇腾同构遗留，沐曦实测不表示 MTE 硬件或其指令计数器。该指标用于和 `hbm_gbps`（带乘）对照「纯搬运 vs 访存+轻算」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。
 
 ![sorted_bar_mte_gbps.svg](card_constitution_muxi_20260711_figs/sorted_bar_mte_gbps.svg)
 
@@ -426,19 +429,19 @@
 
 ![sorted_bar_power_limit_w.svg](card_constitution_muxi_20260711_figs/sorted_bar_power_limit_w.svg)
 
-**`power_w`**（单卡升序一览）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。
+**`power_w`**（单卡升序一览）。本批中位≈**471**。**含义**：负载探针时段实时功耗（W）。  **底层**：`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测功耗快照；health≠健康分）工况不同。
 
 ![sorted_bar_power_w.svg](card_constitution_muxi_20260711_figs/sorted_bar_power_w.svg)
 
-**`scalar_elems_per_s`**（单卡升序一览）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**`scalar_elems_per_s`**（单卡升序一览）。本批中位≈**1.209e+11**。**含义**：长依赖串行链吞吐（元素/秒）。同构 JSON 键名遗留；实测是 MetaX/MACA `torch.cumsum` 路径（控制流+同步代理），不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![sorted_bar_scalar_elems_per_s.svg](card_constitution_muxi_20260711_figs/sorted_bar_scalar_elems_per_s.svg)
 
-**`sfu_gflops`**（单卡升序一览）。本批中位≈**177.4**。**含义**：特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
+**`sfu_gflops`**（单卡升序一览）。本批中位≈**177.4**。**含义**：特殊函数类吞吐代理。公开叙述里 exp/sqrt 等常归向量计算能力面；本字段实现是 torch.exp，按 1 op/元素计，量纲更接近 Gops/s。  **底层**：默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。
 
 ![sorted_bar_sfu_gflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_sfu_gflops.svg)
 
-**`shape_sweep_peak_tflops`**（单卡升序一览）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」。  **底层**：本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。
+**`shape_sweep_peak_tflops`**（单卡升序一览）。本批中位≈**286**。**含义**：名义「shape sweep 峰值」，**名不副实**=本批 **BNMK 各形状中位吞吐的最大值**。  **底层**：方阵 shape_sweep 关闭；`jsonl.py` 用 max(BNMK tflops) 回填此键。
 
 ![sorted_bar_shape_sweep_peak_tflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_shape_sweep_peak_tflops.svg)
 
@@ -446,7 +449,7 @@
 
 ![sorted_bar_sustained_tflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_sustained_tflops.svg)
 
-**`vector_gflops`**（单卡升序一览）。本批中位≈**122.2**。**含义**：宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。
+**`vector_gflops`**（单卡升序一览）。本批中位≈**122.2**。**含义**：MACA 向量路径的 FMA 吞吐代理（GFLOPS），不是昇腾 Vector Core，也不是矩阵乘主路径。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA/MACA Event 中位。w20/i50。
 
 ![sorted_bar_vector_gflops.svg](card_constitution_muxi_20260711_figs/sorted_bar_vector_gflops.svg)
 

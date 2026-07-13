@@ -28,10 +28,10 @@
 - **计时**：CUDA/MACA Event（`torch.cuda`），不是 NPU Event
 - **合流**：各 pod JSONL → `constitution128.merged.jsonl`
 
-### 0.2 本批明确缺口
+### 0.2 本批数据状态
 
-- **有 BNMK sample**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）
-- **board_temp / GPU util / XCORE clk 已落盘**（出图可见）
+- **BNMK sample 已落盘**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）
+- **board_temp / GPU util / XCORE clk 已落盘**（出图可见），不再列为本批缺口
 - NCCL 跨节点走 **`SOCKET_IFNAME=eth0`**；拓扑可见 mlx5/xscale，本批未切 IB 数据面
 - master 8 卡 **contended**（preflight 撞到残留 compute 进程）；worker-12:0 **bad**
 

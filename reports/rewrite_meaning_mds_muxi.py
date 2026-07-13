@@ -25,7 +25,8 @@ FLUFF = ("直方图", "怎么看", "红虚线", "橙虚线", "出图脚本")
 # 相对昇腾 SEM：NPU Event→CUDA/MACA Event；npu-smi→mx-smi；Cube→方阵 GEMM / MetaX 主算力路径
 SEM: dict[str, tuple[str, str]] = {
     "func_tflops": (
-        "单卡方阵 GEMM 吞吐（TFLOPS）。测的是 MetaX 主算力路径，越高说明方阵乘越强。",
+        "单卡方阵 GEMM 吞吐（TFLOPS）。`func_*` 是跨后端同构键名；沐曦实际测 MetaX MACA "
+        "GEMM 主算力路径，不对应昇腾 Cube 硬件。",
         "torch 算子 `a@b`（bf16），FLOPs=`2·N³`，CUDA/MACA Event（`torch.cuda`）计时取中位；"
         "N=8192，warmup=20，iters=50。",
     ),
@@ -35,12 +36,13 @@ SEM: dict[str, tuple[str, str]] = {
         "**卡级字段取最后一个时间窗**（非中位）。N=8192 bf16。",
     ),
     "hbm_gbps": (
-        "HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。",
+        "HBM 有效带宽代理（GB/s）。看读+写通路是否异常掉速或成簇偏低。",
         "设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；"
         "Event 计时中位。默认 1024MB，w20/i50。",
     ),
     "vector_gflops": (
-        "宽向量 FMA 吞吐代理（GFLOPS）。不是昇腾 Vector Core；沐曦上是 MACA 向量算子路径。",
+        "宽向量 FMA 吞吐代理（GFLOPS）。`vector_*` 是同构键名；沐曦实际走 MetaX MACA "
+        "逐元素算子路径，不对应昇腾 Vector Core。",
         "逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；CUDA Event 中位。w20/i50。",
     ),
     "scalar_elems_per_s": (
@@ -48,12 +50,14 @@ SEM: dict[str, tuple[str, str]] = {
         "`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。",
     ),
     "mte_gbps": (
-        "纯 copy / DMA 带宽（GB/s）。字段名 `mte_*` 是昇腾同构遗留；沐曦上测的是通用搬运通路。",
+        "纯 copy / DMA 带宽（GB/s）。`mte_*` 只是昇腾同构遗留键名；沐曦实际走 MetaX MACA "
+        "DMA copy 路径，不表示存在 Ascend MTE 硬件。",
         "`Tensor.copy_`；流量按 R+W；512MB；CUDA/MACA Event 中位。新别名 `dma_copy_gbps`。",
     ),
     "cube_vector_tflops": (
         "方阵 GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。"
-        "字段名 `cube_*` 是昇腾同构遗留；沐曦上是 GEMM→向量衔接。",
+        "`cube_*` / `vector_*` 只是昇腾同构遗留键名；沐曦实际走 MetaX MACA 的 "
+        "GEMM→逐元素 epilogue 路径，不对应 Ascend Cube/Vector 硬件。",
         "`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。新别名 `gemm_epilogue_tflops`。",
     ),
     "sfu_gflops": (
@@ -110,13 +114,16 @@ SEM: dict[str, tuple[str, str]] = {
         "同上。",
     ),
     "health_temp_c": (
-        "健康/开测路径温度快照（°C）。沐曦侧默认是 hotspot/结温代理。",
-        "`mx-smi`（`MxSmiProvider`）。与负载 `board_temp_c` / hotspot **不同时刻**；"
+        "开测早期轻载温度快照（°C）；`health` 是采样阶段标签，不是健康分。"
+        "沐曦侧默认是 hotspot/结温代理。",
+        "由 `MxSmiProvider` 调用 `mx-smi` 采集，不使用 `npu-smi`。"
+        "与负载 `board_temp_c` / hotspot **不同时刻**；"
         "本批 JSONL 的 board_temp **已采集**（`--show-temperature` TTL；与 dmon hotspot 分传感器）。",
     ),
     "health_power_w": (
-        "健康/轻载路径实时功耗（W），常近空闲。",
-        "`mx-smi` → 实时功耗。**不要**和 `power_w`（负载末）直接相减当降频证据。",
+        "开测早期轻载实时功耗（W），常近空闲；`health` 不是健康分。",
+        "由 `MxSmiProvider` 调用 `mx-smi` 采集实时功耗，不使用 `npu-smi`。"
+        "**不要**和 `power_w`（负载末）直接相减当降频证据。",
     ),
     "board_temp_c": (
         "板温（°C）。跨厂商通用键名；本批取 Board Temperature 传感器峰值。",
@@ -140,15 +147,15 @@ SEM: dict[str, tuple[str, str]] = {
     ),
     "power_w": (
         "负载探针时段实时功耗（W）。",
-        "`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载健康快照）工况不同。",
+        "`mx-smi` 功耗；卡级常取 vector_fma **末轮**。与 `health_power_w`（轻载开测快照）工况不同。",
     ),
     "power_limit_w": (
         "功耗上限 / 功耗墙（W）。",
         "`mx-smi --show-board-power`；本批中位 550 W。",
     ),
     "shape_sweep_peak_tflops": (
-        "名义「shape sweep 峰值」。",
-        "本批以 BNMK sample 为主；旧 shape_sweep 开关关闭。",
+        "字段名沿用「shape sweep 峰值」，本批实为各 BNMK shape 中位 TFLOPS 的 max（名不副实）。",
+        "旧独立 shape_sweep 开关已关；以 `gemm_bnmk_sample` 为准。",
     ),
     "aicore_freq_mhz": (
         "XCORE 时钟（MHz）。键名 `aicore_*` 兼容昇腾；沐曦来自 `clocks.XCORE.XCORE_CLK`。",
@@ -193,6 +200,8 @@ def list_svgs(d: Path) -> list[str]:
 def meaning_block(key: str) -> str:
     if key in SEM:
         what, how = SEM[key]
+        # Muxi 文案已在 SEM 中给出同构键名与 MetaX 实际路径；不要调用
+        # glossary_links.linkify_abbr，以免注入 Ascend Cube/MTE/Vector 硬件释义。
         return f"**含义**：{what}  **底层**：{how}"
     return (
         f"**含义**：字段 `{key}` 的语义见 "
@@ -253,16 +262,21 @@ def write_constitution(cards: list[dict]) -> int:
     lines = [
         "# Card Constitution · Muxi · 20260711",
         "",
-        "指标「是什么 / 底层 API」详见 "
-        f"[`{SEM_LINK}`]({SEM_LINK})。",
+        "**怎么读**：关键缩写在正文括号附注；完整硬件词条附录："
+        "[`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)。"
+        f"测法：[`{SEM_LINK}`]({SEM_LINK})。  ",
+        "JSON 键里的 Cube / MTE / AICore 是昇腾同构壳；沐曦侧架构对齐见 "
+        "[`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)"
+        "（正文附注 + glossary 附录可并存）。下文在遗留键名后用括号附注沐曦对应语义，"
+        "避免把同构键名误读为沐曦硬件名称。  ",
         "数据：`logs/muxi-constitution-20260711_232400-muxi-constitution128/results/"
         "constitution128.merged.jsonl`；"
         "job `yushan-muxi-card-screen-128-cp-copy` **16×8=128**；"
         "`screen.py` + `config.constitution128.yaml`；"
-        "`--sdc-rounds 5 --gemm-n 8192 --sustained-s 30`。",
+        "`--sdc-rounds 5 --gemm-n 8192 --sustained-s 30`。"
         "计时：CUDA/MACA Event（`torch.cuda`）；遥测：`mx-smi`。"
         "本批 **有 BNMK sample**；board_temp / GPU util / XCORE clk **已落盘**。"
-        "架构对齐见 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)。",
+        "`health_*` 的 `health` 只是采样阶段标签，**不是健康分**。",
         "",
         "## 关键中位",
         "",
@@ -273,14 +287,17 @@ def write_constitution(cards: list[dict]) -> int:
         ("func_tflops", "方阵 GEMM / MetaX 主算力"),
         ("sustained_tflops", "稳态 GEMM"),
         ("hbm_gbps", "HBM 带宽代理"),
-        ("vector_gflops", "Vector FMA"),
-        ("mte_gbps", "纯 copy/DMA"),
-        ("cube_vector_tflops", "GEMM+epilogue"),
-        ("sfu_gflops", "SFU（Gops/s 量级）"),
-        ("health_power_w", "健康功耗"),
+        ("vector_gflops", "向量 FMA 代理（MACA 路径）"),
+        ("mte_gbps", "纯 copy/DMA（同构键 MTE）"),
+        ("cube_vector_tflops", "GEMM+epilogue（同构键 cube_*）"),
+        ("sfu_gflops", "SFU/特殊函数（Gops/s 量级）"),
+        ("health_power_w", "轻载开测功耗（≠健康分）"),
         ("power_w", "负载末功耗"),
         ("power_limit_w", "功耗墙"),
-        ("health_temp_c", "健康温度"),
+        ("health_temp_c", "轻载开测温度（≠健康分）"),
+        ("board_temp_c", "板温快照"),
+        ("aicore_util_pct", "GPU util（同构键 aicore_*）"),
+        ("aicore_freq_mhz", "XCORE clk（同构键 aicore_*）"),
     ]:
         v = med(cards, k)
         n = n_nonnull(cards, k)
@@ -337,8 +354,10 @@ def write_extra(cards: list[dict]) -> int:
     lines = [
         "# Constitution 增强图 · Muxi · 20260711",
         "",
-        f"字段含义见 [`{SEM_LINK}`]({SEM_LINK})。"
-        "同一 constitution merged JSONL（`muxi-constitution-20260711_232400-…`）。",
+        "**怎么读**：硬件词条 [`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)；"
+        f"字段测法 [`{SEM_LINK}`]({SEM_LINK})。"
+        "同一 constitution merged JSONL（`muxi-constitution-20260711_232400-…`）。"
+        "Cube/MTE 等为同构壳键名，实测为 MetaX/MACA 探针路径。",
         "",
     ]
     caps = {
@@ -346,7 +365,6 @@ def write_extra(cards: list[dict]) -> int:
             "各 host 在多指标上的**中位相对集群中位**（1.0=集群水平）。"
             "用来看机间体质是否齐，不是单卡绝对值。"
         ),
-        "parallel_host_median_norm.svg": "与雷达同一套 host 中位归一化，平行坐标展示。",
         "hbm_modes_grouped_bar.svg": (
             "四种 HBM 访问模式带宽："
             "`seq_copy` / `strided` / `read_heavy` / `write_heavy`。"
@@ -354,18 +372,30 @@ def write_extra(cards: list[dict]) -> int:
             "**跨模式绝对值不可直接比「谁更好」**。"
         ),
         "corr_cube_vector_sfu_mte.svg": (
-            "方阵 GEMM / Vector / SFU / 纯 copy 四路吞吐的 Pearson 相关。"
+            "方阵 GEMM / 宽向量算子 / SFU / 纯 copy 四路吞吐的 Pearson 相关。"
+            "图名中的 `cube` / `mte` 是昇腾同构遗留键名；沐曦实际走 MetaX MACA 的 "
+            "GEMM、逐元素算子与 `Tensor.copy_` DMA copy 路径，不表示存在 Ascend Cube/MTE 硬件。"
             "看子系统是否同涨同跌；相关≈0 表示彼此相对独立。"
         ),
         "box_launch_by_host.svg": (
-            "Launch 延迟分 host："
-            "空 sync p99、host 发射开销 p99、突发总时延 p50。"
-            f"{meaning_block('launch_sync_p99_us')}"
+            "Launch 延迟分 host：`launch_sync_p99_us` / "
+            "`launch_host_overhead_p99_us` / `launch_burst_p50_us`。"
+            "**含义**：空 sync / host 发射开销 / 突发总时延（µs），看调度抖动尾延迟。"
+            "  **底层**：`launch_latency` 探针（CPU 计时 + CUDA sync/Event）。"
         ),
-        "cdf_core_metrics.svg": "核心吞吐指标的经验分布函数（CDF）。",
+        "cdf_core_metrics.svg": (
+            "核心吞吐指标的经验分布函数（CDF）。"
+            "**含义**：对 `func_tflops` / `hbm_gbps` / `vector_gflops` 等卡级字段做 ECDF，"
+            "看集群齐性与尾部。  **底层**：同 constitution merged JSONL 的 stage_a/c 探针中位。"
+        ),
+        "parallel_host_median_norm.svg": (
+            "与雷达同一套 host 中位归一化；平行坐标展示 "
+            "`func_tflops` / `hbm_gbps` / `vector_gflops` / `mte_gbps` 等相对中位。"
+        ),
         "extreme10_small_multiples.svg": (
             "按 `sustained_tflops` 最慢/最快各 10 卡，多指标相对集群中位偏差。"
-            "用来对照「慢卡是否多项一起慢」。"
+            "**含义**：极端卡剖面；对照「慢卡是否多项一起慢」。"
+            "  **底层**：同 merged JSONL 卡级字段。"
         ),
         "scatter_sustained_vs_func.svg": (
             f"横轴短测方阵 GEMM，纵轴稳态 GEMM。{meaning_block('func_tflops')} "
@@ -563,9 +593,9 @@ def write_provenance(n_const: int, n_extra: int, n_nccl: int) -> None:
         "- **计时**：CUDA/MACA Event（`torch.cuda`），不是 NPU Event",
         "- **合流**：各 pod JSONL → `constitution128.merged.jsonl`",
         "",
-        "### 0.2 本批明确缺口",
+        "### 0.2 本批数据状态",
         "",
-        "- **有 BNMK sample**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）",
+        "- **BNMK sample 已落盘**（`gemm_bnmk_sample`；出图可另开 bnmk 入口）",
         "- **board_temp / GPU util / XCORE clk 已落盘**（出图可见）",
         "- NCCL 跨节点走 **`SOCKET_IFNAME=eth0`**；拓扑可见 mlx5/xscale，本批未切 IB 数据面",
         "- master 8 卡 **contended**（preflight 撞到残留 compute 进程）；worker-12:0 **bad**",
@@ -642,7 +672,11 @@ def write_campaign(
         "**Job**: `yushan-muxi-card-screen-128-cp-copy`（16×8 MetaX C550-PL = 128 卡）  ",
         "**集群**: `vc-c550-mohe-241`（kube 隔离：`scripts/cluster/muxi.env` → `CLUSTER_KUBECONFIG`）  ",
         "**对照计划**: [`../research/GOAL_MUXI_MIGRATE_STATUS.md`](../research/GOAL_MUXI_MIGRATE_STATUS.md)  ",
-        f"**对标昇腾总汇报**: [`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)",
+        f"**对标昇腾总汇报**: [`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)  ",
+        "**怎么读 / 硬件对照**：正文附注 + "
+        "[`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)；"
+        "架构对齐笔记 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`]"
+        "(../research/METAX_ARCH_ALIGNMENT_20260711.md)（可并存）。",
         "",
         "---",
         "",
@@ -668,7 +702,7 @@ def write_campaign(
         "",
         "**计划达成度：GOAL 主路径 100%。**  ",
         "剩余为 **可选增强**：跨节点切 IB/`net*` 重测；TE fused attn 符号补齐后冲高真训练 MFU；"
-        "重跑体质以落盘 GPU util / 多传感器温度；BNMK sample。",
+        "master contended / worker-12:0 单卡复测。",
         "",
         "---",
         "",
@@ -680,17 +714,26 @@ def write_campaign(
         "|------|------|------|",
         f"| 方阵 GEMM func TFLOPS | **{fmt(m('func_tflops'))}** | {cov('func_tflops')} |",
         f"| Sustained TFLOPS | **{fmt(m('sustained_tflops'))}** | {cov('sustained_tflops')} |",
-        f"| HBM GB/s | **{fmt(m('hbm_gbps'))}** | {cov('hbm_gbps')} |",
-        f"| Vector GFLOPS | **{fmt(m('vector_gflops'))}** | {cov('vector_gflops')} |",
+        f"| HBM 带宽 GB/s | **{fmt(m('hbm_gbps'))}** | {cov('hbm_gbps')} |",
+        f"| Vector GFLOPS（MACA 路径） | **{fmt(m('vector_gflops'))}** | {cov('vector_gflops')} |",
         f"| SFU（Gops/s 量级） | **{fmt(m('sfu_gflops'))}** | {cov('sfu_gflops')} |",
         f"| 纯 copy / DMA GB/s | **{fmt(m('mte_gbps'))}** | {cov('mte_gbps')} |",
         f"| GEMM+epilogue TFLOPS | **{fmt(m('cube_vector_tflops'))}** | {cov('cube_vector_tflops')} |",
-        f"| 空闲功耗 health_power_w | **{fmt(m('health_power_w'))} W** | {cov('health_power_w')} |",
+        f"| 早期轻载功耗 health_power_w | **{fmt(m('health_power_w'))} W** | {cov('health_power_w')} |",
         f"| 满载功耗 power_w | **{fmt(m('power_w'))} W** | {cov('power_w')} |",
         f"| 功耗墙 power_limit_w | **{fmt(m('power_limit_w'))} W** | {cov('power_limit_w')} |",
-        f"| 健康温度 health_temp_c | **{fmt(m('health_temp_c'))} °C** | {cov('health_temp_c')} |",
-        "| 冒烟判定 | good **106** / slow 19 / bad **1** | 128 |",
-        "| BNMK | **无本批 sample** | — |",
+        f"| 早期轻载温度 health_temp_c | **{fmt(m('health_temp_c'))} °C** | {cov('health_temp_c')} |",
+        f"| GPU util（aicore_util_pct） | **{fmt(m('aicore_util_pct'))}%** | {cov('aicore_util_pct')} |",
+        f"| XCORE clk（aicore_freq_mhz） | **{fmt(m('aicore_freq_mhz'))}** | {cov('aicore_freq_mhz')} |",
+        f"| board_temp_c | **{fmt(m('board_temp_c'))} °C** | {cov('board_temp_c')} |",
+        "| 判定（本批体质） | good **119** / contended **8** / bad **1** | 128 |",
+        "| BNMK | **有 sample** | 本批已开 |",
+        "",
+        "`health_power_w` / `health_temp_c` 是流程早期轻载阶段通过 `mx-smi` 取得的快照；"
+        "`health` 只是采样阶段标签，不表示“健康分”，也不等同于负载阶段遥测。",
+        "",
+        "**判定口径不要混用**：冒烟判定为 good=106 / slow=19 / bad=1（另有 contended=2），"
+        "体质判定为 good=119 / contended=8 / bad=1；两者采样阶段与规则不同。",
         "",
         "### 通信（All-Reduce @ 256MB bus_bw 保持率 vs **w8**，现算）",
         "",
@@ -763,8 +806,8 @@ def write_campaign(
         "6. **AFS 写结果**：经 pod 写；登录机假挂载不可用。",
         "7. **G9 nvcc**：`CUDA_HOME/bin/nvcc` ← symlink `cucc`；TE fused attn 缺符号 → `local/unfused`。",
         "8. **假成功**：`torchrun | tee` 必须用 `PIPESTATUS[0]`。",
-        "9. **遥测缺口**：本批历史 JSONL 无 board_temp/GPU util/XCORE clk"
-        "（采集层已补线：usage + `-j` static TTL）、无 BNMK sample——报告勿假装有图。",
+        "9. **遥测完整性**：本批 merged JSONL（`20260711_232400`）已包含 board_temp、"
+        "GPU util、XCORE clk 与 BNMK sample，与第 2 节统计口径一致。",
         "",
         "---",
         "",
@@ -827,8 +870,9 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         "**禁止**把昇腾 `npu-smi -t …` 套到沐曦。  ",
         "> **计时**：CUDA/MACA Event（`torch.cuda`），不是 NPU Event。  ",
         "> **架构对齐**：[`../research/METAX_ARCH_ALIGNMENT_20260711.md`]"
-        "(../research/METAX_ARCH_ALIGNMENT_20260711.md)（XCORE / MACA / MCCL / mx-smi）。  ",
-        "> **缺口**：有 BNMK sample；board_temp / GPU util / XCORE clk 已落盘。",
+        "(../research/METAX_ARCH_ALIGNMENT_20260711.md)（XCORE / MACA / MCCL / mx-smi）；"
+        "报告附录 [`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)。  ",
+        "> **本批状态**：有 BNMK；board_temp / GPU util / XCORE clk 已落盘。",
         "",
         "---",
         "",
@@ -895,33 +939,49 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         f"- **本批中位**：sync p50 **{mv('launch_sync_p50_us')} µs**；"
         f"host overhead p50 **{mv('launch_host_overhead_p50_us')} µs**；"
         f"burst p50 **{mv('launch_burst_p50_us')} µs**。",
-        "- **注意**：CV 明显高于算力字段——更适合看尾延迟/驱动抖动，不宜当「卡体质主分」。",
+        "- **注意**：CV 明显高于算力字段——更适合看尾延迟/驱动抖动，不宜作为主判定指标。",
         "",
         "---",
         "",
-        "### 遥测：`health_temp_c` / `health_power_w` / `power_w` / `power_limit_w`",
+        "### 遥测：`health_*` / `power_*` / `board_temp_c` / GPU util / XCORE clk",
         "",
-        "- **是什么**：轻载 vs 负载功耗/温度快照。",
+        "- **是什么**：轻载与负载阶段的功耗/温度快照，以及负载阶段的板温、GPU 利用率和 XCORE 时钟；"
+        "兼容键分别为 `board_temp_c`、`aicore_util_pct`、`aicore_freq_mhz`。"
+        "`health` 只是采样阶段标签，**不是健康分**。",
         "- **怎么得到（沐曦）**：`mx-smi` 解析（`MxSmiProvider`），不是 `npu-smi`。",
-        f"- **关键参数**：健康路径开测快照；负载末常取 vector_fma 末轮回填。",
-        f"- **本批中位**：health temp **{mv('health_temp_c')} °C**；"
-        f"health power **{mv('health_power_w')} W**；"
-        f"负载 power **{mv('power_w')} W**；power limit **{mv('power_limit_w')} W**。",
+        f"- **关键参数**：开测早期轻载快照；负载末常取 vector_fma 末轮回填；"
+        "board_temp / util / XCORE 为负载路径 TTL 合并。",
+        f"- **本批中位**：轻载 temp **{mv('health_temp_c')} °C**；"
+        f"轻载 power **{mv('health_power_w')} W**；"
+        f"负载 power **{mv('power_w')} W**；power limit **{mv('power_limit_w')} W**；"
+        f"board_temp **{mv('board_temp_c')} °C**；"
+        f"GPU util **{mv('aicore_util_pct')}%**；"
+        f"XCORE clk **{mv('aicore_freq_mhz')} MHz**。",
         "- **注意**：",
         "  - **不要**把 health 与 load power 相减当降频证据。",
-        "  - 本批历史 JSONL 中 `board_temp_c` / `*_util_pct` **未采集**"
-        "（≠硬件无；`mx-smi --show-usage` 已接线；出图 skip）。",
+        "  - 本批 JSONL（`20260711_232400`）中 `board_temp_c` / `aicore_util_pct` / "
+        "`aicore_freq_mhz` **已采集并落盘**；是采样时刻快照，不等同于完整热稳态。",
         "  - 相对昇腾：空闲/满载功耗量级不同（昇腾满载中位 ~872 W；沐曦 ~467 W / 550 W 墙）。",
         "",
         "---",
         "",
-        "### 判定字段（冒烟 `good/slow/bad`）",
+        "### `shape_sweep_peak_tflops`（名不副实：BNMK max）",
+        "",
+        "- **是什么**：字段名沿用「shape sweep 峰值」，本批实为各 BNMK shape 中位 TFLOPS 的 **max**。",
+        "- **怎么得到**：`gemm_bnmk_sample`；旧独立 shape_sweep 开关已关。",
+        f"- **本批中位**：字段中位 **{mv('shape_sweep_peak_tflops')}**（覆盖 {cov('shape_sweep_peak_tflops')}）。",
+        "- **注意**：勿按字面理解成独立 shape sweep 扫参结果。",
+        "",
+        "---",
+        "",
+        "### 判定字段（冒烟 vs 体质，勿混用）",
         "",
         "- **是什么**：相对集群中位的偏离 + 正确性/计时质量门控。",
-        "- **怎么得到**：冒烟 job `logs/muxi-card-screen-20260711_133828-muxi-smoke/`。",
-        "- **关键参数**：相对中位阈值 + `max_rel_err`。",
-        "- **注意**：constitution 分布报告「不强调 slow/坏卡」；坏卡叙事以冒烟报告为准。"
-        "本批冒烟 good=106 / slow=19 / bad=1 / contended=2。",
+        "- **怎么得到**：冒烟 job `logs/muxi-card-screen-20260711_133828-muxi-smoke/`；"
+        "体质判定来自 constitution merged。",
+        "- **关键参数**：相对中位阈值 + `max_rel_err`（冒烟与体质规则不完全相同）。",
+        "- **注意**：本批冒烟 good=106 / slow=19 / bad=1 / contended=2；"
+        "体质 good=119 / contended=8 / bad=1。两者采样阶段与规则不同，勿混读。",
         "",
         "---",
         "",
@@ -1012,7 +1072,7 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         else "| P2P vs AR | 协议不同，勿 1:1 |",
         "| eth0 0.2 GB/s vs MetaXLink | 跨节点当前路径 vs 机内路径；不是「卡不行」 |",
         "| `nvcc` shim | cu-bridge 用 `cucc`；Megatron fused_kernels 硬查 `nvcc` |",
-        "| BNMK / board_temp / GPU util | **本批无 sample / 历史未采集（代码已补线）** |",
+        "| BNMK / board_temp / GPU util / XCORE clk | **本批（232400）有 sample / 已落盘** |",
         "",
         "---",
         "",
@@ -1020,8 +1080,8 @@ def write_semantics(cards: list[dict], ret: dict[str, dict[int, tuple[float, flo
         "",
         "- **字段名、公式、图注话术**尽量同构，便于对照阅读。",
         "- **差异只写清楚**：后端（NCCL/MCCL vs HCCL）、遥测（`mx-smi` vs `npu-smi`）、"
-        "世界大小基线（8 vs 16）、计时设备（CUDA Event vs NPU Event）、"
-        "本批缺测字段（BNMK / util / board_temp）。",
+        "世界大小基线（8 vs 16）、计时设备（CUDA Event vs NPU Event）；"
+        "同构键名（Cube/MTE/AICore）在沐曦侧是兼容壳，不表示昇腾硅上同名部件。",
         "",
         "*文档版本：2026-07-11 · 由 `rewrite_meaning_mds_muxi.py` 现算中位 · "
         "配套 [`CAMPAIGN_FINAL_MUXI_20260711.md`](CAMPAIGN_FINAL_MUXI_20260711.md) · "

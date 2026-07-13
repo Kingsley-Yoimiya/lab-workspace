@@ -2,7 +2,9 @@
 
 **日期**: 2026-07-11  
 **Job**: `whj4stu-copy-copy-copy`（8×16 Ascend910 = 128 卡）  
-**对照计划**: `reports/research/research_run_plan_ready.md`
+**对照计划**: `reports/research/research_run_plan_ready.md`  
+**稳定性对照结论（昇腾 vs 沐曦）**: [`COMPARE_ASCEND_MUXI_STABILITY_20260713.md`](COMPARE_ASCEND_MUXI_STABILITY_20260713.md)  
+**本批 128 卡卡间差异（含 launch latency 专节）**: [`WITHIN_CLUSTER_CARD_VARIATION_20260713.md`](WITHIN_CLUSTER_CARD_VARIATION_20260713.md)
 
 ---
 
@@ -10,7 +12,7 @@
 
 | 计划项 | 状态 | 说明 |
 |--------|------|------|
-| 128 卡体质分布 | **完成** | 128/128 GOOD；Cube/HBM/Vector/Scalar/SFU/MTE/pipeline/launch/SDC |
+| 128 卡体质分布 | **完成** | 128/128 GOOD；Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）/HBM（High Bandwidth Memory，器件高带宽外存）/Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低）/Scalar（标量与控制单元：负责循环/分支，并为矩阵/向量/搬运指令计算地址与参数）/SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面）/MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器）/pipeline/launch/SDC |
 | 10 shape BNMK | **完成**（补采） | 10 labels × 128 卡 = **1280** 条 `gemm_bnmk_sample` |
 | 遥测温/功耗/util | **完成**（补采） | 修复 `npu-smi -t` 解析后重跑；功耗×性能图已出 |
 | 出图 | **完成** | 主图 112 + 增强 12 + BNMK 3 + HCCL 23 + 机间 1 ≈ **151 SVG**（默认 `plot_style`） |
@@ -28,15 +30,15 @@
 
 | 指标 | 中位 | 覆盖 |
 |------|------|------|
-| Cube func TFLOPS | **292.4** | 128/128 |
+| Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） func TFLOPS | **292.4** | 128/128 |
 | Sustained TFLOPS | ~306–310 | 128/128 |
-| HBM GB/s | ~1240 | 128/128 |
-| Vector GFLOPS | **98.8** | 128/128 |
-| SFU GFLOPS | ~156 | 128/128 |
-| MTE GB/s | ~1267 | 128/128 |
-| 空闲功耗 health_power_w | **168 W** | 128/128 |
+| HBM（High Bandwidth Memory，器件高带宽外存） GB/s | ~1240 | 128/128 |
+| Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） GFLOPS | **98.8** | 128/128 |
+| SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面） GFLOPS | ~156 | 128/128 |
+| MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器） GB/s | ~1267 | 128/128 |
+| 空闲功耗 health_power_w（流程早期轻载时刻的 npu-smi Real-time Power；health 是采样阶段标签，不是健康分） | **168 W** | 128/128 |
 | 满载功耗 power_w | **872 W** | 128/128 |
-| 健康温度 health_temp_c | **40 °C** | 128/128 |
+| 健康温度 health_temp_c（流程早期轻载/开测温度快照，与负载中 board_temp 不同时刻） | **40 °C** | 128/128 |
 | 板温 board_temp_c（满载采样） | **66 °C** | 128/128 |
 | BNMK peak TFLOPS | **310.7** | 128/128 |
 | 判定 | **128 GOOD / 0 BAD** | |
@@ -97,6 +99,6 @@
 
 这批 128 卡 **算力/带宽一致性很好**（多数 CV < 4%），判定全 GOOD。  
 通信上 **All-Reduce 到 128 仍保留约 89%**，但 **All-Gather / Reduce-Scatter 腰斩级下滑**，与机内 HCCS 健康、跨机扩展变差的图像一致。  
-功耗画像已打通：空闲 ~168 W，满载采样中位 ~872 W，可与 Cube/HBM 做交叉散点。
+功耗画像已打通：空闲 ~168 W，满载采样中位 ~872 W，可与 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）/HBM（High Bandwidth Memory，器件高带宽外存） 做交叉散点。
 
 > 索引更新时间：2026-07-11 20:18

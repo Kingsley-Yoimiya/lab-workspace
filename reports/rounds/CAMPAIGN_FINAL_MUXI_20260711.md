@@ -4,7 +4,10 @@
 **Job**: `yushan-muxi-card-screen-128-cp-copy`（16×8 MetaX C550-PL = 128 卡）  
 **集群**: `vc-c550-mohe-241`（kube 隔离：`scripts/cluster/muxi.env` → `CLUSTER_KUBECONFIG`）  
 **对照计划**: [`../research/GOAL_MUXI_MIGRATE_STATUS.md`](../research/GOAL_MUXI_MIGRATE_STATUS.md)  
-**对标昇腾总汇报**: [`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)
+**对标昇腾总汇报**: [`CAMPAIGN_FINAL_20260711.md`](CAMPAIGN_FINAL_20260711.md)  
+**稳定性对照结论（昇腾 vs 沐曦）**: [`COMPARE_ASCEND_MUXI_STABILITY_20260713.md`](COMPARE_ASCEND_MUXI_STABILITY_20260713.md)  
+**本批 128 卡卡间差异（含 launch latency 专节）**: [`WITHIN_CLUSTER_CARD_VARIATION_20260713.md`](WITHIN_CLUSTER_CARD_VARIATION_20260713.md)  
+**怎么读 / 硬件对照**：正文附注 + [`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)；架构对齐笔记 [`../research/METAX_ARCH_ALIGNMENT_20260711.md`](../research/METAX_ARCH_ALIGNMENT_20260711.md)（可并存）。
 
 ---
 
@@ -37,20 +40,24 @@
 |------|------|------|
 | 方阵 GEMM func TFLOPS | **279.9** | 127/128 |
 | Sustained TFLOPS | **280** | 127/128 |
-| HBM GB/s | **1469** | 127/128 |
-| Vector GFLOPS | **122.2** | 127/128 |
+| HBM（高带宽外存）带宽 GB/s | **1469** | 127/128 |
+| Vector GFLOPS（MACA 路径） | **122.2** | 127/128 |
 | SFU（Gops/s 量级） | **177.4** | 127/128 |
 | 纯 copy / DMA GB/s | **1387** | 127/128 |
 | GEMM+epilogue TFLOPS | **195.2** | 127/128 |
-| 空闲功耗 health_power_w | **94.84 W** | 128/128 |
+| 早期轻载功耗 health_power_w | **94.84 W** | 128/128 |
 | 满载功耗 power_w | **471 W** | 127/128 |
 | 功耗墙 power_limit_w | **550 W** | 127/128 |
-| 健康温度 health_temp_c | **38.5 °C** | 128/128 |
+| 早期轻载温度 health_temp_c | **38.5 °C** | 128/128 |
 | GPU util（aicore_util_pct） | **98%** | 127/128 |
 | XCORE clk（aicore_freq_mhz） | **1500** | 127/128 |
 | board_temp_c | **54 °C** | 127/128 |
 | 判定（本批体质） | good **119** / contended **8** / bad **1** | 128 |
 | BNMK | **有 sample** | 本批已开 |
+
+`health_power_w` / `health_temp_c` 是流程早期轻载阶段通过 `mx-smi` 取得的快照；`health` 只是采样阶段标签，不表示“健康分”，也不等同于负载阶段遥测。
+
+**判定口径不要混用**：冒烟判定为 good=106 / slow=19 / bad=1（另有 contended=2），体质判定为 good=119 / contended=8 / bad=1；两者采样阶段与规则不同。
 
 ### 通信（All-Reduce @ 256MB bus_bw 保持率 vs **w8**，现算）
 
@@ -88,7 +95,7 @@
 
 > 出图默认 `reports/plot_style.py`（大字号 / 去顶右边框 / y 点线网格 / hatch 柱 / **SVG**）。  
 > **图注优先讲清：字段人话含义 + 底层 API/命令/算子**（禁止画图空话）。  
-> 语义手册：[`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)；采集链路溯源：[`FIGURE_PROVENANCE_MUXI_20260711.md`](FIGURE_PROVENANCE_MUXI_20260711.md)。
+> 语义手册：[`METRIC_SEMANTICS_MUXI_20260711.md`](METRIC_SEMANTICS_MUXI_20260711.md)；硬件词条附录：[`METAX_HARDWARE_GLOSSARY_20260711.md`](METAX_HARDWARE_GLOSSARY_20260711.md)；采集链路溯源：[`FIGURE_PROVENANCE_MUXI_20260711.md`](FIGURE_PROVENANCE_MUXI_20260711.md)。
 
 ### 体质主报告
 - [`card_constitution_muxi_20260711.md`](card_constitution_muxi_20260711.md)
@@ -130,7 +137,7 @@
 6. **AFS 写结果**：经 pod 写；登录机假挂载不可用。
 7. **G9 nvcc**：`CUDA_HOME/bin/nvcc` ← symlink `cucc`；TE fused attn 缺符号 → `local/unfused`。
 8. **假成功**：`torchrun | tee` 必须用 `PIPESTATUS[0]`。
-9. **遥测缺口**：本批历史 JSONL 无 board_temp/GPU util/XCORE clk（采集层已补线：usage + `-j` static TTL）、无 BNMK sample——报告勿假装有图。
+9. **遥测完整性**：本批 merged JSONL 已包含 board_temp、GPU util、XCORE clk 和 BNMK sample，与第 2 节统计口径一致。
 
 ---
 
