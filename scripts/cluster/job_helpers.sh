@@ -126,9 +126,14 @@ cluster_fanout_run() {
           running=$((running - 1))
         fi
       done
-      # 压缩数组空洞
-      pids=("${pids[@]}")
-      pod_of_pid=("${pod_of_pid[@]}")
+      # 压缩数组空洞（bash 3.2 + set -u：空数组需兜底）
+      if [[ ${#pids[@]} -gt 0 ]]; then
+        pids=("${pids[@]}")
+        pod_of_pid=("${pod_of_pid[@]}")
+      else
+        pids=()
+        pod_of_pid=()
+      fi
       [[ "$running" -ge "$CLUSTER_FANOUT_PARALLEL" ]] && sleep 0.5
     done
     "$run_fn" "$pod" &
@@ -143,7 +148,11 @@ cluster_fanout_run() {
       fail_pods+=("${pod_of_pid[$i]}")
     fi
   done
-  CLUSTER_FANOUT_FAIL_PODS=("${fail_pods[@]}")
+  if [[ ${#fail_pods[@]} -gt 0 ]]; then
+    CLUSTER_FANOUT_FAIL_PODS=("${fail_pods[@]}")
+  else
+    CLUSTER_FANOUT_FAIL_PODS=()
+  fi
   [[ ${#fail_pods[@]} -eq 0 ]]
 }
 

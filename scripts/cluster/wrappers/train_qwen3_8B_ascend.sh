@@ -181,5 +181,7 @@ torchrun $DISTRIBUTED_ARGS pretrain_gpt.py \
     $MODEL_PARALLEL_ARGS \
     "${EXTRA_ARGS[@]}" \
     2>&1 | tee -a "${LOG_FILE}"
-
-echo "TRAIN_DENSE_RANK_${RANK}_DONE"
+rc=${PIPESTATUS[0]}
+echo "TRAIN_DENSE_RANK_${RANK}_DONE rc=${rc}"
+echo "TRAIN_RANK_${RANK}_DONE rc=${rc}"
+exit "${rc}"
