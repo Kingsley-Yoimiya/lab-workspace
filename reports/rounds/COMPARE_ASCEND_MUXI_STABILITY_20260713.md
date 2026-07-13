@@ -58,23 +58,15 @@
 
 图证（跨卡箱线，看齐性不看谁峰值高）：
 
-昇腾：
-
-![昇腾 func_tflops 分布](card_constitution_20260711_figs/box_by_host_func_tflops.svg)
-
-沐曦：
-
-![沐曦 func_tflops 分布](card_constitution_muxi_20260711_figs/box_by_host_func_tflops.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 func_tflops 分布](card_constitution_20260711_figs/box_by_host_func_tflops.svg) | ![沐曦 func_tflops 分布](card_constitution_muxi_20260711_figs/box_by_host_func_tflops.svg) |
 
 **稳态轨迹**（横轴时间窗，纵轴 TFLOPS；p50≈128 卡当前窗中位，p05≈尾部偏慢卡；`sustained_tflops` 取每卡最后一个 ~30s 窗，用来看降频/争用）：
 
-昇腾：
-
-![昇腾 sustained p05/p50](card_constitution_20260711_figs/timeseries_sustained_p05_p50.svg)
-
-沐曦：
-
-![沐曦 sustained p05/p50](card_constitution_muxi_20260711_figs/timeseries_sustained_p05_p50.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 sustained p05/p50](card_constitution_20260711_figs/timeseries_sustained_p05_p50.svg) | ![沐曦 sustained p05/p50](card_constitution_muxi_20260711_figs/timeseries_sustained_p05_p50.svg) |
 
 **与芯片结构的关系**：`cube_vector_tflops` 相对 `func_tflops` 的比值，昇腾约 82%（240.2/292.4），沐曦约 70%（195.2/279.9）——即接上向量 epilogue 后，沐曦掉点相对更多。§2 的表给出一个可能但**未经细粒度剖析验证**的结构假设：昇腾 Cube→Vector 是两条有独立队列的硬件流水，衔接损耗可能更小；沐曦 XCORE 是统一核内完成矩阵与向量两步，可能存在核内资源复用/调度开销。这是**假设**，不是结论——要坐实需要更细的 kernel-level profiling，本批探针粒度不够。
 
@@ -91,23 +83,15 @@
 
 图证（相对集群中位热图，看是否成片偏低；**不比两侧色标绝对值**）：
 
-昇腾：
-
-![昇腾 HBM relmed](card_constitution_20260711_figs/heatmap_relmed_hbm_gbps.svg)
-
-沐曦：
-
-![沐曦 HBM relmed](card_constitution_muxi_20260711_figs/heatmap_relmed_hbm_gbps.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 HBM relmed](card_constitution_20260711_figs/heatmap_relmed_hbm_gbps.svg) | ![沐曦 HBM relmed](card_constitution_muxi_20260711_figs/heatmap_relmed_hbm_gbps.svg) |
 
 **HBM vs 纯 copy 散点**（同一张卡两个探针是否同向掉速，用来判断是「访存链路整体慢」还是「单一探针噪声」）：
 
-昇腾：
-
-![昇腾 HBM vs copy](card_constitution_20260711_figs/scatter_hbm_gbps_vs_mte_gbps.svg)
-
-沐曦：
-
-![沐曦 HBM vs copy](card_constitution_muxi_20260711_figs/scatter_hbm_gbps_vs_mte_gbps.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 HBM vs copy](card_constitution_20260711_figs/scatter_hbm_gbps_vs_mte_gbps.svg) | ![沐曦 HBM vs copy](card_constitution_muxi_20260711_figs/scatter_hbm_gbps_vs_mte_gbps.svg) |
 
 **沐曦异常细节**：`worker-7`、`worker-14` 两个节点均为 **8/8** 卡 HBM 偏慢（约 **1040–1050 GB/s**，相对冒烟中位约 **1487 GB/s**）——**是整节点成簇**，不是单卡随机噪声。这提示排查方向是节点级（供电/散热/PCIe 拓扑/驱动），而不是「沐曦这块芯片的 HBM 接口结构有问题」。
 
@@ -127,13 +111,9 @@
 
 图证（跨卡箱线）：
 
-昇腾：
-
-![昇腾 vector/sfu](card_constitution_20260711_figs/box_by_host_vector_gflops.svg)
-
-沐曦：
-
-![沐曦 vector/sfu](card_constitution_muxi_20260711_figs/box_by_host_vector_gflops.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 vector/sfu](card_constitution_20260711_figs/box_by_host_vector_gflops.svg) | ![沐曦 vector/sfu](card_constitution_muxi_20260711_figs/box_by_host_vector_gflops.svg) |
 
 **关于 Scalar 的陷阱**：`scalar_elems_per_s` 两边相差约 **432 倍**（1.209e+11 / 2.799e+08）。这**不能**写成「沐曦标量单元比昇腾快几百倍」——`torch.cumsum` 在两套完全不同的软件栈（CANN/`torch_npu` Event vs MACA/`torch.cuda` Event）上，长依赖串行链的编译、调度、同步实现差异巨大，探针测的是**软件路径的串行吞吐代理**，不是同一把尺子量出来的硬件 Scalar 部件周期数。同理，`sfu_gflops` 按 1 op/元素计，量纲偏 Gops/s，不要跟 Vector 的 2 flops/elem 直接换算倍速。
 
@@ -152,17 +132,12 @@
 | 轻载温度 `health_temp_c` | 早期轻载温度快照 | **~40 °C** | **~38.5 °C** |
 | 板温 `board_temp_c` | 负载态板温 | **~66 °C** | **~54 °C** |
 
-图证：
+图证（第一行功耗分布箱线，第二行功耗×算力散点）：
 
-昇腾功耗分布 + 功耗×算力散点：
-
-![昇腾功耗分布](card_constitution_20260711_figs/box_by_host_power_w.svg)
-![昇腾功耗vs算力](card_constitution_20260711_figs/scatter_power_w_vs_func_tflops.svg)
-
-沐曦功耗分布 + 功耗×算力散点：
-
-![沐曦功耗分布](card_constitution_muxi_20260711_figs/box_by_host_power_w.svg)
-![沐曦功耗vs算力](card_constitution_muxi_20260711_figs/scatter_power_w_vs_func_tflops.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾功耗分布](card_constitution_20260711_figs/box_by_host_power_w.svg) | ![沐曦功耗分布](card_constitution_muxi_20260711_figs/box_by_host_power_w.svg) |
+| ![昇腾功耗vs算力](card_constitution_20260711_figs/scatter_power_w_vs_func_tflops.svg) | ![沐曦功耗vs算力](card_constitution_muxi_20260711_figs/scatter_power_w_vs_func_tflops.svg) |
 
 **与芯片结构的关系**：本节数字受制程代际、封装、功耗墙设定影响远大于「Cube/Vector/Scalar/MTE 分工」这类微架构差异，**不适合用来反推芯片结构优劣**；唯一可读的结构性信号是两边负载态功耗都显著高于轻载态（说明探针确实把卡从轻载推到了满载），可作为体质数据可信度的旁证。
 
@@ -182,13 +157,9 @@
 
 图证（体质总览箱线，一图看多指标齐性）：
 
-昇腾：
-
-![昇腾 box overview](card_constitution_20260711_figs/box_overview.svg)
-
-沐曦：
-
-![沐曦 box overview](card_constitution_muxi_20260711_figs/box_overview.svg)
+| 昇腾 Ascend910 | 沐曦 C550 |
+|:---:|:---:|
+| ![昇腾 box overview](card_constitution_20260711_figs/box_overview.svg) | ![沐曦 box overview](card_constitution_muxi_20260711_figs/box_overview.svg) |
 
 **运维含义**：`worker-12:0` 需隔离复测（怀疑 SDC 级正确性问题）；`worker-7`/`worker-14` 建议整节点下线或换机复测 HBM，而不是逐卡排查——因为异常已经是「一个节点里全部卡」而不是「某张卡」。判定口径提醒：冒烟与体质是两套不同阶段、不同规则的判定，对外材料不要混用。
 
