@@ -12,7 +12,7 @@ source "$SCRIPT_DIR/muxi.env"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 LOCAL_CS="${LOCAL_CS:-$SCRIPT_DIR/../../projects/CARD_SCREEN}"
-AFS_DEST="${AFS_DEST:-/afs-a3-weight-share/montyyin/lab-workspace/projects/CARD_SCREEN}"
+AFS_DEST="${AFS_DEST:-/afs-a3-weight-share/yinjinrun.p/lab-workspace/projects/CARD_SCREEN}"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/muxi-sync-cs-${STAMP}}"

@@ -17,7 +17,7 @@ source "$SCRIPT_DIR/job_helpers.sh"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
 AFS_OUT="${AFS_OUT:-${AFS_RESULTS}/nccl-${STAMP}}"
-AFS_SCRIPTS="/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster"
+AFS_SCRIPTS="/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/muxi-nccl-${STAMP}}"
 mkdir -p "$LOG_DIR"

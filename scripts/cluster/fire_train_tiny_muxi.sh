@@ -7,7 +7,7 @@ source "$SCRIPT_DIR/muxi.env"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 AFS_OUT="${AFS_OUT:?set AFS_OUT}"
-AFS_WRAPPERS="/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster/wrappers"
+AFS_WRAPPERS="/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster/wrappers"
 MASTER_PORT="${MASTER_PORT:-30111}"
 TRAIN_ITERS="${TRAIN_ITERS:-5}"
 GPUS="${GPUS_PER_NODE:-8}"

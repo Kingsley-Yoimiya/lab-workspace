@@ -1,0 +1,33 @@
+| 2 | d_tp8pp1_rest | dense | 64 | 8/1/1 | 8 | 2048 | 86.00 | 29.37 | ok | P0 Dense TP8PP1 续 64/128（16/32已完成） |
+| 2 | d_tp8pp1_rest | dense | 128 | 8/1/1 | 16 | 2048 | 76.15 | 26.01 | ok | P0 Dense TP8PP1 续 64/128（16/32已完成） |
+| 3 | d_tp8pp2 | dense | 16 | 8/2/1 | 1 | 2048 | 93.20 | 31.83 | ok | P0 Dense TP8PP2 扩DP |
+| 3 | d_tp8pp2 | dense | 32 | 8/2/1 | 2 | 2048 | 91.70 | 31.32 | ok | P0 Dense TP8PP2 扩DP |
+| 3 | d_tp8pp2 | dense | 64 | 8/2/1 | 4 | 2048 | 81.35 | 27.78 | ok | P0 Dense TP8PP2 扩DP |
+| 3 | d_tp8pp2 | dense | 128 | 8/2/1 | 8 | 2048 | 73.60 | 25.14 | ok | P0 Dense TP8PP2 扩DP |
+| 4 | d_tp4pp2 | dense | 16 | 4/2/1 | 2 | 2048 | 125.50 | 42.86 | ok | P1 Dense TP4PP2 扩DP |
+| 4 | d_tp4pp2 | dense | 32 | 4/2/1 | 4 | 2048 | 125.60 | 42.90 | ok | P1 Dense TP4PP2 扩DP |
+| 4 | d_tp4pp2 | dense | 64 | 4/2/1 | 8 | 2048 | 107.05 | 36.56 | ok | P1 Dense TP4PP2 扩DP |
+| 4 | d_tp4pp2 | dense | 128 | 4/2/1 | 16 | 2048 | 108.40 | 37.02 | ok | P1 Dense TP4PP2 扩DP |
+---
+/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r1-d_tp8pp1_rest-20260711_130044:
+scale_32
+
+/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r2-d_tp8pp1_rest-20260711_132017:
+scale_128
+scale_64
+
+/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r3-d_tp8pp2-20260711_133047:
+scale_128
+scale_16
+scale_32
+scale_64
+
+/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r4-d_tp4pp2-20260711_140449:
+scale_128
+scale_16
+scale_32
+scale_64
+
+/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r5-d_tp4pp4-20260711_143146:
+scale_16
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory

@@ -22,7 +22,7 @@ MASTER_PORT="${MASTER_PORT:-30311}"
 HOSTSET="${HOSTSET:-clean}"
 NCCL_IB_HCA="${NCCL_IB_HCA:-xscale}"
 MCCL_IB_HCA="${MCCL_IB_HCA:-xscale}"
-AFS_WRAPPERS="/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster/wrappers"
+AFS_WRAPPERS="/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster/wrappers"
 LOG_DIR="${LOG_DIR:-/Users/yinjinrun/random-thing/logs/muxi-train-moe-fire}"
 mkdir -p "$LOG_DIR"
 

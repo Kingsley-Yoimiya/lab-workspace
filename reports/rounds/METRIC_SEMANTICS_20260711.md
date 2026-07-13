@@ -13,9 +13,9 @@
 
 ---
 
-### `func_tflops`（Cube func TFLOPS）
+### `func_tflops`（Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） func TFLOPS）
 
-- **是什么**：单卡 Cube 矩阵乘峰值吞吐代理（TFLOPS）。反映 Ascend Cube 主算力路径在方阵 GEMM 下的瞬时能力；越高表示该卡 Cube 越强。
+- **是什么**：单卡 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） 矩阵乘峰值吞吐代理（TFLOPS）。反映 Ascend Cube 主算力路径在方阵 GEMM 下的瞬时能力；越高表示该卡 Cube 越强。
 - **怎么得到**（底层 API）：探针 `func_perf`（`stage_a.py`）。`torch` 算子 `c = a @ b`（bf16）；理论 FLOPs = `2·N³`；用 NPU Event（`timing_context`）逐轮计时；卡级字段取 **各轮 tflops 的中位数**（非均值、非末轮）。
 - **关键参数**：`N=8192`，`dtype=bf16`，`warmup=20`，`iters=50`；含 golden 正确性校验（`max_rel_err < tol`）。
 - **注意**：这是短窗峰值探针，不代表热稳态；与 `sustained_tflops` 对比可看降频/争用。计时在设备 Event 内，不含 host 排队。
@@ -24,77 +24,77 @@
 
 ### `sustained_tflops`（Sustained TFLOPS）
 
-- **是什么**：连续烤机后的稳态 Cube 吞吐（TFLOPS）。用于观察热稳态、降频、长时间争用后的可持续算力，不是瞬时峰值。
+- **是什么**：连续烤机后的稳态 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） 吞吐（TFLOPS）。用于观察热稳态、降频、长时间争用后的可持续算力，不是瞬时峰值。
 - **怎么得到**（底层 API）：探针 `sustained_tflops`（`stage_a.py`）。循环 `a @ b`，每窗连续执行 `window` 次 GEMM，NPU Event 计时；卡级 `sustained_tflops` = **`samples` 列表最后一个时间窗的 tflops**（`last_tflops`），**不是中位数**。
 - **关键参数**：`N=8192`，`bf16`，`seconds=30`（本批 `--sustained-s 30`），`window=50`；明细行 `record=gemm_sustained_sample` 含 `t_s`、`iter`、`tflops` 时序。
 - **注意**：探针同时记录 `tflops_median` / `tflops_min` / `tflops_max`，但 **card 字段只用末窗**。末窗可能高于 `func_tflops`（热身后频率爬升）。含自洽 SDC 检查（`self_check_*`）。
 
 ---
 
-### `hbm_gbps`（HBM GB/s）
+### `hbm_gbps`（HBM（High Bandwidth Memory，器件高带宽外存） GB/s）
 
-- **是什么**：HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路在带计算负载下的健康度。
+- **是什么**：HBM（High Bandwidth Memory，器件高带宽外存） 有效带宽代理（GB/s）。反映高带宽内存读+写通路在带计算负载下的健康度。
 - **怎么得到**（底层 API）：探针 `hbm_bandwidth`（`stage_a.py`）。设备侧 `dst = src * 2.0`（fp32，**含一次逐元素乘法，非纯 DMA**）；流量按 **读+写** 计：`nbytes = 2 × elems × 4`；NPU Event 计时；卡级取各轮 **中位** gbps。
 - **关键参数**：`mb=1024`（1024 MB 缓冲），`warmup=20`，`iters=50`。
 - **注意**：与 `mte_gbps`（纯 `copy_`）和 `hbm_mode_*`（四模式）互补，勿跨模式比绝对值当优劣分。非 memcpy 基准，更接近「访存+轻算」混合路径。
 
 ---
 
-### `vector_gflops`（Vector GFLOPS）
+### `vector_gflops`（Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） GFLOPS）
 
-- **是什么**：Vector 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行能力，**不是 Cube**。
+- **是什么**：Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行能力，**不是 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）**。
 - **怎么得到**（底层 API）：探针 `vector_fma_perf`（`stage_c.py`）。逐元素 `a * b + c`；按 **2 flops/elem**（mul + add）；NPU Event 计时；卡级取各轮 **中位** gflops。
 - **关键参数**：`elems = 64M`（`1 << 26`），`dtype=fp32`，`warmup=20`，`iters=50`。
 - **注意**：`board_temp_c`、`*_util_pct`、`power_w` 等负载遥测多从本探针 **末轮 round** 回填到 card（见下文 util/power 节）。
 
 ---
 
-### `scalar_elems_per_s`（Scalar elems/s）
+### `scalar_elems_per_s`（Scalar（标量与控制单元：负责循环/分支，并为矩阵/向量/搬运指令计算地址与参数） elems/s）
 
-- **是什么**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流与同步屏障，不是 SIMD 峰值。
+- **是什么**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar（标量与控制单元：负责循环/分支，并为矩阵/向量/搬运指令计算地址与参数）/控制流与同步屏障，不是 SIMD 峰值。
 - **怎么得到**（底层 API）：探针 `scalar_chain_perf`（`stage_c.py`）。`torch.cumsum(x, dim=0)`；`elems_per_s = elems / dt`；NPU Event 计时；卡级取 **中位**。
 - **关键参数**：`elems = 16M`（`1 << 24`），`warmup=10`，`iters=50`。
 - **注意**：量纲是 **元素/秒**，不是 GFLOPS；勿与 `vector_gflops` 直接比倍速。cumsum 有前缀依赖，反映串行瓶颈。
 
 ---
 
-### `mte_gbps`（MTE copy GB/s）
+### `mte_gbps`（MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器） copy GB/s）
 
-- **是什么**：纯拷贝带宽（GB/s）。代理 MTE/DMA 搬运通路，用于拆分「算+访存」与「纯搬运」。
+- **是什么**：纯拷贝带宽（GB/s）。代理 MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器）/DMA 搬运通路，用于拆分「算+访存」与「纯搬运」。
 - **怎么得到**（底层 API）：探针 `mte_copy_perf`（`stage_c.py`）。`dst.copy_(src)`；流量按 R+W：`nbytes = 2 × elems × 4`；NPU Event 计时；卡级取 **中位**。
 - **关键参数**：`mb=512`，`warmup=20`，`iters=50`。
 - **注意**：与 `hbm_gbps`（`src*2` 带乘）对比可粗看「纯搬运 vs 访存+算」差距；与 `hbm_mode_seq_copy` 同为 copy 但缓冲大小与 warmup 不同。
 
 ---
 
-### `cube_vector_tflops`（Cube+Vector pipeline TFLOPS）
+### `cube_vector_tflops`（Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）+Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） pipeline TFLOPS）
 
-- **是什么**：Cube GEMM 后接 Vector epilogue（scale + bias）的端到端吞吐（TFLOPS）。考察 Cube→Vector 流水线衔接。
+- **是什么**：Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） GEMM 后接 Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） epilogue（scale + bias）的端到端吞吐（TFLOPS）。考察 Cube→Vector 流水线衔接。
 - **怎么得到**（底层 API）：探针 `cube_vector_pipeline`（`stage_c.py`）。`c = a @ b; out = c * scale + bias`；FLOPs = `2·N³ + 3·N²`；NPU Event 计时；卡级取 **中位**。
 - **关键参数**：`N=4096`，`bf16`，`warmup=20`，`iters=50`。
 - **注意**：数值通常 **低于** 纯 `func_tflops`（N=8192 方阵），因含 epilogue 且 N 更小；勿与 func 直接比绝对值。
 
 ---
 
-### `sfu_gflops`（SFU GFLOPS）
+### `sfu_gflops`（SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面） GFLOPS）
 
-- **是什么**：特殊函数单元（SFU）吞吐。字段名带 `gflops`，但实现按 **1 op/元素** 计数，实质更接近 **Gops/s**，易误解为 FMA GFLOPS。
+- **是什么**：特殊函数单元（SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面））吞吐。字段名带 `gflops`，但实现按 **1 op/元素** 计数，实质更接近 **Gops/s**，易误解为 FMA GFLOPS。
 - **怎么得到**（底层 API）：探针 `vector_sfu_perf`（`stage_c.py`）。默认 `torch.exp(x)`；`gflops ≈ elems / dt / 1e9`（1 flop/elem）；NPU Event 计时；卡级取 **中位**。
 - **关键参数**：`elems = 64M`，`op=exp`（亦支持 `rsqrt`），`warmup=20`，`iters=50`。
 - **注意**：与 SDC 正确性探针不是一回事；勿与 `vector_gflops`（2 flops/elem FMA）按 2× 换算。
 
 ---
 
-### `hbm_mode_seq_copy_gbps`（HBM 顺序 copy）
+### `hbm_mode_seq_copy_gbps`（HBM（High Bandwidth Memory，器件高带宽外存） 顺序 copy）
 
-- **是什么**：HBM 多模式探针之一——顺序 `copy_` 带宽（GB/s）。
+- **是什么**：HBM（High Bandwidth Memory，器件高带宽外存） 多模式探针之一——顺序 `copy_` 带宽（GB/s）。
 - **怎么得到**（底层 API）：探针 `hbm_modes_perf` 模式 `seq_copy`（`stage_c.py`）。`dst.copy_(src)`；流量 R+W；NPU Event 中位。卡级键 `hbm_mode_seq_copy_gbps`。
 - **关键参数**：`mb=512`，`stride=16`（本模式不用 stride），`warmup=10`，`iters=30`。
 - **注意**：与 Stage A `hbm_gbps`（`src*2`、1024MB）正交；四模式 **勿跨模式比绝对值** 当卡质分数。
 
 ---
 
-### `hbm_mode_strided_gbps`（HBM 跨步 copy）
+### `hbm_mode_strided_gbps`（HBM（High Bandwidth Memory，器件高带宽外存） 跨步 copy）
 
 - **是什么**：跨步访问有效带宽（GB/s）；只计实际触碰元素的字节量。
 - **怎么得到**（底层 API）：`src[::stride]` → `dst[::stride]` 的 `copy_`；`nbytes = 2 × (elems/stride) × 4`；NPU Event 中位。
@@ -103,7 +103,7 @@
 
 ---
 
-### `hbm_mode_read_heavy_gbps`（HBM 读密集）
+### `hbm_mode_read_heavy_gbps`（HBM（High Bandwidth Memory，器件高带宽外存） 读密集）
 
 - **是什么**：读密集路径带宽代理（GB/s）。
 - **怎么得到**（底层 API）：`src.sum()`；流量按 **只读** 计：`nbytes = elems × 4`；NPU Event 中位。
@@ -112,7 +112,7 @@
 
 ---
 
-### `hbm_mode_write_heavy_gbps`（HBM 写密集）
+### `hbm_mode_write_heavy_gbps`（HBM（High Bandwidth Memory，器件高带宽外存） 写密集）
 
 - **是什么**：写密集路径带宽代理（GB/s）。
 - **怎么得到**（底层 API）：`dst.fill_(1.0)`；流量按 **只写** 计：`nbytes = elems × 4`；NPU Event 中位。
@@ -184,36 +184,36 @@
 
 ---
 
-### `aicore_util_pct`（AICore 利用率）
+### `aicore_util_pct`（AICore（昇腾主计算核，内含矩阵/向量/标量计算与片上搬运等部件） 利用率）
 
-- **是什么**：AICore 利用率（%），瞬时率而非时间平均。
+- **是什么**：AICore（昇腾主计算核，内含矩阵/向量/标量计算与片上搬运等部件） 利用率（%），瞬时率而非时间平均。
 - **怎么得到**（底层 API）：`npu-smi info -t usages -i <card> -c <chip>` → 解析 `Aicore Usage Rate (%)`；卡级取 **vector_fma 末轮** round 附带的遥测。
 - **关键参数**：与 vector 探针同次采样；非 30s sustained 全程平均。
 - **注意**：本批中位约 92%；是探针末瞬时值，不能代表整机日平均利用率。
 
 ---
 
-### `aicpu_util_pct`（AICPU 利用率）
+### `aicpu_util_pct`（AICPU（器件侧 AI CPU，与主计算核上的矩阵/向量单元不是同一执行体；npu-smi 报 Aicpu Usage Rate） 利用率）
 
-- **是什么**：AICPU 利用率（%）。
+- **是什么**：AICPU（器件侧 AI CPU，与主计算核上的矩阵/向量单元不是同一执行体；npu-smi 报 Aicpu Usage Rate） 利用率（%）。
 - **怎么得到**（底层 API）：`npu-smi info -t usages` → `Aicpu Usage Rate (%)`；回填路径同 `aicore_util_pct`。
 - **关键参数**：vector_fma 末轮遥测。
 - **注意**：本批常全 **0**；为 0 不表示探针失败，可能是该路径未忙。
 
 ---
 
-### `ctrlcpu_util_pct`（CtrlCPU 利用率）
+### `ctrlcpu_util_pct`（CtrlCPU（器件侧控制 CPU；npu-smi 报 Ctrlcpu Usage Rate，不是宿主机 top 里的 CPU%） 利用率）
 
-- **是什么**：CtrlCPU 利用率（%）。
+- **是什么**：CtrlCPU（器件侧控制 CPU；npu-smi 报 Ctrlcpu Usage Rate，不是宿主机 top 里的 CPU%） 利用率（%）。
 - **怎么得到**（底层 API）：`npu-smi info -t usages` → `Ctrlcpu Usage Rate (%)`；回填路径同 vector 末轮。
 - **关键参数**：vector_fma 末轮遥测。
 - **注意**：本批中位约 7%；与 `launch_host_overhead_*` 散点图可看控制面争用关联（非因果）。
 
 ---
 
-### `mem_bw_util_pct`（HBM 带宽利用率）
+### `mem_bw_util_pct`（HBM（High Bandwidth Memory，器件高带宽外存） 带宽利用率）
 
-- **是什么**：HBM Bandwidth Usage Rate（%），内存带宽占用瞬时率。
+- **是什么**：HBM（High Bandwidth Memory，器件高带宽外存） Bandwidth Usage Rate（%），内存带宽占用瞬时率。
 - **怎么得到**（底层 API）：`npu-smi info -t usages` → `HBM Bandwidth Usage Rate (%)`；回填路径同 vector 末轮。
 - **关键参数**：vector_fma 末轮遥测。
 - **注意**：本批中位约 18%；与 `hbm_gbps` 探针结果不同源，勿数值对齐。

@@ -10,7 +10,7 @@
 
 ![cdf_core_metrics.svg](constitution_extra_fillgap_20260711_figs/cdf_core_metrics.svg)
 
-**corr_cube_vector_sfu_mte.svg**：Cube / Vector / SFU / MTE 四路吞吐的 Pearson 相关。看子系统是否同涨同跌；相关≈0 表示彼此相对独立。
+**corr_cube_vector_sfu_mte.svg**：Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件） / Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） / SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面） / MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器） 四路吞吐的 Pearson 相关。看子系统是否同涨同跌；相关≈0 表示彼此相对独立。
 
 ![corr_cube_vector_sfu_mte.svg](constitution_extra_fillgap_20260711_figs/corr_cube_vector_sfu_mte.svg)
 
@@ -18,15 +18,15 @@
 
 ![extreme10_small_multiples.svg](constitution_extra_fillgap_20260711_figs/extreme10_small_multiples.svg)
 
-**hbm_modes_grouped_bar.svg**：四种 HBM 访问模式带宽：`seq_copy` / `strided` / `read_heavy` / `write_heavy`。底层是 `hbm_modes_perf`（copy / 跨步 / sum / fill），单位 GB/s；**跨模式绝对值不可直接比「谁更好」**。
+**hbm_modes_grouped_bar.svg**：四种 HBM（High Bandwidth Memory，器件高带宽外存） 访问模式带宽：`seq_copy` / `strided` / `read_heavy` / `write_heavy`。底层是 `hbm_modes_perf`（copy / 跨步 / sum / fill），单位 GB/s；**跨模式绝对值不可直接比「谁更好」**。
 
 ![hbm_modes_grouped_bar.svg](constitution_extra_fillgap_20260711_figs/hbm_modes_grouped_bar.svg)
 
-**heatmap_host_device_mte_gbps.svg**：host×device 上的 **`mte_gbps` 绝对值**。**含义**：纯拷贝带宽（GB/s）。代理 MTE/DMA 搬运通路，用来拆「算发访存」vs「纯搬运」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。
+**heatmap_host_device_mte_gbps.svg**：host×device 上的 **`mte_gbps` 绝对值**。**含义**：纯拷贝带宽（GB/s）。代理 MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器）/DMA 搬运通路，用来拆「算发访存」vs「纯搬运」。  **底层**：`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。
 
 ![heatmap_host_device_mte_gbps.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_mte_gbps.svg)
 
-**heatmap_host_device_scalar_elems_per_s.svg**：host×device 上的 **`scalar_elems_per_s` 绝对值**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
+**heatmap_host_device_scalar_elems_per_s.svg**：host×device 上的 **`scalar_elems_per_s` 绝对值**。**含义**：长依赖串行链吞吐（元素/秒）。更贴近 Scalar（标量与控制单元：负责循环/分支，并为矩阵/向量/搬运指令计算地址与参数）/控制流+同步，不是 SIMD 峰值。  **底层**：`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。
 
 ![heatmap_host_device_scalar_elems_per_s.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_scalar_elems_per_s.svg)
 
@@ -34,7 +34,7 @@
 
 ![heatmap_host_device_sfu_gflops.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_sfu_gflops.svg)
 
-**heatmap_host_device_vector_gflops.svg**：host×device 上的 **`vector_gflops` 绝对值**。**含义**：Vector 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行，不是 Cube。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；NPU Event 中位。w20/i50。
+**heatmap_host_device_vector_gflops.svg**：host×device 上的 **`vector_gflops` 绝对值**。**含义**：Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低） 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行，不是 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）。  **底层**：逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；NPU Event 中位。w20/i50。
 
 ![heatmap_host_device_vector_gflops.svg](constitution_extra_fillgap_20260711_figs/heatmap_host_device_vector_gflops.svg)
 
@@ -46,7 +46,7 @@
 
 ![radar_host_median_norm.svg](constitution_extra_fillgap_20260711_figs/radar_host_median_norm.svg)
 
-**scatter_sustained_vs_func.svg**：横轴短测 Cube，纵轴稳态 Cube。**含义**：单卡 Cube 矩阵乘吞吐（TFLOPS）。测的是昇腾 Cube 主算力路径，越高说明方阵 GEMM 越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，NPU Event 计时取中位；N=8192，warmup=20，iters=50。 **含义**：稳态 Cube 吞吐（TFLOPS）。连续烤机后的可持续算力，用来看降频/争用，不是瞬时峰值。  **底层**：循环 `a@b` 跑满 ~30s，每窗 50 次 GEMM 用 NPU Event 计时；**卡级字段取最后一个时间窗**（非中位）。N=8192 bf16。
+**scatter_sustained_vs_func.svg**：横轴短测 Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件），纵轴稳态 Cube。**含义**：单卡 Cube 矩阵乘吞吐（TFLOPS）。测的是昇腾 Cube 主算力路径，越高说明方阵 GEMM 越强。  **底层**：torch 算子 `a@b`（bf16），FLOPs=`2·N³`，NPU Event 计时取中位；N=8192，warmup=20，iters=50。 **含义**：稳态 Cube 吞吐（TFLOPS）。连续烤机后的可持续算力，用来看降频/争用，不是瞬时峰值。  **底层**：循环 `a@b` 跑满 ~30s，每窗 50 次 GEMM 用 NPU Event 计时；**卡级字段取最后一个时间窗**（非中位）。N=8192 bf16。
 
 ![scatter_sustained_vs_func.svg](constitution_extra_fillgap_20260711_figs/scatter_sustained_vs_func.svg)
 

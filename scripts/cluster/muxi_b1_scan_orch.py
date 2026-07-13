@@ -8,8 +8,8 @@ import subprocess
 import time
 
 KC = {"KUBECONFIG": "/root/.kube/config.muxi-mohe"}
-AFS = "/afs-a3-weight-share/montyyin/results/muxi-day-20260713_002719"
-BENCH = "/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster"
+AFS = "/afs-a3-weight-share/yinjinrun.p/results/muxi-day-20260713_002719"
+BENCH = "/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster"
 MASTER = "yushan-muxi-card-screen-128-cp-copy-master-0"
 ITERS = 600
 

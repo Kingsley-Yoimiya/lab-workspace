@@ -9,7 +9,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=muxi.env
 source "$SCRIPT_DIR/muxi.env"
-export AFS_WORKSPACE="${AFS_WORKSPACE_OVERRIDE:-/afs-a3-weight-share/montyyin/lab-workspace}"
+export AFS_WORKSPACE="${AFS_WORKSPACE_OVERRIDE:-/afs-a3-weight-share/yinjinrun.p/lab-workspace}"
 export AFS_CS="${AFS_CS_OVERRIDE:-${AFS_WORKSPACE}/projects/CARD_SCREEN}"
 # shellcheck source=job_helpers.sh
 source "$SCRIPT_DIR/job_helpers.sh"

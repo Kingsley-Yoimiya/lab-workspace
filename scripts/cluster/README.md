@@ -36,13 +36,21 @@ CLUSTER_FANOUT_PARALLEL=6 ./scripts/cluster/run_card_screen_muxi.sh all
 
 ## 路径约定
 
+**写盘规则（权威）→ [`AFS_LAYOUT.md`](./AFS_LAYOUT.md)**
+
 | 位置 | 路径 |
 |------|------|
 | 本机 ops 仓库 | `project/lab-workspace`（本分支） |
-| 本机 main worktree | `project/lab-workspace-main`（`sync_to_afs.sh` 自动创建） |
-| 华为 AFS 工作区 | `/afs-a3-241ceshi-shared/montyyin/lab-workspace` |
-| 沐曦 AFS 结果 | `/afs-a3-weight-share/montyyin/results` |
+| 华为 `AFS_HOME` | `/afs-a3-241ceshi-shared/montyyin`（`lab-workspace` / `results`） |
+| 沐曦 `AFS_HOME` | `/afs-a3-weight-share/yinjinrun.p`（个人目录；勿写 `yushan`） |
+| 沐曦只读 CARD_SCREEN | `/afs-a3-weight-share/yushan/CARD_SCREEN`（`SHARED_CS_READONLY`） |
 | 默认 job/pod（华为） | `huawei-8node-copy` / `…-master-0` |
+
+```bash
+source scripts/cluster/muxi.env
+./scripts/cluster/migrate_weight_share_home.sh          # dry-run
+./scripts/cluster/migrate_weight_share_home.sh --apply  # 迁 montyyin→yinjinrun.p
+```
 
 ## 脚本
 

@@ -66,21 +66,19 @@ wait_marker "/tmp/exp45_${STAMP1}.log" "EXP45_DONE" 5400 || true
 wait_marker "/tmp/exp3_strong_${STAMP1}_strong.log" "EXP3_STRONG_DONE" 5400 || true
 kill_trainers
 
-# ---------- 2) MoE failslow 32+64 并行，再 96 ----------
-echo "==> PHASE2 MoE failslow"
+# ---------- 2) MoE failslow：串行 32,64（始终空出 ≥32 卡），不跑 96 ----------
+echo "==> PHASE2 MoE failslow SCALES=32,64 (sequential; leave >=32 cards free)"
 cp -f "$REMOTE_DIR/jumphost_moe_failslow.sh" /tmp/jumphost_moe_failslow.sh
 chmod +x /tmp/jumphost_moe_failslow.sh
-# sync hook
 cat "$REMOTE_DIR/failslow_step_timer.py" | vcctl pod exec -i ${JOB}-master-0 -- bash -lc \
   "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py" || true
 
 STAMP2="${CAMPAIGN_STAMP}_moe"
-export JOB STAMP="$STAMP2" SCALES='32+64' TRAIN_ITERS=40 PROBING=0 FAILSLOW_STEP_LOG=1
+export JOB STAMP="$STAMP2" SCALES='32,64' TRAIN_ITERS=40 PROBING=0 FAILSLOW_STEP_LOG=1
 export MASTER_PORT=28000 RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}"
 export LOCAL_LOG="/tmp/moe_failslow_${STAMP2}.log"
 nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP2}_nohup.out 2>&1 &
-wait_marker "/tmp/moe_failslow_${STAMP2}.log" "JUMPHOST_MOE_FAILSLOW_DONE|MOE_FAILSLOW_DONE|DONE stamp" 7200 || true
-# parse if possible
+wait_marker "/tmp/moe_failslow_${STAMP2}.log" "JUMPHOST_MOE_FAILSLOW_DONE|MOE_FAILSLOW_DONE|DONE stamp" 10800 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
 cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2} --drop-first 5 \
@@ -88,22 +86,8 @@ python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/moe_fails
 " || true
 kill_trainers
 
-# MoE 96
-STAMP2b="${CAMPAIGN_STAMP}_moe96"
-export STAMP="$STAMP2b" SCALES=96 TRAIN_ITERS=40 MASTER_PORT=28100
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2b}"
-export LOCAL_LOG="/tmp/moe_failslow_${STAMP2b}.log"
-nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP2b}_nohup.out 2>&1 &
-wait_marker "/tmp/moe_failslow_${STAMP2b}.log" "JUMPHOST_MOE_FAILSLOW_DONE|MOE_FAILSLOW_DONE|DONE stamp" 7200 || true
-vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
-python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2b} --drop-first 5 \
-  --csv /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2b}/gap_vs_n.csv || true
-" || true
-kill_trainers
-
-# ---------- 3) Dense 长窗 GBS∝DP 16+32 然后 64+96 ----------
-echo "==> PHASE3 Dense long-window GBS∝DP"
+# ---------- 3) Dense 长窗：最多 64 卡（16+32 并行=48；再串行 64），不跑 96 ----------
+echo "==> PHASE3 Dense long-window GBS∝DP (max 64 cards)"
 cp -f "$REMOTE_DIR/jumphost_dense_failslow.sh" /tmp/jumphost_dense_failslow.sh
 chmod +x /tmp/jumphost_dense_failslow.sh
 STAMP3="${CAMPAIGN_STAMP}_dense_long"
@@ -116,11 +100,10 @@ nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_a_nohup.o
 wait_marker "/tmp/dense_long_${STAMP3}_a.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
 kill_trainers
 
-export STAMP="${STAMP3}_b" SCALES='64+96' MASTER_PORT=28300
+export STAMP="${STAMP3}_b" SCALES=64 MASTER_PORT=28300
 export LOCAL_LOG="/tmp/dense_long_${STAMP3}_b.log"
-# same RUN_ROOT to merge scales
 nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_b_nohup.out 2>&1 &
-wait_marker "/tmp/dense_long_${STAMP3}_b.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 12000 || true
+wait_marker "/tmp/dense_long_${STAMP3}_b.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
 cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3} --drop-first 10 \
@@ -133,16 +116,8 @@ python3 parse_network_contrib.py \
 " || true
 kill_trainers
 
-# ---------- 4) 再来一轮 Block C full96 ----------
-echo "==> PHASE4 Block C full96 again"
-STAMP4="${CAMPAIGN_STAMP}_c2"
-export STAMP="$STAMP4"
-nohup bash "$REMOTE_DIR/launch_blockC_full96.sh" > /tmp/blockC_full96_${STAMP4}_nohup.out 2>&1 &
-wait_marker "/tmp/blockC_full96_${STAMP4}.log" "BLOCK_C_FULL96_DONE" 7200 || true
-kill_trainers
-
-# ---------- 5) MoE 再试一轮 32 only 长窗（稳）----------
-echo "==> PHASE5 MoE32 long"
+# ---------- 4) MoE32 长窗（只用 32 卡，空出 64）----------
+echo "==> PHASE4 MoE32 long (32 cards only)"
 STAMP5="${CAMPAIGN_STAMP}_moe32long"
 export STAMP="$STAMP5" SCALES=32 TRAIN_ITERS=60 MASTER_PORT=28400
 export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP5}"
@@ -155,8 +130,8 @@ vcctl pod exec ${JOB}-master-0 -- bash -lc "
 mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713
 {
   echo ''
-  echo \"## Infinite campaign $CAMPAIGN_STAMP\"
-  echo \"phases: C→D/E→MoE→DenseLong→C2→MoE32long\"
+  echo \"## Infinite campaign $CAMPAIGN_STAMP (lean: no 96)\"
+  echo \"phases: C→D/E→MoE32,64→Dense≤64→MoE32long\"
   echo \"finished: \$(date -Iseconds)\"
 } >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
 " || true

@@ -1,0 +1,262 @@
+==> wait existing pretrain to finish 2026-07-11T13:20:15+00:00
+  t=1 pretrain_procs=0 2026-07-11T13:20:16+00:00
+| 0 | d_tp8pp1 | dense | 16 | 8/1/1 | 2 | 2048 | 98.80 | 33.74 | leftover | 本机拉起后 jumphost 接管 |
+==> ROUND 2 d_tp8pp1_rest mode=dense TP=8 PP=1 EP=1 scales=64,128
+==> scale=64 DP=8 GBS=2048 nnodes=4 port=26041
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_28362
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_5038
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+==> waiting scale=64
+  wait t=1 done=0/4 alive=17 mfu_lines=0 2026-07-11T13:20:51+00:00
+  wait t=2 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:21:24+00:00
+  wait t=3 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:21:55+00:00
+  wait t=4 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:22:28+00:00
+  wait t=5 done=0/4 alive=21 mfu_lines=1 2026-07-11T13:23:00+00:00
+  wait t=6 done=0/4 alive=21 mfu_lines=2 2026-07-11T13:23:32+00:00
+  wait t=7 done=0/4 alive=21 mfu_lines=3 2026-07-11T13:24:05+00:00
+  wait t=8 done=0/4 alive=21 mfu_lines=3 2026-07-11T13:24:37+00:00
+  wait t=9 done=0/4 alive=7 mfu_lines=4 2026-07-11T13:25:12+00:00
+  wait t=10 done=4/4 alive=0 mfu_lines=5 2026-07-11T13:25:44+00:00
+| 2 | d_tp8pp1_rest | dense | 64 | 8/1/1 | 8 | 2048 | 86.00 | 29.37 | ok | P0 Dense TP8PP1 续 64/128（16/32已完成） |
+==> scale=128 DP=16 GBS=2048 nnodes=8 port=26042
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_37689
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_10622
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_5708
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_5708
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_124
+==> waiting scale=128
+  wait t=1 done=0/8 alive=17 mfu_lines=0 2026-07-11T13:27:08+00:00
+  wait t=2 done=0/8 alive=21 mfu_lines=0 2026-07-11T13:27:39+00:00
+  wait t=3 done=0/8 alive=21 mfu_lines=0 2026-07-11T13:28:12+00:00
+  wait t=4 done=0/8 alive=21 mfu_lines=2 2026-07-11T13:28:45+00:00
+  wait t=5 done=0/8 alive=21 mfu_lines=2 2026-07-11T13:29:17+00:00
+  wait t=6 done=0/8 alive=17 mfu_lines=4 2026-07-11T13:29:50+00:00
+  wait t=7 done=8/8 alive=0 mfu_lines=5 2026-07-11T13:30:22+00:00
+| 2 | d_tp8pp1_rest | dense | 128 | 8/1/1 | 16 | 2048 | 76.15 | 26.01 | ok | P0 Dense TP8PP1 续 64/128（16/32已完成） |
+==> ROUND 3 d_tp8pp2 mode=dense TP=8 PP=2 EP=1 scales=16,32,64,128
+==> scale=16 DP=1 GBS=2048 nnodes=1 port=26061
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_47121
+==> waiting scale=16
+  wait t=1 done=0/1 alive=17 mfu_lines=0 2026-07-11T13:30:57+00:00
+  wait t=2 done=0/1 alive=21 mfu_lines=0 2026-07-11T13:31:30+00:00
+  wait t=3 done=0/1 alive=21 mfu_lines=0 2026-07-11T13:32:02+00:00
+  wait t=4 done=0/1 alive=21 mfu_lines=0 2026-07-11T13:32:35+00:00
+  wait t=5 done=0/1 alive=21 mfu_lines=0 2026-07-11T13:33:08+00:00
+  wait t=6 done=0/1 alive=21 mfu_lines=0 2026-07-11T13:33:40+00:00
+  wait t=7 done=0/1 alive=21 mfu_lines=2 2026-07-11T13:34:13+00:00
+  wait t=8 done=0/1 alive=21 mfu_lines=2 2026-07-11T13:34:46+00:00
+  wait t=9 done=0/1 alive=21 mfu_lines=2 2026-07-11T13:35:18+00:00
+  wait t=10 done=0/1 alive=21 mfu_lines=2 2026-07-11T13:35:49+00:00
+  wait t=11 done=0/1 alive=21 mfu_lines=2 2026-07-11T13:36:22+00:00
+  wait t=12 done=0/1 alive=21 mfu_lines=4 2026-07-11T13:36:54+00:00
+  wait t=13 done=0/1 alive=21 mfu_lines=4 2026-07-11T13:37:26+00:00
+  wait t=14 done=0/1 alive=21 mfu_lines=4 2026-07-11T13:37:58+00:00
+  wait t=15 done=0/1 alive=21 mfu_lines=4 2026-07-11T13:38:31+00:00
+  wait t=16 done=0/1 alive=21 mfu_lines=4 2026-07-11T13:39:03+00:00
+  wait t=17 done=0/1 alive=21 mfu_lines=6 2026-07-11T13:39:38+00:00
+  wait t=18 done=0/1 alive=21 mfu_lines=6 2026-07-11T13:40:11+00:00
+  wait t=19 done=0/1 alive=21 mfu_lines=6 2026-07-11T13:40:43+00:00
+  wait t=20 done=0/1 alive=21 mfu_lines=6 2026-07-11T13:41:16+00:00
+  wait t=21 done=0/1 alive=21 mfu_lines=6 2026-07-11T13:41:48+00:00
+  wait t=22 done=0/1 alive=21 mfu_lines=8 2026-07-11T13:42:20+00:00
+  wait t=23 done=0/1 alive=21 mfu_lines=8 2026-07-11T13:42:53+00:00
+  wait t=24 done=0/1 alive=21 mfu_lines=8 2026-07-11T13:43:25+00:00
+  wait t=25 done=0/1 alive=21 mfu_lines=8 2026-07-11T13:43:58+00:00
+  wait t=26 done=0/1 alive=21 mfu_lines=8 2026-07-11T13:44:30+00:00
+  wait t=27 done=0/1 alive=9 mfu_lines=10 2026-07-11T13:45:02+00:00
+  wait t=28 done=1/1 alive=0 mfu_lines=10 2026-07-11T13:45:35+00:00
+| 3 | d_tp8pp2 | dense | 16 | 8/2/1 | 1 | 2048 | 93.20 | 31.83 | ok | P0 Dense TP8PP2 扩DP |
+==> scale=32 DP=2 GBS=2048 nnodes=2 port=26062
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_62273
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_17374
+==> waiting scale=32
+  wait t=1 done=0/2 alive=17 mfu_lines=0 2026-07-11T13:46:15+00:00
+  wait t=2 done=0/2 alive=21 mfu_lines=0 2026-07-11T13:46:48+00:00
+  wait t=3 done=0/2 alive=21 mfu_lines=0 2026-07-11T13:47:20+00:00
+  wait t=4 done=0/2 alive=21 mfu_lines=0 2026-07-11T13:47:52+00:00
+  wait t=5 done=0/2 alive=21 mfu_lines=0 2026-07-11T13:48:25+00:00
+  wait t=6 done=0/2 alive=21 mfu_lines=1 2026-07-11T13:48:59+00:00
+  wait t=7 done=0/2 alive=21 mfu_lines=1 2026-07-11T13:49:32+00:00
+  wait t=8 done=0/2 alive=21 mfu_lines=2 2026-07-11T13:50:10+00:00
+  wait t=9 done=0/2 alive=21 mfu_lines=2 2026-07-11T13:50:44+00:00
+  wait t=10 done=0/2 alive=21 mfu_lines=2 2026-07-11T13:51:16+00:00
+  wait t=11 done=0/2 alive=21 mfu_lines=3 2026-07-11T13:51:49+00:00
+  wait t=12 done=0/2 alive=21 mfu_lines=3 2026-07-11T13:52:23+00:00
+  wait t=13 done=0/2 alive=21 mfu_lines=4 2026-07-11T13:52:55+00:00
+  wait t=14 done=0/2 alive=21 mfu_lines=4 2026-07-11T13:53:28+00:00
+  wait t=15 done=2/2 alive=0 mfu_lines=5 2026-07-11T13:54:01+00:00
+| 3 | d_tp8pp2 | dense | 32 | 8/2/1 | 2 | 2048 | 91.70 | 31.32 | ok | P0 Dense TP8PP2 扩DP |
+==> scale=64 DP=4 GBS=2048 nnodes=4 port=26063
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_72510
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_22234
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_12460
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_12460
+==> waiting scale=64
+  wait t=1 done=0/4 alive=17 mfu_lines=0 2026-07-11T13:54:55+00:00
+  wait t=2 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:55:27+00:00
+  wait t=3 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:56:00+00:00
+  wait t=4 done=0/4 alive=21 mfu_lines=0 2026-07-11T13:56:32+00:00
+  wait t=5 done=0/4 alive=21 mfu_lines=1 2026-07-11T13:57:04+00:00
+  wait t=6 done=0/4 alive=21 mfu_lines=2 2026-07-11T13:57:37+00:00
+  wait t=7 done=0/4 alive=21 mfu_lines=2 2026-07-11T13:58:09+00:00
+  wait t=8 done=0/4 alive=21 mfu_lines=3 2026-07-11T13:58:42+00:00
+  wait t=9 done=0/4 alive=21 mfu_lines=4 2026-07-11T13:59:14+00:00
+  wait t=10 done=4/4 alive=0 mfu_lines=5 2026-07-11T13:59:46+00:00
+| 3 | d_tp8pp2 | dense | 64 | 8/2/1 | 4 | 2048 | 81.35 | 27.78 | ok | P0 Dense TP8PP2 扩DP |
+==> scale=128 DP=8 GBS=2048 nnodes=8 port=26064
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_81709
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_27706
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_17960
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_17928
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_6876
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_6876
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_6876
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_6876
+==> waiting scale=128
+  wait t=1 done=0/8 alive=17 mfu_lines=0 2026-07-11T14:01:12+00:00
+  wait t=2 done=0/8 alive=21 mfu_lines=0 2026-07-11T14:01:44+00:00
+  wait t=3 done=0/8 alive=21 mfu_lines=0 2026-07-11T14:02:19+00:00
+  wait t=4 done=0/8 alive=21 mfu_lines=2 2026-07-11T14:02:51+00:00
+  wait t=5 done=0/8 alive=21 mfu_lines=2 2026-07-11T14:03:23+00:00
+  wait t=6 done=0/8 alive=21 mfu_lines=4 2026-07-11T14:03:56+00:00
+  wait t=7 done=8/8 alive=0 mfu_lines=5 2026-07-11T14:04:29+00:00
+| 3 | d_tp8pp2 | dense | 128 | 8/2/1 | 8 | 2048 | 73.60 | 25.14 | ok | P0 Dense TP8PP2 扩DP |
+==> ROUND 4 d_tp4pp2 mode=dense TP=4 PP=2 EP=1 scales=16,32,64,128
+==> scale=16 DP=2 GBS=2048 nnodes=1 port=26081
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_91012
+==> waiting scale=16
+  wait t=1 done=0/1 alive=17 mfu_lines=0 2026-07-11T14:05:00+00:00
+  wait t=2 done=0/1 alive=25 mfu_lines=0 2026-07-11T14:05:33+00:00
+  wait t=3 done=0/1 alive=25 mfu_lines=0 2026-07-11T14:06:05+00:00
+  wait t=4 done=0/1 alive=25 mfu_lines=0 2026-07-11T14:06:38+00:00
+  wait t=5 done=0/1 alive=25 mfu_lines=0 2026-07-11T14:07:10+00:00
+  wait t=6 done=0/1 alive=25 mfu_lines=2 2026-07-11T14:07:42+00:00
+  wait t=7 done=0/1 alive=25 mfu_lines=2 2026-07-11T14:08:15+00:00
+  wait t=8 done=0/1 alive=25 mfu_lines=2 2026-07-11T14:08:46+00:00
+  wait t=9 done=0/1 alive=25 mfu_lines=2 2026-07-11T14:09:19+00:00
+  wait t=10 done=0/1 alive=25 mfu_lines=4 2026-07-11T14:09:55+00:00
+  wait t=11 done=0/1 alive=25 mfu_lines=4 2026-07-11T14:10:27+00:00
+  wait t=12 done=0/1 alive=25 mfu_lines=4 2026-07-11T14:10:59+00:00
+  wait t=13 done=0/1 alive=25 mfu_lines=6 2026-07-11T14:11:32+00:00
+  wait t=14 done=0/1 alive=25 mfu_lines=6 2026-07-11T14:12:04+00:00
+  wait t=15 done=0/1 alive=25 mfu_lines=6 2026-07-11T14:12:36+00:00
+  wait t=16 done=0/1 alive=25 mfu_lines=6 2026-07-11T14:13:09+00:00
+  wait t=17 done=0/1 alive=25 mfu_lines=8 2026-07-11T14:13:41+00:00
+  wait t=18 done=0/1 alive=25 mfu_lines=8 2026-07-11T14:14:15+00:00
+  wait t=19 done=0/1 alive=25 mfu_lines=8 2026-07-11T14:14:47+00:00
+  wait t=20 done=0/1 alive=25 mfu_lines=8 2026-07-11T14:15:19+00:00
+  wait t=21 done=1/1 alive=0 mfu_lines=10 2026-07-11T14:15:51+00:00
+| 4 | d_tp4pp2 | dense | 16 | 4/2/1 | 2 | 2048 | 125.50 | 42.86 | ok | P1 Dense TP4PP2 扩DP |
+==> scale=32 DP=4 GBS=2048 nnodes=2 port=26082
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_103689
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_34330
+==> waiting scale=32
+  wait t=1 done=0/2 alive=17 mfu_lines=0 2026-07-11T14:16:31+00:00
+  wait t=2 done=0/2 alive=25 mfu_lines=0 2026-07-11T14:17:03+00:00
+  wait t=3 done=0/2 alive=25 mfu_lines=0 2026-07-11T14:17:35+00:00
+  wait t=4 done=0/2 alive=25 mfu_lines=0 2026-07-11T14:18:08+00:00
+  wait t=5 done=0/2 alive=25 mfu_lines=1 2026-07-11T14:18:42+00:00
+  wait t=6 done=0/2 alive=25 mfu_lines=1 2026-07-11T14:19:15+00:00
+  wait t=7 done=0/2 alive=25 mfu_lines=2 2026-07-11T14:19:48+00:00
+  wait t=8 done=0/2 alive=25 mfu_lines=2 2026-07-11T14:20:26+00:00
+  wait t=9 done=0/2 alive=25 mfu_lines=3 2026-07-11T14:20:58+00:00
+  wait t=10 done=0/2 alive=25 mfu_lines=4 2026-07-11T14:21:30+00:00
+  wait t=11 done=0/2 alive=17 mfu_lines=4 2026-07-11T14:22:03+00:00
+  wait t=12 done=2/2 alive=0 mfu_lines=5 2026-07-11T14:22:35+00:00
+| 4 | d_tp4pp2 | dense | 32 | 4/2/1 | 4 | 2048 | 125.60 | 42.90 | ok | P1 Dense TP4PP2 扩DP |
+==> scale=64 DP=8 GBS=2048 nnodes=4 port=26083
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_112765
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_39096
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_24584
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_24552
+==> waiting scale=64
+  wait t=1 done=0/4 alive=17 mfu_lines=0 2026-07-11T14:23:30+00:00
+  wait t=2 done=0/4 alive=25 mfu_lines=0 2026-07-11T14:24:03+00:00
+  wait t=3 done=0/4 alive=25 mfu_lines=0 2026-07-11T14:24:37+00:00
+  wait t=4 done=0/4 alive=25 mfu_lines=1 2026-07-11T14:25:11+00:00
+  wait t=5 done=0/4 alive=25 mfu_lines=2 2026-07-11T14:25:42+00:00
+  wait t=6 done=0/4 alive=25 mfu_lines=2 2026-07-11T14:26:15+00:00
+  wait t=7 done=0/4 alive=25 mfu_lines=3 2026-07-11T14:26:47+00:00
+  wait t=8 done=4/4 alive=0 mfu_lines=5 2026-07-11T14:27:21+00:00
+| 4 | d_tp4pp2 | dense | 64 | 4/2/1 | 8 | 2048 | 107.05 | 36.56 | ok | P1 Dense TP4PP2 扩DP |
+==> scale=128 DP=16 GBS=2048 nnodes=8 port=26084
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_121141
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_44430
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_29959
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_29910
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_13576
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_13528
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_13528
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_13528
+==> waiting scale=128
+  wait t=1 done=0/8 alive=17 mfu_lines=0 2026-07-11T14:28:43+00:00
+  wait t=2 done=0/8 alive=25 mfu_lines=0 2026-07-11T14:29:16+00:00
+  wait t=3 done=0/8 alive=25 mfu_lines=0 2026-07-11T14:29:48+00:00
+  wait t=4 done=0/8 alive=25 mfu_lines=2 2026-07-11T14:30:20+00:00
+  wait t=5 done=0/8 alive=25 mfu_lines=4 2026-07-11T14:30:52+00:00
+  wait t=6 done=8/8 alive=0 mfu_lines=5 2026-07-11T14:31:25+00:00
+| 4 | d_tp4pp2 | dense | 128 | 4/2/1 | 16 | 2048 | 108.40 | 37.02 | ok | P1 Dense TP4PP2 扩DP |
+==> ROUND 5 d_tp4pp4 mode=dense TP=4 PP=4 EP=1 scales=16,32,64,128
+==> scale=16 DP=1 GBS=2048 nnodes=1 port=26101
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+/root/.bashrc: line 14: /usr/local/Ascend/driver/bin/setenv.bash: No such file or directory
+STARTED_130092
+==> waiting scale=16
+  wait t=1 done=0/1 alive=17 mfu_lines=0 2026-07-11T14:31:56+00:00
+  wait t=2 done=0/1 alive=25 mfu_lines=0 2026-07-11T14:32:29+00:00

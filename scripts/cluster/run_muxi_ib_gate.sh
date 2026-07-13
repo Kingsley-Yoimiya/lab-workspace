@@ -7,7 +7,7 @@ source "$SCRIPT_DIR/muxi.env"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-AFS_OUT="${AFS_OUT:-/afs-a3-weight-share/montyyin/results/muxi-ib-gate-${STAMP}}"
+AFS_OUT="${AFS_OUT:-/afs-a3-weight-share/yinjinrun.p/results/muxi-ib-gate-${STAMP}}"
 LOG_DIR="${LOG_DIR:-/Users/yinjinrun/random-thing/logs/muxi-ib-gate-${STAMP}}"
 REPORT="${REPORT:-$SCRIPT_DIR/../../reports/rounds/muxi_ib_gate_${STAMP}.md}"
 NCCL_IB_HCA="${NCCL_IB_HCA:-xscale}"

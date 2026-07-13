@@ -2,10 +2,10 @@
 # 在 ais 跳板上跑（vcctl 本地），避免本机嵌套 SSH 长跑被杀
 set +e
 export KUBECONFIG=/root/.kube/config.muxi-mohe
-AFS=/afs-a3-weight-share/montyyin/results/muxi-day-20260713_002719
+AFS=/afs-a3-weight-share/yinjinrun.p/results/muxi-day-20260713_002719
 JOB=yushan-muxi-card-screen-128-cp-copy
 MASTER=${JOB}-master-0
-AFS_BENCH=/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster
+AFS_BENCH=/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster
 LOG=/tmp/muxi_day_drive.log
 : >"$LOG"
 log() { echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG"; }

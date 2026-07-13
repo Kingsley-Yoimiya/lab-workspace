@@ -47,7 +47,7 @@
 | `sfu_gflops` | `vector_sfu_perf` | 64M elems, op=exp, w20/i50 |
 | `hbm_mode_*_gbps` | `hbm_modes_perf` | 512 MB, stride=16, w10/i30；四模式 seq_copy/strided/read_heavy/write_heavy |
 | `launch_*` | `launch_latency` | samples=500, warmup=50, burst_count=64, timing_method=event |
-| `health_temp_c` / `health_power_w` | `health` / `health_counters` | npu-smi |
+| `health_temp_c` / `health_power_w` | `health` / `health_counters` | npu-smi（昇腾 NPU 系统管理命令行，可查功耗/温度/usages 等） |
 | `board_temp_c` / `*_util_pct` / `power_w` | 探针 round 末次遥测 | 多为 vector_fma_round 末条回填到 card |
 | `shape_sweep_peak_tflops` | **本批无 shape_sweep**；`jsonl.py` 用 `max(bnmk_tflops)` 回填 | 见 §1.9 / §3 |
 
@@ -168,7 +168,7 @@ merged 行数抽样：`card=128`, `gemm_sustained_sample=19898`, `gemm_bnmk_samp
 | `radar_host_median_norm.svg` | `plot_radar_and_parallel` | 每 host 对 `RADAR_METRICS` 取中位，再 ÷ 集群中位；极坐标；1.0=集群中位；ylim 0.85–1.15 |
 | `parallel_host_median_norm.svg` | 同上 | 同一归一化矩阵的平行坐标 |
 | `hbm_modes_grouped_bar.svg` | `plot_hbm_modes_grouped` | `hbm_mode_{seq_copy,strided,read_heavy,write_heavy}_gbps`；首组「全集群」中位 + 各 host 中位，四模式并排柱 |
-| `corr_cube_vector_sfu_mte.svg` | `plot_corr_heatmap` | 四指标都非空的卡对齐后 Pearson `corrcoef`；Cube/Vector/SFU/MTE |
+| `corr_cube_vector_sfu_mte.svg` | `plot_corr_heatmap` | 四指标都非空的卡对齐后 Pearson `corrcoef`；Cube（矩阵计算单元：主计算核内专做大规模矩阵乘加、提供主算力的部件）/Vector（向量计算单元：做逐元素/向量运算与部分数学函数，灵活度高于矩阵单元、峰值算力通常更低）/SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面）/MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器） |
 | `box_launch_by_host.svg` | `plot_launch_boxplot` | `launch_sync_p99_us`, `launch_host_overhead_p99_us`, `launch_burst_p50_us` 按 host 箱线 |
 | `cdf_core_metrics.svg` | `plot_cdf_panel` | `func/hbm/vector/mte/sfu/sustained` 六面板经验 CDF + 中位竖线 |
 | `extreme10_small_multiples.svg` | `plot_extreme_cards` | 按 `sustained_tflops` 升序取最慢/最快各 10 卡；多指标画 **相对集群中位偏差 %** 水平条 |
@@ -281,16 +281,16 @@ merged 行数抽样：`card=128`, `gemm_sustained_sample=19898`, `gemm_bnmk_samp
 | 出图 metric key | JSONL record | 探针名 | 关键参数 |
 |-----------------|--------------|--------|----------|
 | `func_tflops` | card ← func_perf | GEMM | N=8192 bf16 w20/i50 |
-| `hbm_gbps` | card ← hbm | HBM copy | 1024MB w20/i50 |
+| `hbm_gbps` | card ← hbm | HBM（High Bandwidth Memory，器件高带宽外存） copy | 1024MB w20/i50 |
 | `sustained_tflops` + timeseries | card + gemm_sustained_sample | sustained | 30s window=50 |
 | `vector_gflops` | card ← vector_fma | vector FMA | 64M fp32 |
 | `scalar_elems_per_s` | card ← scalar_chain | scalar | 16M |
-| `mte_gbps` | card ← mte_copy | MTE | 512MB |
+| `mte_gbps` | card ← mte_copy | MTE（Memory Transfer Engine，片上 Buffer 与 Global Memory 之间的数据搬运引擎；本字段多用 Tensor.copy_ 作纯搬运带宽代理，并非直接读该引擎指令计数器） | 512MB |
 | `cube_vector_tflops` | card ← cube_vector_pipeline | cube+vector | n=4096 bf16 |
-| `sfu_gflops` | card ← vector_sfu | SFU exp | 64M |
-| `hbm_mode_*` | card ← hbm_modes | HBM 四模式 | 512MB stride=16 |
+| `sfu_gflops` | card ← vector_sfu | SFU（特殊函数类吞吐代理；本探针默认 torch.exp，按 1 op/元素计，公开叙述常归在向量计算能力面） exp | 64M |
+| `hbm_mode_*` | card ← hbm_modes | HBM（High Bandwidth Memory，器件高带宽外存） 四模式 | 512MB stride=16 |
 | `launch_*` | card ← launch_latency | launch | 500 samples, burst=64, event |
-| `health_*` / util / `power_w` | card ← health + round telemetry | npu-smi `-t` | |
+| `health_*` / util / `power_w` | card ← health + round telemetry | npu-smi（昇腾 NPU 系统管理命令行，可查功耗/温度/usages 等） `-t` | |
 | `shape_sweep_peak_tflops` | card（本批=BNMK max） | bnmk_sweep 回填 | 见 §1.9 |
 | bnmk 图 | gemm_bnmk_sample | gemm_bnmk_sweep | 10 shapes bf16 NN |
 

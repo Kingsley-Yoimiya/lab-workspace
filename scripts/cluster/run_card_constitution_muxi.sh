@@ -13,7 +13,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=muxi.env
 source "$SCRIPT_DIR/muxi.env"
 # 体质用自有树（含 stage_c + Metax），不覆盖 yushan 冒烟树
-export AFS_WORKSPACE="${AFS_WORKSPACE_OVERRIDE:-/afs-a3-weight-share/montyyin/lab-workspace}"
+export AFS_WORKSPACE="${AFS_WORKSPACE_OVERRIDE:-/afs-a3-weight-share/yinjinrun.p/lab-workspace}"
 export AFS_CS="${AFS_CS_OVERRIDE:-${AFS_WORKSPACE}/projects/CARD_SCREEN}"
 # shellcheck source=job_helpers.sh
 source "$SCRIPT_DIR/job_helpers.sh"

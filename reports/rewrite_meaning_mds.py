@@ -6,6 +6,12 @@ import json
 import re
 import statistics
 from pathlib import Path
+import sys
+
+_REP = Path(__file__).resolve().parent
+if str(_REP) not in sys.path:
+    sys.path.insert(0, str(_REP))
+from glossary_links import linkify_abbr
 
 ROUNDS = Path(__file__).resolve().parent / "rounds"
 FILLGAP = Path(
@@ -16,19 +22,23 @@ FILLGAP = Path(
 # 字段 → 人话含义（短）+ 底层 API（短）。详细版见 METRIC_SEMANTICS_20260711.md
 SEM: dict[str, tuple[str, str]] = {
     "func_tflops": (
-        "单卡 Cube 矩阵乘吞吐（TFLOPS）。测的是昇腾 Cube 主算力路径，越高说明方阵 GEMM 越强。",
+        "单卡方阵矩阵乘吞吐（TFLOPS）。对应 Cube（矩阵计算单元：AI Core 内专做大规模矩阵乘加的主算力部件）路径上的瞬时能力；"
+        "不是热稳态，也不等于整网训练 MFU。",
         "torch 算子 `a@b`（bf16），FLOPs=`2·N³`，NPU Event 计时取中位；N=8192，warmup=20，iters=50。",
     ),
     "sustained_tflops": (
-        "稳态 Cube 吞吐（TFLOPS）。连续烤机后的可持续算力，用来看降频/争用，不是瞬时峰值。",
+        "连续烤机后的方阵矩阵乘吞吐（TFLOPS）。仍走 Cube（矩阵计算单元）路径；"
+        "看一段时间后还能维持多少算力，用来对比短窗 func_tflops，而不是替代整卡健康评分。",
         "循环 `a@b` 跑满 ~30s，每窗 50 次 GEMM 用 NPU Event 计时；**卡级字段取最后一个时间窗**（非中位）。N=8192 bf16。",
     ),
     "hbm_gbps": (
-        "HBM 有效带宽代理（GB/s）。反映高带宽内存读+写通路是否健康。",
-        "设备侧大缓冲 `dst = src * 2.0`（fp32，含一次乘法，非纯 DMA）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。",
+        "HBM（High Bandwidth Memory，器件高带宽外存）路径上的有效带宽代理（GB/s）。"
+        "探针是「读+写 + 一次逐元素乘」，所以是访存+轻算混合，不是纯 DMA，也不是 npu-smi 的带宽占用率。",
+        "设备侧大缓冲 `dst = src * 2.0`（fp32）；流量按 R+W；Event 计时中位。默认 1024MB，w20/i50。",
     ),
     "vector_gflops": (
-        "Vector 单元 FMA 吞吐（GFLOPS）。代理 Ascend Vector 宽并行，不是 Cube。",
+        "Vector（向量计算单元：逐元素/向量运算，灵活度高于 Cube、峰值通常低于 Cube）路径上的 FMA 吞吐代理（GFLOPS）。"
+        "测的不是矩阵乘主路径。",
         "逐元素 `a*b+c`，按 2 flops/elem；64M 元素 fp32；NPU Event 中位。w20/i50。",
     ),
     "scalar_elems_per_s": (
@@ -36,15 +46,18 @@ SEM: dict[str, tuple[str, str]] = {
         "`torch.cumsum`；elems_per_s = elems/dt；16M fp32。量纲不是 GFLOPS，勿与 vector 直接比倍速。",
     ),
     "mte_gbps": (
-        "纯拷贝带宽（GB/s）。代理 MTE/DMA 搬运通路，用来拆「算发访存」vs「纯搬运」。",
+        "纯设备侧拷贝带宽（GB/s）。字段名借 MTE（Memory Transfer Engine：片上 Buffer 与 Global Memory 之间的搬运引擎）；"
+        "实现是 `Tensor.copy_`，用来和 hbm_gbps（带乘）对照「纯搬运 vs 访存+轻算」——不是直接读 MTE1/2/3 计数器。",
         "`Tensor.copy_`；流量按 R+W；512MB；Event 中位。w20/i50。",
     ),
     "cube_vector_tflops": (
-        "Cube GEMM + Vector epilogue（scale+bias）端到端吞吐（TFLOPS）。看 Cube→Vector 衔接。",
+        "Cube（矩阵乘）之后接 Vector（向量）epilogue（scale+bias）的端到端吞吐（TFLOPS）。"
+        "看矩阵结果离开 Cube 再进向量后处理这条衔接路径，不是单独的 Cube 峰值。",
         "`c=a@b; c*scale+bias`；FLOPs=`2N³+3N²`；N=4096 bf16。数值通常低于纯 `func_tflops`。",
     ),
     "sfu_gflops": (
-        "特殊函数单元吞吐。字段叫 gflops，实现按 1 op/元素计，实质是 Gops/s 量级。",
+        "特殊函数类吞吐代理。公开 AI Core 叙述里 exp/sqrt 等常归 Vector 能力面；"
+        "本字段名沿用 SFU，实现是 `torch.exp`，按 1 op/元素计，量纲更接近 Gops/s，不是 FMA GFLOPS。",
         "默认 `torch.exp(x)`；`gflops≈elems/dt/1e9`；64M fp32。与 SDC 正确性探针不是一回事。",
     ),
     "hbm_mode_seq_copy_gbps": (
@@ -96,36 +109,43 @@ SEM: dict[str, tuple[str, str]] = {
         "同上。",
     ),
     "health_temp_c": (
-        "健康/开测路径温度快照（°C）。",
-        "`npu-smi info -t temp -i <card> -c <chip>` 解析。与负载中 board_temp **不同时刻**。",
+        "流程早期轻载/开测温度快照（°C）。health 同样只是采样阶段标签；"
+        "与负载探针回填的 board_temp_c 不是同一时刻的热状态。",
+        "`npu-smi info -t temp -i <card> -c <chip>` 解析。",
     ),
     "health_power_w": (
-        "健康/轻载路径实时功耗（W），常近空闲。",
-        "`npu-smi info -t power -i -c` → Real-time Power。**不要**和 `power_w`（负载末）直接相减当降频证据。",
+        "constitution 流程早期、轻载时刻的芯片实时功耗（W）。"
+        "来自 npu-smi -t power 的 Real-time Power；名称里的 health 只表示采样阶段，不是健康评分。"
+        "与负载末的 power_w 是同一工具字段、不同时刻，差值未在本报告定义为降频幅度。",
+        "`npu-smi info -t power -i -c` → Real-time Power。",
     ),
     "board_temp_c": (
         "板/NPU 温度（°C），取自负载遥测缓存。",
         "`npu-smi -t temp/board`；卡级常取 **vector_fma 探针末轮** 回填，不是 sustained 烤机峰值时刻。",
     ),
     "aicore_util_pct": (
-        "AICore 利用率（%）。",
-        "`npu-smi info -t usages`；卡级多为 vector_fma 末轮瞬时率，非 30s sustained 平均。",
+        "AICore（即 AI Core：昇腾主计算核）占用率（%），来自 npu-smi usages 的 Aicore Usage Rate。"
+        "本批多为某次负载探针末轮瞬时值，不是长时间平均。",
+        "`npu-smi info -t usages`；卡级多为 vector_fma 末轮瞬时率。",
     ),
     "aicpu_util_pct": (
-        "AICPU 利用率（%）。",
-        "同上 `-t usages`。本批常全 0。",
+        "AICPU（器件侧 AI CPU，与 Cube/Vector 不是同一执行体）占用率（%）。"
+        "来自 npu-smi 的 Aicpu Usage Rate；本批常为 0，表示该次采样为 0，不单独证明硬件缺失。",
+        "同上 `-t usages`。",
     ),
     "ctrlcpu_util_pct": (
-        "CtrlCPU 利用率（%）。",
-        "同上。",
+        "CtrlCPU（器件侧控制 CPU）占用率（%），来自 npu-smi 的 Ctrlcpu Usage Rate；"
+        "不是宿主机 top 的 CPU%。与 launch_*（host 墙钟）不在同一观测面。",
+        "同上 `-t usages`。",
     ),
     "mem_bw_util_pct": (
         "HBM Bandwidth Usage Rate（%）。",
         "同上 `-t usages`；瞬时率。",
     ),
     "power_w": (
-        "负载探针时段实时功耗（W），常为数百～近千瓦。",
-        "`npu-smi -t power`；卡级取 vector_fma **末轮**。与 `health_power_w`（~百瓦级健康快照）工况不同。",
+        "负载探针时段（多为 vector_fma 末轮）的芯片实时功耗（W），同样来自 npu-smi Real-time Power。"
+        "与 health_power_w 字段同源、采样时刻不同。",
+        "`npu-smi -t power`；卡级取 vector_fma **末轮**。",
     ),
     "power_limit_w": (
         "功耗上限（W）。",
@@ -168,7 +188,8 @@ def list_svgs(d: Path) -> list[str]:
 def meaning_block(key: str) -> str:
     if key in SEM:
         what, how = SEM[key]
-        return f"**含义**：{what}  **底层**：{how}"
+        body = f"**含义**：{what}  **底层**：{how}"
+        return linkify_abbr(body)
     return (
         f"**含义**：字段 `{key}` 的语义见 "
         f"[`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md)。"
@@ -202,7 +223,9 @@ def write_constitution(cards: list[dict]) -> None:
     lines = [
         "# Card Constitution · 20260711",
         "",
-        "指标「是什么 / 底层 API」详见 [`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md)。",
+        "**怎么读**：关键硬件缩写在**本行第一次出现**时，后面直接跟括号附注（无需跳转）。"
+        "完整对照表：[`ASCEND_HARDWARE_GLOSSARY_20260711.md`](ASCEND_HARDWARE_GLOSSARY_20260711.md)；"
+        "测法：[`METRIC_SEMANTICS_20260711.md`](METRIC_SEMANTICS_20260711.md)。",
         "数据：`logs/card-fillgap-20260711_140301/results/constitution128.merged.jsonl`；"
         "job `whj4stu-copy-copy-copy` 8×16；`screen.py` + `config.constitution128.yaml`。",
         "",
@@ -212,16 +235,18 @@ def write_constitution(cards: list[dict]) -> None:
         "|---|---|---:|",
     ]
     for k, lab in [
-        ("func_tflops", "Cube GEMM"),
-        ("sustained_tflops", "稳态 Cube"),
-        ("hbm_gbps", "HBM 带宽代理"),
-        ("vector_gflops", "Vector FMA"),
-        ("mte_gbps", "纯 copy/MTE"),
-        ("health_power_w", "健康功耗"),
-        ("power_w", "负载末功耗"),
+        ("func_tflops", "方阵 GEMM 吞吐代理（Cube 主算力路径）"),
+        ("sustained_tflops", "稳态方阵 GEMM（Cube）"),
+        ("hbm_gbps", "HBM 访存+轻算带宽代理"),
+        ("vector_gflops", "向量 FMA 代理（Vector）"),
+        ("mte_gbps", "纯 copy_ 带宽代理（字段名借 MTE）"),
+        ("health_power_w", "轻载时刻 Real-time Power（非健康分）"),
+        ("power_w", "负载末轮 Real-time Power"),
     ]:
         v = med(cards, k)
-        lines.append(f"| `{k}` | {lab} | {v:.4g} |" if v is not None else f"| `{k}` | {lab} | — |")
+        lab_l = linkify_abbr(lab)
+        mid = f"{v:.4g}" if v is not None else "—"
+        lines.append(f"| `{k}` | {lab_l} | {mid} |")
 
     lines += ["", "## 逐图（含义优先）", ""]
     for name in svgs:

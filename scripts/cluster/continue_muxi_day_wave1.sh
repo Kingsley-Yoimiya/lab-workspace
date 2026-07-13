@@ -8,7 +8,7 @@ source "$SCRIPT_DIR/job_helpers.sh"
 STAMP=$(cat /tmp/muxi_day_stamp.txt)
 DAY_ROOT=$(cat /tmp/muxi_day_root.txt)
 AFS_OUT=$(cat /tmp/muxi_day_afs.txt)
-AFS_BENCH=/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster
+AFS_BENCH=/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster
 ITERS=3000; WARMUP=30
 JOB=$CLUSTER_JOB
 MASTER=${JOB}-master-0

@@ -42,13 +42,14 @@
 | 官方命令 | 用途 | 本仓状态 |
 |----------|------|----------|
 | `dmon --show-temperature --show-board-power` | 高刷温/功耗 | ✅ |
-| `--show-usage` / `dmon --show-usage` | GPU/VPU 利用率 | ✅ 已补线（TTL）；**历史 JSONL 无值需重跑** |
-| `-j` → XCORE_CLK / RAS | 时钟 / ECC | ✅；负载路径时钟仍偏稀 |
+| `--show-usage` / `dmon --show-usage` | GPU/VPU 利用率 | ✅ 已补线（TTL）；旧批 JSONL 无值，`20260711_232400` 批已落盘 GPU util |
+| `--show-temperature` / `-j` 多传感器 | board temperature | ✅ 已补线（TTL）；旧批 JSONL 无值，`20260711_232400` 批已落盘 `board_temp_c` |
+| `-j` → XCORE_CLK / RAS | 时钟 / ECC | ✅；`20260711_232400` 批已落盘 XCORE clk，负载路径采样仍可能偏稀 |
 | `--show-clk-tr` | 降频原因 | ✅ |
 | `mxlk` / `topo -m/-n` | MetaXLink / NIC 拓扑 | 拓扑脚本有；未进体质 JSONL |
 | `--show-hbm-bandwidth` | 厂商动态 HBM 带宽 | 未用（用 torch 探针） |
 
-「本批无 util / board_temp」= **当时采集未接线或数据未重跑**，≠ 硬件无该量。
+旧批曾因采集未接线而没有 util / board_temp；`muxi-constitution-20260711_232400-…` 本批已落盘 GPU util、`board_temp_c` 与 XCORE clk。旧批缺值不表示硬件无该量。
 
 ---
 

@@ -10,7 +10,7 @@ set +e
 STAMP="${STAMP:-$(cat /tmp/muxi_day_stamp.txt)}"
 AFS_OUT="${AFS_OUT:-$(cat /tmp/muxi_day_afs.txt)}"
 DAY_ROOT="${DAY_ROOT:-$(cat /tmp/muxi_day_root.txt)}"
-AFS_BENCH="/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster"
+AFS_BENCH="/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster"
 ITERS="${ITERS:-600}"
 POD="${POD:-${CLUSTER_JOB}-master-0}"
 LOGF="$DAY_ROOT/b1_scan.log"

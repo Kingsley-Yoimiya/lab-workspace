@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set +e
 export KUBECONFIG=/root/.kube/config.muxi-mohe
-AFS=/afs-a3-weight-share/montyyin/results/muxi-day-20260713_002719
+AFS=/afs-a3-weight-share/yinjinrun.p/results/muxi-day-20260713_002719
 JOB=yushan-muxi-card-screen-128-cp-copy
-BENCH=/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster/virtual_sync_bench.py
+BENCH=/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster/virtual_sync_bench.py
 LOG=/tmp/muxi_day_drive_v2.log
 : >"$LOG"
 log(){ echo "[$(date +%H:%M:%S)] $*" | tee -a "$LOG"; }

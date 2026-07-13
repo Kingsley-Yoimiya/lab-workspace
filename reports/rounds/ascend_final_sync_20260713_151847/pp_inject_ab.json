@@ -1,0 +1,25 @@
+{
+  "baseline": {
+    "global_median_ms": 18791.8255,
+    "stage_median_ms": {
+      "0": 18791.023999999998,
+      "1": 18792.886
+    },
+    "stage_spread_ms": 1.8620000000009895,
+    "delayed_frac": 0.0,
+    "n_ranks": 16
+  },
+  "inject": {
+    "global_median_ms": 18836.606,
+    "stage_median_ms": {
+      "0": 18835.3795,
+      "1": 18837.4905
+    },
+    "stage_spread_ms": 2.111000000000786,
+    "delayed_frac": 0.24193548387096775,
+    "n_ranks": 16
+  },
+  "delta_global_median_ms": 44.78050000000076,
+  "delta_stage_spread_ms": 0.24899999999979627,
+  "verdict": "WEAK: stage spread rose but modest"
+}

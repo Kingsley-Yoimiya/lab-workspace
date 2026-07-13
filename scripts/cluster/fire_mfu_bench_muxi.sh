@@ -13,7 +13,7 @@ PEAK="${PEAK_TFLOPS:-279}"
 NPROC="${DEVICES_PER_NODE:-8}"
 nnodes=$((WORLD / NPROC))
 AFS_OUT="${AFS_OUT:?set AFS_OUT}"
-AFS_SCRIPTS="/afs-a3-weight-share/montyyin/lab-workspace/scripts/cluster"
+AFS_SCRIPTS="/afs-a3-weight-share/yinjinrun.p/lab-workspace/scripts/cluster"
 MASTER_ADDR="${MASTER_ADDR:-${CLUSTER_JOB}-master-0.${CLUSTER_JOB}}"
 LOG_DIR="${LOG_DIR:-/Users/yinjinrun/random-thing/logs/muxi-mfu-fire}"
 mkdir -p "$LOG_DIR"

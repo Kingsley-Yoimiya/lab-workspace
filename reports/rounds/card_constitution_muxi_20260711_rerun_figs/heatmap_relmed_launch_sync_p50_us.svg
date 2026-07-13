@@ -1,0 +1,646 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="771.904022pt" height="466.876875pt" viewBox="0 0 771.904022 466.876875" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-07-11T23:31:15.346226</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.9.4, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 466.876875 
+L 771.904022 466.876875 
+L 771.904022 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 52.350625 424.616875 
+L 691.909512 424.616875 
+L 691.909512 28.546875 
+L 52.350625 28.546875 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p982511e7d3)">
+    <image xlink:href="data:image/png;base64,
+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eAAAAAAAAxIh4AAAAAAAAECPiAQAAAAAAQIyIBwAAAAAAADEiHgAAAAAAAMSIeAAAAAAAABAj4gEAAAAAAECMiAcAAAAAAAAxIh4AAAAAAADEiHgAAAAAAAAQI+IBAAAAAABAjIgHAAAAAAAAMSIeAAAAAAAAxIh4AAAAAAAAECPiAQAAAAAAQIyIBwAAAAAAADEiHgAAAAAAAMSIeAAAAAAAABAj4gEAAAAAAECMiAcAAAAAAAAxIh4AAAAAAADEiHgAAAAAAAAQI+IBAAAAAABAjIgHAAAAAAAAMSIeAAAAAAAAxIh4AAAAAAAAECPiAQAAAAAAQIyIBwAAAAAAADEiHgAAAAAAAMSIeAAAAAAAABAj4gEAAAAAAECMiAcAAAAAAAAxIh4AAAAAAADEiHgAAAAAAAAQI+IBAAAAAABAjIgHAAAAAAAAMSIeAAAAAAAAxIh4AAAAAAAAECPiAQAAAAAAQIyIBwAAAAAAADEiHgAAAAAAAMSIeAAAAAAAABAj4gEAAAAAAECMiAcAAAAAAAAxm5Mnbx+nR8ByXn+6mZ4AAAAAAAB0ucQDAAAAAACAGBEPAAAAAAAAYkQ8AAAAAAAAiBHxAAAAAAAAIEbEAwAAAAAAgBgRDwAAAAAAAGJEPAAAAAAAAIgR8QAAAAAAACBGxAMAAAAAAIAYEQ8AAAAAAABiRDwAAAAAAACIEfEAAAAAAAAgRsQDAAAAAACAGBEPAAAAAAAAYkQ8AAAAAAAAiBHxAAAAAAAAIEbEAwAAAAAAgBgRDwAAAAAAAGJEPAAAAAAAAIgR8QAAAAAAACBGxAMAAAAAAIAYEQ8AAAAAAABiRDwAAAAAAACIEfEAAAAAAAAgRsQDAAAAAACAGBEPAAAAAAAAYkQ8AAAAAAAAiBHxAAAAAAAAIEbEAwAAAAAAgBgRDwAAAAAAAGJEPAAAAAAAAIgR8QAAAAAAACBGxAMAAAAAAIAYEQ8AAAAAAABiRDwAAAAAAACIEfEAAAAAAAAgRsQDAAAAAACAGBEPAAAAAAAAYkQ8AAAAAAAAiBHxAAAAAAAAIEbEAwAAAAAAgBgRDwAAAAAAAGJEPAAAAAAAAIgR8QAAAAAAACBGxAMAAAAAAIAYEQ8AAAAAAABiRDwAAAAAAACIEfEAAAAAAAAgRsQDAAAAAACAGBEPAAAAAAAAYkQ8AAAAAAAAiBH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" id="imagedf74388d86" transform="scale(1 -1) translate(0 -396.36)" x="52.350625" y="-28.256875" width="639.72" height="396.36"/>
+   </g>
+   <g id="matplotlib.axis_1">
+    <g id="xtick_1">
+     <g id="line2d_1">
+      <defs>
+       <path id="me52ac6cb0e" d="M 0 0 
+L 0 3.5 
+" style="stroke: #444444; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="92.323055" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_1">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="439.57625" transform="rotate(-0 92.323055 439.57625)">0</text>
+     </g>
+    </g>
+    <g id="xtick_2">
+     <g id="line2d_2">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="172.267916" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_2">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="439.57625" transform="rotate(-0 172.267916 439.57625)">1</text>
+     </g>
+    </g>
+    <g id="xtick_3">
+     <g id="line2d_3">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="252.212777" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_3">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="439.57625" transform="rotate(-0 252.212777 439.57625)">2</text>
+     </g>
+    </g>
+    <g id="xtick_4">
+     <g id="line2d_4">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="332.157638" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_4">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="439.57625" transform="rotate(-0 332.157638 439.57625)">3</text>
+     </g>
+    </g>
+    <g id="xtick_5">
+     <g id="line2d_5">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="412.102499" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_5">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="439.57625" transform="rotate(-0 412.102499 439.57625)">4</text>
+     </g>
+    </g>
+    <g id="xtick_6">
+     <g id="line2d_6">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="492.04736" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_6">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="439.57625" transform="rotate(-0 492.04736 439.57625)">5</text>
+     </g>
+    </g>
+    <g id="xtick_7">
+     <g id="line2d_7">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="571.992221" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_7">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="439.57625" transform="rotate(-0 571.992221 439.57625)">6</text>
+     </g>
+    </g>
+    <g id="xtick_8">
+     <g id="line2d_8">
+      <g>
+       <use xlink:href="#me52ac6cb0e" x="651.937081" y="424.616875" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_8">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="439.57625" transform="rotate(-0 651.937081 439.57625)">7</text>
+     </g>
+    </g>
+    <g id="text_9">
+     <text style="fill: #333333; font: 12px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="372.130068" y="454.468125" transform="rotate(-0 372.130068 454.468125)">device</text>
+    </g>
+   </g>
+   <g id="matplotlib.axis_2">
+    <g id="ytick_1">
+     <g id="line2d_9">
+      <defs>
+       <path id="m92257c0f28" d="M 0 0 
+L -3.5 0 
+" style="stroke: #444444; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="40.924063" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_10">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="44.90375" transform="rotate(-0 45.350625 44.90375)">m0</text>
+     </g>
+    </g>
+    <g id="ytick_2">
+     <g id="line2d_10">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="65.678438" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_11">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="69.658125" transform="rotate(-0 45.350625 69.658125)">w0</text>
+     </g>
+    </g>
+    <g id="ytick_3">
+     <g id="line2d_11">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="90.432813" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_12">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="94.4125" transform="rotate(-0 45.350625 94.4125)">w1</text>
+     </g>
+    </g>
+    <g id="ytick_4">
+     <g id="line2d_12">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="115.187188" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_13">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="119.166875" transform="rotate(-0 45.350625 119.166875)">w2</text>
+     </g>
+    </g>
+    <g id="ytick_5">
+     <g id="line2d_13">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="139.941563" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_14">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="143.92125" transform="rotate(-0 45.350625 143.92125)">w3</text>
+     </g>
+    </g>
+    <g id="ytick_6">
+     <g id="line2d_14">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="164.695938" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_15">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="168.675625" transform="rotate(-0 45.350625 168.675625)">w4</text>
+     </g>
+    </g>
+    <g id="ytick_7">
+     <g id="line2d_15">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="189.450313" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_16">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="193.43" transform="rotate(-0 45.350625 193.43)">w5</text>
+     </g>
+    </g>
+    <g id="ytick_8">
+     <g id="line2d_16">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="214.204688" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_17">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="218.184375" transform="rotate(-0 45.350625 218.184375)">w6</text>
+     </g>
+    </g>
+    <g id="ytick_9">
+     <g id="line2d_17">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="238.959063" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_18">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="242.93875" transform="rotate(-0 45.350625 242.93875)">w7</text>
+     </g>
+    </g>
+    <g id="ytick_10">
+     <g id="line2d_18">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="263.713438" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_19">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="267.693125" transform="rotate(-0 45.350625 267.693125)">w8</text>
+     </g>
+    </g>
+    <g id="ytick_11">
+     <g id="line2d_19">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="288.467813" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_20">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="292.4475" transform="rotate(-0 45.350625 292.4475)">w9</text>
+     </g>
+    </g>
+    <g id="ytick_12">
+     <g id="line2d_20">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="313.222188" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_21">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="317.201875" transform="rotate(-0 45.350625 317.201875)">w10</text>
+     </g>
+    </g>
+    <g id="ytick_13">
+     <g id="line2d_21">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="337.976563" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_22">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="341.95625" transform="rotate(-0 45.350625 341.95625)">w11</text>
+     </g>
+    </g>
+    <g id="ytick_14">
+     <g id="line2d_22">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="362.730938" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_23">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="366.710625" transform="rotate(-0 45.350625 366.710625)">w12</text>
+     </g>
+    </g>
+    <g id="ytick_15">
+     <g id="line2d_23">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="387.485313" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_24">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="391.465" transform="rotate(-0 45.350625 391.465)">w13</text>
+     </g>
+    </g>
+    <g id="ytick_16">
+     <g id="line2d_24">
+      <g>
+       <use xlink:href="#m92257c0f28" x="52.350625" y="412.239688" style="fill: #444444; stroke: #444444; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_25">
+      <text style="fill: #444444; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: end" x="45.350625" y="416.219375" transform="rotate(-0 45.350625 416.219375)">w14</text>
+     </g>
+    </g>
+    <g id="text_26">
+     <text style="fill: #333333; font: 12px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="20.35125" y="226.581875" transform="rotate(-90 20.35125 226.581875)">host</text>
+    </g>
+   </g>
+   <g id="patch_3">
+    <path d="M 52.350625 424.616875 
+L 52.350625 28.546875 
+" style="fill: none; stroke: #808080; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="patch_4">
+    <path d="M 52.350625 424.616875 
+L 691.909512 424.616875 
+" style="fill: none; stroke: #808080; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+   <g id="text_27">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="43.075156" transform="rotate(-0 92.323055 43.075156)">-4.5</text>
+   </g>
+   <g id="text_28">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="43.075156" transform="rotate(-0 172.267916 43.075156)">-1.9</text>
+   </g>
+   <g id="text_29">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="43.075156" transform="rotate(-0 332.157638 43.075156)">-3.0</text>
+   </g>
+   <g id="text_30">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="43.075156" transform="rotate(-0 412.102499 43.075156)">-3.7</text>
+   </g>
+   <g id="text_31">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="43.075156" transform="rotate(-0 492.04736 43.075156)">-2.3</text>
+   </g>
+   <g id="text_32">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="43.075156" transform="rotate(-0 571.992221 43.075156)">+44.8</text>
+   </g>
+   <g id="text_33">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="43.075156" transform="rotate(-0 651.937081 43.075156)">-3.0</text>
+   </g>
+   <g id="text_34">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="67.829531" transform="rotate(-0 92.323055 67.829531)">-1.1</text>
+   </g>
+   <g id="text_35">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="67.829531" transform="rotate(-0 172.267916 67.829531)">+1.5</text>
+   </g>
+   <g id="text_36">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="67.829531" transform="rotate(-0 332.157638 67.829531)">+45.5</text>
+   </g>
+   <g id="text_37">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="67.829531" transform="rotate(-0 492.04736 67.829531)">-7.8</text>
+   </g>
+   <g id="text_38">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="67.829531" transform="rotate(-0 571.992221 67.829531)">-4.9</text>
+   </g>
+   <g id="text_39">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="67.829531" transform="rotate(-0 651.937081 67.829531)">+44.4</text>
+   </g>
+   <g id="text_40">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="92.583906" transform="rotate(-0 172.267916 92.583906)">+2.2</text>
+   </g>
+   <g id="text_41">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="92.583906" transform="rotate(-0 252.212777 92.583906)">-1.1</text>
+   </g>
+   <g id="text_42">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="92.583906" transform="rotate(-0 332.157638 92.583906)">+2.6</text>
+   </g>
+   <g id="text_43">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="92.583906" transform="rotate(-0 651.937081 92.583906)">+1.8</text>
+   </g>
+   <g id="text_44">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="117.338281" transform="rotate(-0 92.323055 117.338281)">+47.0</text>
+   </g>
+   <g id="text_45">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="117.338281" transform="rotate(-0 172.267916 117.338281)">+45.5</text>
+   </g>
+   <g id="text_46">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="117.338281" transform="rotate(-0 252.212777 117.338281)">+274.2</text>
+   </g>
+   <g id="text_47">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="117.338281" transform="rotate(-0 412.102499 117.338281)">+46.2</text>
+   </g>
+   <g id="text_48">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="117.338281" transform="rotate(-0 492.04736 117.338281)">+56.3</text>
+   </g>
+   <g id="text_49">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="117.338281" transform="rotate(-0 571.992221 117.338281)">+46.6</text>
+   </g>
+   <g id="text_50">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="117.338281" transform="rotate(-0 651.937081 117.338281)">+46.6</text>
+   </g>
+   <g id="text_51">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="142.092656" transform="rotate(-0 92.323055 142.092656)">+47.4</text>
+   </g>
+   <g id="text_52">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="142.092656" transform="rotate(-0 172.267916 142.092656)">-1.9</text>
+   </g>
+   <g id="text_53">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="142.092656" transform="rotate(-0 252.212777 142.092656)">+49.6</text>
+   </g>
+   <g id="text_54">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="142.092656" transform="rotate(-0 332.157638 142.092656)">+47.4</text>
+   </g>
+   <g id="text_55">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="142.092656" transform="rotate(-0 412.102499 142.092656)">-1.5</text>
+   </g>
+   <g id="text_56">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="142.092656" transform="rotate(-0 492.04736 142.092656)">+2.6</text>
+   </g>
+   <g id="text_57">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="142.092656" transform="rotate(-0 571.992221 142.092656)">-1.5</text>
+   </g>
+   <g id="text_58">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="166.847031" transform="rotate(-0 92.323055 166.847031)">-4.5</text>
+   </g>
+   <g id="text_59">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="166.847031" transform="rotate(-0 172.267916 166.847031)">-1.9</text>
+   </g>
+   <g id="text_60">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="166.847031" transform="rotate(-0 252.212777 166.847031)">-3.4</text>
+   </g>
+   <g id="text_61">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="166.847031" transform="rotate(-0 332.157638 166.847031)">-4.1</text>
+   </g>
+   <g id="text_62">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="166.847031" transform="rotate(-0 492.04736 166.847031)">-2.3</text>
+   </g>
+   <g id="text_63">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="191.601406" transform="rotate(-0 92.323055 191.601406)">-1.9</text>
+   </g>
+   <g id="text_64">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="191.601406" transform="rotate(-0 252.212777 191.601406)">+48.1</text>
+   </g>
+   <g id="text_65">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="216.355781" transform="rotate(-0 252.212777 216.355781)">+1.1</text>
+   </g>
+   <g id="text_66">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="216.355781" transform="rotate(-0 332.157638 216.355781)">-1.5</text>
+   </g>
+   <g id="text_67">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="216.355781" transform="rotate(-0 412.102499 216.355781)">-1.5</text>
+   </g>
+   <g id="text_68">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="216.355781" transform="rotate(-0 651.937081 216.355781)">-1.9</text>
+   </g>
+   <g id="text_69">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="241.110156" transform="rotate(-0 92.323055 241.110156)">+236.1</text>
+   </g>
+   <g id="text_70">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="265.864531" transform="rotate(-0 92.323055 265.864531)">-1.1</text>
+   </g>
+   <g id="text_71">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="265.864531" transform="rotate(-0 172.267916 265.864531)">+5.2</text>
+   </g>
+   <g id="text_72">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="265.864531" transform="rotate(-0 252.212777 265.864531)">+2.2</text>
+   </g>
+   <g id="text_73">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="265.864531" transform="rotate(-0 332.157638 265.864531)">-3.8</text>
+   </g>
+   <g id="text_74">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="265.864531" transform="rotate(-0 492.04736 265.864531)">+47.0</text>
+   </g>
+   <g id="text_75">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="265.864531" transform="rotate(-0 651.937081 265.864531)">+45.1</text>
+   </g>
+   <g id="text_76">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="290.618906" transform="rotate(-0 92.323055 290.618906)">-1.9</text>
+   </g>
+   <g id="text_77">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="290.618906" transform="rotate(-0 252.212777 290.618906)">-2.3</text>
+   </g>
+   <g id="text_78">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="290.618906" transform="rotate(-0 332.157638 290.618906)">-4.1</text>
+   </g>
+   <g id="text_79">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="290.618906" transform="rotate(-0 412.102499 290.618906)">+45.9</text>
+   </g>
+   <g id="text_80">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="290.618906" transform="rotate(-0 492.04736 290.618906)">+3.7</text>
+   </g>
+   <g id="text_81">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="290.618906" transform="rotate(-0 651.937081 290.618906)">-3.0</text>
+   </g>
+   <g id="text_82">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="315.373281" transform="rotate(-0 172.267916 315.373281)">+2.2</text>
+   </g>
+   <g id="text_83">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="315.373281" transform="rotate(-0 252.212777 315.373281)">+45.9</text>
+   </g>
+   <g id="text_84">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="315.373281" transform="rotate(-0 492.04736 315.373281)">+2.3</text>
+   </g>
+   <g id="text_85">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="315.373281" transform="rotate(-0 571.992221 315.373281)">+47.7</text>
+   </g>
+   <g id="text_86">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="315.373281" transform="rotate(-0 651.937081 315.373281)">+47.4</text>
+   </g>
+   <g id="text_87">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="340.127656" transform="rotate(-0 92.323055 340.127656)">+49.9</text>
+   </g>
+   <g id="text_88">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="340.127656" transform="rotate(-0 172.267916 340.127656)">+46.6</text>
+   </g>
+   <g id="text_89">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="340.127656" transform="rotate(-0 252.212777 340.127656)">+44.4</text>
+   </g>
+   <g id="text_90">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="340.127656" transform="rotate(-0 332.157638 340.127656)">+1.5</text>
+   </g>
+   <g id="text_91">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="340.127656" transform="rotate(-0 412.102499 340.127656)">+3.0</text>
+   </g>
+   <g id="text_92">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="364.882031" transform="rotate(-0 252.212777 364.882031)">+48.5</text>
+   </g>
+   <g id="text_93">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="364.882031" transform="rotate(-0 571.992221 364.882031)">+44.4</text>
+   </g>
+   <g id="text_94">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="389.636406" transform="rotate(-0 92.323055 389.636406)">+1.8</text>
+   </g>
+   <g id="text_95">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="389.636406" transform="rotate(-0 172.267916 389.636406)">+3.3</text>
+   </g>
+   <g id="text_96">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="252.212777" y="389.636406" transform="rotate(-0 252.212777 389.636406)">-2.3</text>
+   </g>
+   <g id="text_97">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="389.636406" transform="rotate(-0 412.102499 389.636406)">-2.3</text>
+   </g>
+   <g id="text_98">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="389.636406" transform="rotate(-0 571.992221 389.636406)">+5.6</text>
+   </g>
+   <g id="text_99">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="389.636406" transform="rotate(-0 651.937081 389.636406)">-2.6</text>
+   </g>
+   <g id="text_100">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="92.323055" y="414.390781" transform="rotate(-0 92.323055 414.390781)">-2.6</text>
+   </g>
+   <g id="text_101">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="172.267916" y="414.390781" transform="rotate(-0 172.267916 414.390781)">-3.8</text>
+   </g>
+   <g id="text_102">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="332.157638" y="414.390781" transform="rotate(-0 332.157638 414.390781)">-3.1</text>
+   </g>
+   <g id="text_103">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="412.102499" y="414.390781" transform="rotate(-0 412.102499 414.390781)">-4.1</text>
+   </g>
+   <g id="text_104">
+    <text style="fill: #ffffff; font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="492.04736" y="414.390781" transform="rotate(-0 492.04736 414.390781)">+44.0</text>
+   </g>
+   <g id="text_105">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="571.992221" y="414.390781" transform="rotate(-0 571.992221 414.390781)">-4.1</text>
+   </g>
+   <g id="text_106">
+    <text style="font: 6.5px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="651.937081" y="414.390781" transform="rotate(-0 651.937081 414.390781)">-5.6</text>
+   </g>
+   <g id="text_107">
+    <text style="font: 14px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: middle" x="372.130068" y="22.546875" transform="rotate(-0 372.130068 22.546875)">Launch sync p50 (us) · 相对中位数偏差 (%)（|Δ|≥1% 才标数）</text>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_5">
+    <path d="M 719.89896 424.616875 
+L 739.70246 424.616875 
+L 739.70246 28.546875 
+L 719.89896 28.546875 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <image xlink:href="data:image/png;base64,
+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" id="image6625d5ecae" transform="scale(1 -1) translate(0 -396.36)" x="720" y="-28.08" width="19.8" height="396.36"/>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4">
+    <g id="ytick_17">
+     <g id="line2d_25">
+      <defs>
+       <path id="m39fd9b4204" d="M 0 0 
+L 3.5 0 
+" style="stroke: #808080; stroke-width: 0.8"/>
+      </defs>
+      <g>
+       <use xlink:href="#m39fd9b4204" x="739.70246" y="390.831077" style="fill: #808080; stroke: #808080; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_108">
+      <text style="fill: #808080; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start" x="746.70246" y="394.810764" transform="rotate(-0 746.70246 394.810764)">-40</text>
+     </g>
+    </g>
+    <g id="ytick_18">
+     <g id="line2d_26">
+      <g>
+       <use xlink:href="#m39fd9b4204" x="739.70246" y="308.706476" style="fill: #808080; stroke: #808080; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_109">
+      <text style="fill: #808080; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start" x="746.70246" y="312.686163" transform="rotate(-0 746.70246 312.686163)">-20</text>
+     </g>
+    </g>
+    <g id="ytick_19">
+     <g id="line2d_27">
+      <g>
+       <use xlink:href="#m39fd9b4204" x="739.70246" y="226.581875" style="fill: #808080; stroke: #808080; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_110">
+      <text style="fill: #808080; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start" x="746.70246" y="230.561563" transform="rotate(-0 746.70246 230.561563)">0</text>
+     </g>
+    </g>
+    <g id="ytick_20">
+     <g id="line2d_28">
+      <g>
+       <use xlink:href="#m39fd9b4204" x="739.70246" y="144.457274" style="fill: #808080; stroke: #808080; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_111">
+      <text style="fill: #808080; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start" x="746.70246" y="148.436962" transform="rotate(-0 746.70246 148.436962)">20</text>
+     </g>
+    </g>
+    <g id="ytick_21">
+     <g id="line2d_29">
+      <g>
+       <use xlink:href="#m39fd9b4204" x="739.70246" y="62.332673" style="fill: #808080; stroke: #808080; stroke-width: 0.8"/>
+      </g>
+     </g>
+     <g id="text_112">
+      <text style="fill: #808080; font: 10px 'PingFang SC', 'Heiti SC', 'STHeiti', 'Calibri', 'Arial', 'Helvetica Neue', 'Arial Unicode MS', 'Noto Sans CJK SC', 'DejaVu Sans', sans-serif; text-anchor: start" x="746.70246" y="66.312361" transform="rotate(-0 746.70246 66.312361)">40</text>
+     </g>
+    </g>
+   </g>
+   <g id="LineCollection_1"/>
+   <g id="patch_6">
+    <path d="M 719.89896 424.616875 
+L 729.80071 424.616875 
+L 739.70246 424.616875 
+L 739.70246 28.546875 
+L 729.80071 28.546875 
+L 719.89896 28.546875 
+L 719.89896 424.616875 
+z
+" style="fill: none; stroke: #808080; stroke-width: 0.8; stroke-linejoin: miter; stroke-linecap: square"/>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p982511e7d3">
+   <rect x="52.350625" y="28.546875" width="639.558887" height="396.07"/>
+  </clipPath>
+ </defs>
+</svg>
