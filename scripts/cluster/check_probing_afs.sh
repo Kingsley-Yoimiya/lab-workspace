@@ -12,7 +12,7 @@ OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/probing-check-$STAMP}"
 mkdir -p "$LOG_DIR"
 STATUS_FILE="${STATUS_FILE:-$LOG_DIR/probing_afs_status.txt}"
-AFS_RUST_ENV="${AFS_RUST_ENV:-/afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh}"
+AFS_RUST_ENV="${AFS_RUST_ENV:-/afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh}"
 PP_DIR="${AFS_WORKSPACE}/projects/Probing_plus"
 PROBING_DIR="${AFS_WORKSPACE}/projects/probing"
 

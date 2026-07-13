@@ -38,19 +38,19 @@ hook = pathlib.Path("${HOOK_DIR}")
 wrap = pathlib.Path("${WRAP_LOCAL}")
 pairs = [
     (hook / "failslow_step_timer.py",
-     "/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py", "644"),
+     "/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py", "644"),
     (hook / "sitecustomize.py",
-     "/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/sitecustomize.py", "644"),
+     "/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/sitecustomize.py", "644"),
     (wrap,
-     "/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh", "755"),
+     "/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh", "755"),
 ]
 # ensure dirs
 subprocess.check_call([
     "ssh", "-o", "BatchMode=yes", "-o", "ConnectTimeout=30", host,
     "export KUBECONFIG=/root/.kube/config.huawei-a3-241ceshi; "
     f"vcctl pod exec {job}-master-0 -- bash -lc "
-    "'mkdir -p /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks "
-    "/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers'",
+    "'mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks "
+    "/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers'",
 ])
 for src, dst, mode in pairs:
     b64 = base64.b64encode(src.read_bytes()).decode()
@@ -78,7 +78,7 @@ export KUBECONFIG=/root/.kube/config.huawei-a3-241ceshi
 export JOB=$JOB STAMP=$STAMP SCALES='$SCALES' GBS=$GBS TRAIN_ITERS=$TRAIN_ITERS
 export PROBING=$PROBING FAILSLOW_STEP_LOG=$FAILSLOW_STEP_LOG MASTER_PORT=$MASTER_PORT
 export SCALE_TIMEOUT_SEC=$SCALE_TIMEOUT_SEC TP=4 PP=2 EP=1
-export RUN_ROOT=/afs-a3-241ceshi-shared/montyyin/results/dense_failslow/${STAMP}
+export RUN_ROOT=/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow/${STAMP}
 export LOCAL_LOG=/tmp/dense-failslow-${STAMP}.log
 pkill -f /tmp/jumphost_dense_failslow.sh || true
 sleep 1
@@ -86,7 +86,7 @@ nohup bash -lc 'export KUBECONFIG=/root/.kube/config.huawei-a3-241ceshi
 export JOB='"$JOB"' STAMP='"$STAMP"' SCALES='"'$SCALES'"' GBS='"$GBS"' TRAIN_ITERS='"$TRAIN_ITERS"'
 export PROBING='"$PROBING"' FAILSLOW_STEP_LOG='"$FAILSLOW_STEP_LOG"' MASTER_PORT='"$MASTER_PORT"'
 export SCALE_TIMEOUT_SEC='"$SCALE_TIMEOUT_SEC"' TP=4 PP=2 EP=1
-export RUN_ROOT=/afs-a3-241ceshi-shared/montyyin/results/dense_failslow/'"$STAMP"'
+export RUN_ROOT=/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow/'"$STAMP"'
 export LOCAL_LOG=/tmp/dense-failslow-'"$STAMP"'.log
 exec bash /tmp/jumphost_dense_failslow.sh' > /tmp/dense-failslow-${STAMP}_nohup.out 2>&1 &
 echo STARTED_\$! STAMP=$STAMP

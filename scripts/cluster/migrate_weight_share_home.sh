@@ -70,9 +70,9 @@ if [[ "$APPLY" -ne 1 ]]; then
   exit 0
 fi
 
-# --- 建目标 ---
-log "==> mkdir $AFS_HOME/{lab-workspace,results}"
-remote "mkdir -p '${AFS_HOME}/lab-workspace' '${AFS_HOME}/results' && touch '${AFS_HOME}/.write_test' && rm -f '${AFS_HOME}/.write_test' && echo MKDIR_OK"
+# --- 建目标（只建 home，勿预建空 lab-workspace/results，以免与 mv 冲突）---
+log "==> mkdir $AFS_HOME + 写测"
+remote "mkdir -p '${AFS_HOME}' && touch '${AFS_HOME}/.write_test' && rm -f '${AFS_HOME}/.write_test' && echo MKDIR_OK"
 
 # --- 迁移 montyyin 整树 ---
 # lab-workspace → home/lab-workspace；results → home/results；其它 → home/ 下同名
@@ -136,7 +136,9 @@ else
 fi
 " | tee -a "$LOG"
 
-# --- yushan：仅迁明确属于我们的额外目录名（保守白名单）---
+# 若 montyyin 无某子树，确保正式目录存在
+log "==> 确保 lab-workspace/results 存在"
+remote "mkdir -p '${AFS_HOME}/lab-workspace' '${AFS_HOME}/results' && echo ENSURE_OK"
 # 不迁 CARD_SCREEN / 对方原有资产。若存在我们误建的常见名则迁走。
 log "==> 检查 yushan 下可能的自有尾巴（白名单）"
 remote "

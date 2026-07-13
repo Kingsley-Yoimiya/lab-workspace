@@ -17,15 +17,17 @@ CLUSTER_SSH_HOST="${CLUSTER_SSH_HOST:-ais-cf3e61a5}"
 CLUSTER_JOB="${CLUSTER_JOB:-huawei-8node-copy}"
 CLUSTER_POD="${CLUSTER_POD:-${CLUSTER_JOB}-master-0}"
 CLUSTER_IMAGE="${CLUSTER_IMAGE:-registry2.d.pjlab.org.cn/ccr-yangxiaolei/mindspeed-llm:openeuler22.03-mindspeed-llm-2.3.0-a3-arm}"
-AFS_ROOT="${AFS_ROOT:-/afs-a3-241ceshi-shared}"
-AFS_USER="${AFS_USER:-montyyin}"
+AFS_ROOT="${AFS_ROOT:-/afs-a3-weight-share}"
+AFS_USER="${AFS_USER:-yinjinrun.p-huawei}"
 AFS_HOME="${AFS_HOME:-${AFS_ROOT}/${AFS_USER}}"
 AFS_WORKSPACE="${AFS_WORKSPACE:-${AFS_HOME}/lab-workspace}"
 AFS_RESULTS="${AFS_RESULTS:-${AFS_HOME}/results}"
 
 # 写盘守卫（afs_assert_under_home）；约定见 AFS_LAYOUT.md
+_JH_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 # shellcheck source=afs_guard.sh
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/afs_guard.sh"
+source "${_JH_DIR}/afs_guard.sh"
+unset _JH_DIR
 
 # 独立 kubeconfig（跳板上的路径）。空 = 用登录机默认 ~/.kube/config
 # 华为: ~/.kube/config.huawei-a3-241ceshi

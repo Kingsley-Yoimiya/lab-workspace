@@ -126,7 +126,7 @@ export SKIP_TB=1
 export SKIP_SAVE=1
 export SKIP_PROFILE=1
 export LOG_DIR
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/logs/train-loop-r${ROUND}-${JOB_ID}-${STAMP}"
+export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/logs/train-loop-r${ROUND}-${JOB_ID}-${STAMP}"
 
 IFS=',' read -ra SCALE_ARR <<< "$JOB_SCALES"
 STATUS_ALL=ok

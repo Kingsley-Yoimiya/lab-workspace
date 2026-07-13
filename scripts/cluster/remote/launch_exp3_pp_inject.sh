@@ -7,7 +7,7 @@ JOB="${JOB:-montyyin-moe96-r2}"
 POD="${POD:-${JOB}-master-0}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 REMOTE_DIR="${REMOTE_DIR:-/root/montyyin-lab-remote}"
-ROOT="/afs-a3-241ceshi-shared/montyyin/results/dense_pp_inject/${STAMP}"
+ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_pp_inject/${STAMP}"
 LOG="/tmp/exp3_pp_inject_${STAMP}.log"
 exec > >(tee -a "$LOG") 2>&1
 
@@ -17,12 +17,12 @@ echo "==> EXP3 STAMP=$STAMP POD=$POD $(date -Iseconds)"
 for f in failslow_step_timer.py; do
   [[ -f "$REMOTE_DIR/$f" ]] || continue
   cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD" -- bash -lc \
-    "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/$f"
+    "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/$f"
 done
 for f in parse_pp_inject_ab.py parse_failslow_gap.py; do
   [[ -f "$REMOTE_DIR/$f" ]] || continue
   cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD" -- bash -lc \
-    "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/$f"
+    "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/$f"
 done
 
 # kill leftover trainers
@@ -75,7 +75,7 @@ export PROBING=0 FAILSLOW_STEP_LOG=1
 export DELAY_INJECT=$inject DELAY_STAGE=1 DELAY_MS=800 DELAY_EVERY=4 DELAY_BURST=2
 export PP_SIZE=2 WORLD_SIZE_NPUS=16
 export PATH=/root/miniconda3/envs/llm_test/bin:\$PATH
-export PYTHONPATH=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks:/MindSpeed-LLM/MindSpeed:\${PYTHONPATH:-}
+export PYTHONPATH=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks:/MindSpeed-LLM/MindSpeed:\${PYTHONPATH:-}
 export WORLD_SIZE=1 NNODES=1 RANK=0 NODE_RANK=0
 export MASTER_ADDR=${POD}.${JOB} MASTER_PORT=$port
 export NPUS_PER_NODE=16 GPUS_PER_NODE=16
@@ -86,10 +86,10 @@ export HCCL_IF_BASE_PORT=$((port+2000))
 mkdir -p \"\$RUN_DIR\" \"\$LOG_DIR\" \"\$TENSORBOARD_DIR\" \"\$CKPT_SAVE_DIR\"
 SP=\$(python3 -c 'import site; print(site.getsitepackages()[0])' 2>/dev/null || true)
 if [[ -n \"\$SP\" && -d \"\$SP\" ]]; then
-  printf '%s\\nimport failslow_step_timer\\n' \"/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks\" > \"\$SP/zz_failslow_step.pth\"
+  printf '%s\\nimport failslow_step_timer\\n' \"/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks\" > \"\$SP/zz_failslow_step.pth\"
 fi
 cd /afs-a3-241ceshi-shared/geruijun/Megatron-LM-0.12.3
-bash /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh 2>&1 | tee $scale_dir/rank0.log
+bash /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh 2>&1 | tee $scale_dir/rank0.log
 rc=\${PIPESTATUS[0]}
 echo TRAIN_RANK_0_DONE rc=\$rc | tee -a $scale_dir/rank0.log
 exit \$rc
@@ -128,7 +128,7 @@ run_one inject 1
 
 # parse
 vcctl pod exec "$POD" -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 python3 parse_pp_inject_ab.py \
   --baseline $ROOT/baseline --inject $ROOT/inject \
   --pp 2 --world 16 --drop-first 5 \
@@ -136,7 +136,7 @@ python3 parse_pp_inject_ab.py \
 python3 parse_failslow_gap.py $ROOT/baseline --drop-first 5 --csv $ROOT/baseline/gap_vs_n.csv || true
 python3 parse_failslow_gap.py $ROOT/inject --drop-first 5 --csv $ROOT/inject/gap_vs_n.csv || true
 # append note to offline report
-mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713
+mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713
 {
   echo ''
   echo '## 实验三 lite：PP stage 注入 AB (Dense 16, TP4PP2 GBS=320)'
@@ -151,7 +151,7 @@ mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713
   echo ''
   echo \"- baseline: $ROOT/baseline/npu_smi_sample.log\"
   echo \"- inject: $ROOT/inject/npu_smi_sample.log\"
-} >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
+} >> /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/SUMMARY.md
 "
 
 echo "EXP3_DONE stamp=$STAMP → $ROOT"

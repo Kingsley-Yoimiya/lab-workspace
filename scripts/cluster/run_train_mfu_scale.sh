@@ -35,7 +35,7 @@ SKIP_SAVE="${SKIP_SAVE:-1}"
 SKIP_PROFILE="${SKIP_PROFILE:-1}"
 # Probing hang-on：0=关；1/2=进程内挂载（需 AFS 上 probing/Probing_plus 可用）
 PROBING="${PROBING:-0}"
-PROBING_HOME="${PROBING_HOME:-/afs-a3-241ceshi-shared/montyyin/lab-workspace/projects/Probing_plus}"
+PROBING_HOME="${PROBING_HOME:-/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/projects/Probing_plus}"
 # 并行/超参（透传给 wrapper）
 TP="${TP:-2}"
 PP="${PP:-2}"
@@ -49,10 +49,10 @@ ETP="${ETP:-1}"
 
 MEGATRON_ROOT="${MEGATRON_ROOT:-/afs-a3-241ceshi-shared/geruijun/Megatron-LM-0.12.3}"
 DATA_ROOT="${DATA_ROOT:-/afs-a3-241ceshi-shared/geruijun}"
-AFS_WRAPPERS="${AFS_WRAPPERS:-/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers}"
+AFS_WRAPPERS="${AFS_WRAPPERS:-/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers}"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-RUN_ROOT="${RUN_ROOT:-/afs-a3-241ceshi-shared/montyyin/logs/train-${MODE}-${STAMP}}"
+RUN_ROOT="${RUN_ROOT:-/afs-a3-weight-share/yinjinrun.p-huawei/logs/train-${MODE}-${STAMP}}"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/train-${MODE}-${STAMP}}"
 mkdir -p "$LOG_DIR"
@@ -121,7 +121,7 @@ AFS_WRAPPERS="${13}"
 SKIP_SAVE="${14}"
 SKIP_PROFILE="${15}"
 PROBING="${16:-0}"
-PROBING_HOME="${17:-/afs-a3-241ceshi-shared/montyyin/lab-workspace/projects/Probing_plus}"
+PROBING_HOME="${17:-/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/projects/Probing_plus}"
 
 export PATH=/root/miniconda3/envs/llm_test/bin:${PATH:-}
 export PYTHONPATH=/MindSpeed-LLM/MindSpeed:${PYTHONPATH:-}
@@ -145,9 +145,9 @@ export PROBING PROBING_HOME
 
 # Probing hang-on：把 Probing_plus / site-packages 提前进 PYTHONPATH
 if [[ "${PROBING}" != "0" && -n "${PROBING}" ]]; then
-  if [[ -f /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh ]]; then
+  if [[ -f /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh ]]; then
     # shellcheck disable=SC1091
-    source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh || true
+    source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh || true
   fi
   export PYTHONPATH="${PROBING_HOME}:${PROBING_HOME}/python:${PYTHONPATH:-}"
   if [[ -d "${PROBING_HOME}/.venv/lib" ]]; then
@@ -179,7 +179,7 @@ export TRAIN_ITERS=$ITERS SKIP_SAVE=$SKIP_SAVE SKIP_PROFILE=$SKIP_PROFILE SKIP_T
 export TP=$TP PP=$PP CP=$CP EP=$EP ETP=$ETP MBS=$MBS GBS=$GBS SEQ_LENGTH=$SEQ_LENGTH
 export HCCL_IF_BASE_PORT=\$((MASTER_PORT+2000))
 export PROBING=$PROBING PROBING_HOME=$PROBING_HOME
-if [[ -f /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh ]]; then source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh || true; fi
+if [[ -f /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh ]]; then source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh || true; fi
 cd $MEGATRON_ROOT
 bash $WRAP" 2>&1 | tee "${RUN_DIR}/rank${RANK}.log"
   rc=${PIPESTATUS[0]}

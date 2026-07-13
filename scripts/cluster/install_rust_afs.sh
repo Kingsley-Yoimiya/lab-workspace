@@ -9,7 +9,7 @@ source "$SCRIPT_DIR/job_helpers.sh"
 
 REMOTE_PROXY_PORT="${REMOTE_PROXY_PORT:-18080}"
 LOCAL_PROXY="${LOCAL_PROXY:-http://127.0.0.1:7897}"
-AFS_RUST="${AFS_RUST:-/afs-a3-241ceshi-shared/montyyin/toolchains/rust}"
+AFS_RUST="${AFS_RUST:-/afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust}"
 USE_EGRESS="${USE_EGRESS:-1}"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
@@ -62,13 +62,13 @@ ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" \
 
 cluster_pod_exec "$CLUSTER_POD" "
 set -euo pipefail
-cat > /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh <<'ENV'
-export RUSTUP_HOME=/afs-a3-241ceshi-shared/montyyin/toolchains/rust/rustup
-export CARGO_HOME=/afs-a3-241ceshi-shared/montyyin/toolchains/rust/cargo
+cat > /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh <<'ENV'
+export RUSTUP_HOME=/afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust/rustup
+export CARGO_HOME=/afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust/cargo
 export PATH=\"\$CARGO_HOME/bin:\$RUSTUP_HOME/bin:\$PATH\"
 ENV
 # shellcheck disable=SC1091
-source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh
+source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh
 rustc -V
 cargo -V
 which rustc
@@ -76,4 +76,4 @@ du -sh '$AFS_RUST'
 echo AFS_RUST_OK
 " | tee "$LOG_DIR/verify.log"
 
-echo "==> 完成。pod 内: source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh"
+echo "==> 完成。pod 内: source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh"

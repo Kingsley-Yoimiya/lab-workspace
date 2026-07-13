@@ -10,7 +10,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-AFS_OUT="${AFS_RESULTS:-/afs-a3-241ceshi-shared/montyyin/results}/hccl-p2p-${STAMP}"
+AFS_OUT="${AFS_RESULTS:-/afs-a3-weight-share/yinjinrun.p-huawei/results}/hccl-p2p-${STAMP}"
 AFS_SCRIPTS="${AFS_WORKSPACE}/scripts/cluster"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 # Track B R0 本地日志约定: logs/hccl-cluster-r0-<ts>/

@@ -5,7 +5,7 @@ export KUBECONFIG="${KUBECONFIG:-/root/.kube/config.huawei-a3-241ceshi}"
 JOB="${JOB:-montyyin-moe96-r2}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 REMOTE_DIR="${REMOTE_DIR:-/root/montyyin-lab-remote}"
-ROOT="/afs-a3-241ceshi-shared/montyyin/results/exp45_parallel/${STAMP}"
+ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/exp45_parallel/${STAMP}"
 LOG="/tmp/exp45_${STAMP}.log"
 exec > >(tee -a "$LOG") 2>&1
 echo "==> EXP45 STAMP=$STAMP $(date -Iseconds)"
@@ -16,8 +16,8 @@ POD1=${JOB}-worker-1
 # sync files
 for f in failslow_step_timer.py npu_busy_preempt.py parse_failslow_gap.py parse_pp_inject_ab.py; do
   [[ -f "$REMOTE_DIR/$f" ]] || continue
-  dst_hooks=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/$f
-  dst=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/$f
+  dst_hooks=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/$f
+  dst=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/$f
   if [[ "$f" == failslow_step_timer.py ]]; then
     cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD0" -- bash -lc "cat > $dst_hooks"
   else
@@ -26,7 +26,7 @@ for f in failslow_step_timer.py npu_busy_preempt.py parse_failslow_gap.py parse_
 done
 # also copy preempt to AFS scripts
 cat "$REMOTE_DIR/npu_busy_preempt.py" | vcctl pod exec -i "$POD0" -- bash -lc \
-  "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/npu_busy_preempt.py"
+  "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/npu_busy_preempt.py"
 
 for p in $POD0 $POD1 ${JOB}-worker-0 ${JOB}-worker-2 ${JOB}-worker-3 ${JOB}-worker-4; do
   vcctl pod exec "$p" -- bash -lc \
@@ -49,7 +49,7 @@ export DELAY_INJECT=$inject DELAY_STAGE=1 DELAY_MS=1500 DELAY_EVERY=3 DELAY_BURS
 export DELAY_RANKS='$ranks'
 export PP_SIZE=2 WORLD_SIZE_NPUS=16
 export PATH=/root/miniconda3/envs/llm_test/bin:\\\$PATH
-export PYTHONPATH=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks:/MindSpeed-LLM/MindSpeed:\\ foresPYTHONPATH:-}
+export PYTHONPATH=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks:/MindSpeed-LLM/MindSpeed:\\ foresPYTHONPATH:-}
 export WORLD_SIZE=1 NNODES=1 RANK=0 NODE_RANK=0
 export MASTER_ADDR=$master_dns MASTER_PORT=$port
 export NPUS_PER_NODE=16 GPUS_PER_NODE=16
@@ -60,10 +60,10 @@ export HCCL_IF_BASE_PORT=$((port+2000))
 mkdir -p \\\"\\\$RUN_DIR\\\" \\\"\\\$LOG_DIR\\\" \\\"\\\$TENSORBOARD_DIR\\\" \\\"\\\$CKPT_SAVE_DIR\\\"
 SP=\\\$(python3 -c 'import site; print(site.getsitepackages()[0])' 2>/dev/null || true)
 if [[ -n \\\"\\\$SP\\\" && -d \\\"\\\$SP\\\" ]]; then
-  printf '%s\\\\nimport failslow_step_timer\\\\n' \\\"/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks\\\" > \\\"\\\$SP/zz_failslow_step.pth\\\"
+  printf '%s\\\\nimport failslow_step_timer\\\\n' \\\"/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks\\\" > \\\"\\\$SP/zz_failslow_step.pth\\\"
 fi
 cd /afs-a3-241ceshi-shared/geruijun/Megatron-LM-0.12.3
-bash /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh 2>&1 | tee $scale_dir/rank0.log
+bash /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers/train_qwen3_8B_ascend.sh 2>&1 | tee $scale_dir/rank0.log
 rc=\\\${PIPESTATUS[0]}
 echo TRAIN_RANK_0_DONE rc=\\\$rc | tee -a $scale_dir/rank0.log
 exit \\\$rc
@@ -91,7 +91,7 @@ echo SMI_PID=\$!
 sleep 90
 # start preempt for 120s on device 14 and 15
 vcctl pod exec "$POD0" -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 echo PREEMPT_T0=\$(date -Iseconds) | tee $ROOT/exp4_preempt/preempt_meta.txt
 nohup python3 npu_busy_preempt.py --device 14 --seconds 120 --size 4096 > $ROOT/exp4_preempt/preempt14.log 2>&1 &
 nohup python3 npu_busy_preempt.py --device 15 --seconds 120 --size 4096 > $ROOT/exp4_preempt/preempt15.log 2>&1 &
@@ -116,7 +116,7 @@ done
 
 # parse（修 timer 后：delay 应计入 ms；Exp4 双信号对照）
 vcctl pod exec "$POD0" -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py $ROOT/exp4_preempt --drop-first 5 --csv $ROOT/exp4_preempt/gap_vs_n.csv || true
 python3 parse_failslow_gap.py $ROOT/exp3_rank_inject --drop-first 5 --csv $ROOT/exp3_rank_inject/gap_vs_n.csv || true
 python3 - <<'PY'
@@ -182,7 +182,7 @@ Path('$ROOT/exp4_preempt/dual_signal.json').write_text(json.dumps(out4,indent=2)
 print('EXP4', json.dumps(out4,indent=2))
 PY
 pkill -f npu_smi_sample || true
-mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713
+mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713
 {
   echo ''
   echo '## 实验四 rematch（timer 修复后）：NPU busy + npu-smi 双信号'
@@ -193,6 +193,6 @@ mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713
   echo '## 实验三 rematch（timer 修复后）：DELAY_RANKS=12-15'
   echo ''
   cat $ROOT/exp3_rank_inject/rank_contrast.json 2>/dev/null || true
-} >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
+} >> /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/SUMMARY.md
 "
 echo "EXP45_DONE stamp=$STAMP → $ROOT"

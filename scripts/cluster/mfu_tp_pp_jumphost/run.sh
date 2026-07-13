@@ -6,7 +6,7 @@ ROOT="$(cd "$(dirname "$0")" && pwd)"
 export KUBECONFIG="${KUBECONFIG:-/root/.kube/config.huawei-a3-241ceshi}"
 JOB="${CLUSTER_JOB:-montyyin-mfu-scale}"
 PEAK=292.79
-AFS_WS=/afs-a3-241ceshi-shared/montyyin
+AFS_WS=/afs-a3-weight-share/yinjinrun.p-huawei
 STATE="$ROOT/state"
 LEDGER="$ROOT/ledger.md"
 QUEUE="$STATE/queue.jsonl"
@@ -55,7 +55,7 @@ for i in $(seq 1 60); do
 done
 
 # 捞一把已有 scale16 指标
-OLD16=/afs-a3-241ceshi-shared/montyyin/logs/train-tp-pp-r1-d_tp8pp1-20260711_202651/scale_16
+OLD16=/afs-a3-weight-share/yinjinrun.p-huawei/logs/train-tp-pp-r1-d_tp8pp1-20260711_202651/scale_16
 pexec "${JOB}-master-0" "grep -E 'throughput per GPU' $OLD16/train_mcore_qwen3_8b_rank0.log 2>/dev/null | tail -10" \
   > "$LOGROOT/leftover_scale16.txt" 2>/dev/null || true
 if [[ -s "$LOGROOT/leftover_scale16.txt" ]]; then
@@ -76,7 +76,7 @@ PY
 fi
 
 ROUND=$(cat "$STATE/round_counter" 2>/dev/null || echo 1)
-WRAP_DIR=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers
+WRAP_DIR=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers
 MEG=/afs-a3-241ceshi-shared/geruijun/Megatron-LM-0.12.3
 DATA=/afs-a3-241ceshi-shared/geruijun
 MASTER_ADDR="${JOB}-master-0.${JOB}"
@@ -94,7 +94,7 @@ for k in ("id","mode","scales","tp","pp","mbs","gbs","seq","iters","note","ep","
 
   ROUND=$((ROUND+1)); echo "$ROUND" > "$STATE/round_counter"
   STAMP=$(date +%Y%m%d_%H%M%S)
-  RUN=/afs-a3-241ceshi-shared/montyyin/logs/jumphost-tp-pp-r${ROUND}-${J_ID}-${STAMP}
+  RUN=/afs-a3-weight-share/yinjinrun.p-huawei/logs/jumphost-tp-pp-r${ROUND}-${J_ID}-${STAMP}
   echo "==> ROUND $ROUND $J_ID mode=$J_MODE TP=$J_TP PP=$J_PP EP=$J_EP scales=$J_SCALES"
 
   IFS=',' read -ra SC <<< "$J_SCALES"

@@ -13,7 +13,7 @@ STAMP="$(date +%Y%m%d_%H%M%S)"
 CASE_NAME="${CASE_NAME:-perf128}"
 RUN_ID="${RUN_ID:-${STAMP}-${CASE_NAME}}"
 AFS_CS="${AFS_WORKSPACE}/projects/CARD_SCREEN"
-AFS_OUT_ROOT="${AFS_RESULTS:-/afs-a3-241ceshi-shared/montyyin/results}"
+AFS_OUT_ROOT="${AFS_RESULTS:-/afs-a3-weight-share/yinjinrun.p-huawei/results}"
 AFS_OUT_DIR="${AFS_OUT_ROOT}/card_screen-${RUN_ID}"
 OUT_JSONL="${AFS_OUT_DIR}/${CASE_NAME}.jsonl"
 

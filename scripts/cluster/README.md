@@ -41,10 +41,10 @@ CLUSTER_FANOUT_PARALLEL=6 ./scripts/cluster/run_card_screen_muxi.sh all
 | 位置 | 路径 |
 |------|------|
 | 本机 ops 仓库 | `project/lab-workspace`（本分支） |
-| 华为 `AFS_HOME` | `/afs-a3-241ceshi-shared/montyyin`（`lab-workspace` / `results`） |
-| 沐曦 `AFS_HOME` | `/afs-a3-weight-share/yinjinrun.p`（个人目录；勿写 `yushan`） |
+| 华为 `AFS_HOME` | `/afs-a3-weight-share/yinjinrun.p-huawei`（勿再写 `241ceshi-shared`） |
+| 沐曦 `AFS_HOME` | `/afs-a3-weight-share/yinjinrun.p`（勿写 `yushan`） |
 | 沐曦只读 CARD_SCREEN | `/afs-a3-weight-share/yushan/CARD_SCREEN`（`SHARED_CS_READONLY`） |
-| 默认 job/pod（华为） | `huawei-8node-copy` / `…-master-0` |
+| 默认 job/pod（华为） | `huawei-8node1` / `…-master-0` |
 
 ```bash
 source scripts/cluster/muxi.env

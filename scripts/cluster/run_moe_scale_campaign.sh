@@ -21,7 +21,7 @@ export MASTER_ADDR=montyyin-moe-scale-96-master-0.montyyin-moe-scale-96
 export MASTER_PORT="${MASTER_PORT:-25000}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 export LOG_DIR="${LOG_DIR:-/Users/yinjinrun/random-thing/logs/moe-phase1-${STAMP}}"
-export RUN_ROOT="${RUN_ROOT:-/afs-a3-241ceshi-shared/montyyin/results/mfu_moe_scale/${STAMP}}"
+export RUN_ROOT="${RUN_ROOT:-/afs-a3-weight-share/yinjinrun.p-huawei/results/mfu_moe_scale/${STAMP}}"
 mkdir -p "$LOG_DIR"
 echo "$LOG_DIR" > /tmp/moe_phase1_logdir.txt
 echo "START $(date -Iseconds) LOG=$LOG_DIR RUN_ROOT=$RUN_ROOT SCALES=$SCALES PROBING=$PROBING"

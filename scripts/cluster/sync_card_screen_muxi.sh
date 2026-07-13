@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# 把本机 CARD_SCREEN（含 stage_c + Metax）同步到沐曦 AFS montyyin 树
+# 把本机 CARD_SCREEN（含 stage_c + Metax）同步到沐曦 AFS 个人树（yinjinrun.p）
 #
 # 用法:
 #   ./scripts/cluster/sync_card_screen_muxi.sh
@@ -12,7 +12,8 @@ source "$SCRIPT_DIR/muxi.env"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 LOCAL_CS="${LOCAL_CS:-$SCRIPT_DIR/../../projects/CARD_SCREEN}"
-AFS_DEST="${AFS_DEST:-/afs-a3-weight-share/yinjinrun.p/lab-workspace/projects/CARD_SCREEN}"
+AFS_DEST="${AFS_DEST:-${AFS_WORKSPACE}/projects/CARD_SCREEN}"
+afs_assert_under_home "$AFS_DEST"
 STAMP="$(date +%Y%m%d_%H%M%S)"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/muxi-sync-cs-${STAMP}}"
@@ -27,7 +28,7 @@ test -f "$LOCAL_CS/screen.py"
 test -f "$LOCAL_CS/card_screen/probes/stage_c.py"
 test -f "$LOCAL_CS/card_screen/backend.py"
 
-# 清空目标后解压（保留父目录）
+# 清空目标后解压（保留父目录；目标必须已过 afs_assert_under_home）
 REMOTE_CMD=$(cat <<REMOTE
 set -euo pipefail
 mkdir -p '$(dirname "$AFS_DEST")'

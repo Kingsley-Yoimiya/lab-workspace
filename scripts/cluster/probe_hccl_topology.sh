@@ -17,7 +17,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/job_helpers.sh"
 
 STAMP="$(date +%Y%m%d_%H%M%S)"
-AFS_OUT="${AFS_RESULTS:-/afs-a3-241ceshi-shared/montyyin/results}/hccl-topo-${STAMP}"
+AFS_OUT="${AFS_RESULTS:-/afs-a3-weight-share/yinjinrun.p-huawei/results}/hccl-topo-${STAMP}"
 OPS_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 LOG_DIR="${LOG_DIR:-$OPS_ROOT/../../logs/hccl-topo-${STAMP}}"
 mkdir -p "$LOG_DIR/raw" "$LOG_DIR/results"

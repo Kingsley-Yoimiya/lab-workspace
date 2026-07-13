@@ -14,26 +14,26 @@ exec >>"$LOG" 2>&1
 echo "MONITOR_START moe_stamp=$MOE_STAMP interval=${INTERVAL}s $(date -Iseconds)"
 
 finalize_once() {
-  local moe_root="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${MOE_STAMP}"
+  local moe_root="/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${MOE_STAMP}"
   echo "FINALIZE $(date -Iseconds)"
   # Dense CSV 若尚未在 AFS 结果目录，在 pod 内 parse
   parse_root() {
     local root="$1" drop="$2"
     [[ -d "$root" ]] || return 0
     vcctl pod exec "$POD" -- bash -lc "
-      cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+      cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
       python3 parse_failslow_gap.py '$root' --drop-first $drop --csv '$root/gap_vs_n.csv' 2>&1 | tail -5
     " || true
   }
-  parse_root "/afs-a3-241ceshi-shared/montyyin/results/dense_failslow/20260713_001230" 20
-  parse_root "/afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop/20260713_071316" 10
+  parse_root "/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow/20260713_001230" 20
+  parse_root "/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop/20260713_071316" 10
   parse_root "$moe_root" 8
 
   vcctl pod exec "$POD" -- bash -lc "
-    python3 /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/remote_finalize_reports.py
+    python3 /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/remote_finalize_reports.py
   " || python3 "$REMOTE_DIR/remote_finalize_reports.py" || true
 
-  echo "FINALIZE_DONE archive=/afs-a3-241ceshi-shared/montyyin/archive/${ARCHIVE_STAMP}"
+  echo "FINALIZE_DONE archive=/afs-a3-weight-share/yinjinrun.p-huawei/archive/${ARCHIVE_STAMP}"
 }
 
 while true; do
@@ -51,7 +51,7 @@ while true; do
     fi
   fi
   vcctl pod exec "$POD" -- bash -lc "
-    R=/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${MOE_STAMP}
+    R=/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${MOE_STAMP}
     for s in 32 64; do
       d=\$R/scale_\$s
       [[ -d \$d ]] && echo scale_\$s=\$(wc -l < \$d/step_times_rank0.jsonl 2>/dev/null || echo 0)/40

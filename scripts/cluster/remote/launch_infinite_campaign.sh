@@ -71,18 +71,18 @@ echo "==> PHASE2 MoE failslow SCALES=32,64 (sequential; leave >=32 cards free)"
 cp -f "$REMOTE_DIR/jumphost_moe_failslow.sh" /tmp/jumphost_moe_failslow.sh
 chmod +x /tmp/jumphost_moe_failslow.sh
 cat "$REMOTE_DIR/failslow_step_timer.py" | vcctl pod exec -i ${JOB}-master-0 -- bash -lc \
-  "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py" || true
+  "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py" || true
 
 STAMP2="${CAMPAIGN_STAMP}_moe"
 export JOB STAMP="$STAMP2" SCALES='32,64' TRAIN_ITERS=40 PROBING=0 FAILSLOW_STEP_LOG=1
-export MASTER_PORT=28000 RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}"
+export MASTER_PORT=28000 RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2}"
 export LOCAL_LOG="/tmp/moe_failslow_${STAMP2}.log"
 nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP2}_nohup.out 2>&1 &
 wait_marker "/tmp/moe_failslow_${STAMP2}.log" "JUMPHOST_MOE_FAILSLOW_DONE|MOE_FAILSLOW_DONE|DONE stamp" 10800 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
-python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2} --drop-first 5 \
-  --csv /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
+python3 parse_failslow_gap.py /afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2} --drop-first 5 \
+  --csv /afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
 " || true
 kill_trainers
 
@@ -94,7 +94,7 @@ STAMP3="${CAMPAIGN_STAMP}_dense_long"
 export STAMP="${STAMP3}_a" SCALES='16+32' GBS_PROP_DP=1 MICROBATCHES_PER_DP=160
 export TRAIN_ITERS=80 PROBING=0 FAILSLOW_STEP_LOG=1 MASTER_PORT=28200
 export SCALE_TIMEOUT_SEC=7200 SCALE_GRACE_SEC=900 TP=4 PP=2
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3}"
+export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3}"
 export LOCAL_LOG="/tmp/dense_long_${STAMP3}_a.log"
 nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_a_nohup.out 2>&1 &
 wait_marker "/tmp/dense_long_${STAMP3}_a.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
@@ -105,14 +105,14 @@ export LOCAL_LOG="/tmp/dense_long_${STAMP3}_b.log"
 nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_b_nohup.out 2>&1 &
 wait_marker "/tmp/dense_long_${STAMP3}_b.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
-python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3} --drop-first 10 \
-  --csv /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv || true
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
+python3 parse_failslow_gap.py /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3} --drop-first 10 \
+  --csv /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv || true
 python3 parse_network_contrib.py \
-  --indep-root /afs-a3-241ceshi-shared/montyyin/results/blockA_indep/20260713_110548 \
-  --real-csv /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv \
+  --indep-root /afs-a3-weight-share/yinjinrun.p-huawei/results/blockA_indep/20260713_110548 \
+  --real-csv /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv \
   --drop-first 10 \
-  --out /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713/network_contrib_long.csv || true
+  --out /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/ascend_campaign_20260713/network_contrib_long.csv || true
 " || true
 kill_trainers
 
@@ -120,20 +120,20 @@ kill_trainers
 echo "==> PHASE4 MoE32 long (32 cards only)"
 STAMP5="${CAMPAIGN_STAMP}_moe32long"
 export STAMP="$STAMP5" SCALES=32 TRAIN_ITERS=60 MASTER_PORT=28400
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP5}"
+export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP5}"
 export LOCAL_LOG="/tmp/moe_failslow_${STAMP5}.log"
 nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP5}_nohup.out 2>&1 &
 wait_marker "/tmp/moe_failslow_${STAMP5}.log" "JUMPHOST_MOE_FAILSLOW_DONE|MOE_FAILSLOW_DONE|DONE stamp" 7200 || true
 
 # finalize note
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713
+mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/ascend_campaign_20260713
 {
   echo ''
   echo \"## Infinite campaign $CAMPAIGN_STAMP (lean: no 96)\"
   echo \"phases: C→D/E→MoE32,64→Dense≤64→MoE32long\"
   echo \"finished: \$(date -Iseconds)\"
-} >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
+} >> /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/SUMMARY.md
 " || true
 
 echo "INFINITE_CAMPAIGN_DONE stamp=$CAMPAIGN_STAMP $(date -Iseconds)"

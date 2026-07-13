@@ -18,11 +18,11 @@ SKIP_TB="${SKIP_TB:-1}"
 NPUS=16
 MASTER_PORT_BASE="${MASTER_PORT:-25200}"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
-RUN_ROOT="${RUN_ROOT:-/afs-a3-241ceshi-shared/montyyin/results/mfu_moe_scale/${STAMP}}"
-AFS_WRAPPERS="/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/wrappers"
+RUN_ROOT="${RUN_ROOT:-/afs-a3-weight-share/yinjinrun.p-huawei/results/mfu_moe_scale/${STAMP}}"
+AFS_WRAPPERS="/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/wrappers"
 MEGATRON="/afs-a3-241ceshi-shared/geruijun/Megatron-LM-0.12.3"
 DATA_ROOT="/afs-a3-241ceshi-shared/geruijun"
-PROBING_HOME="/afs-a3-241ceshi-shared/montyyin/lab-workspace/projects/Probing_plus"
+PROBING_HOME="/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/projects/Probing_plus"
 LOCAL_LOG="${LOCAL_LOG:-/tmp/moe-jumphost-${STAMP}.log}"
 exec > >(tee -a "$LOCAL_LOG") 2>&1
 
@@ -116,7 +116,7 @@ export HCCL_IF_BASE_PORT=$((master_port+2000))
 export HCCL_EXEC_TIMEOUT=\${HCCL_EXEC_TIMEOUT:-3600}
 export HCCL_CONNECT_TIMEOUT=\${HCCL_CONNECT_TIMEOUT:-3600}
 if [[ \"\$PROBING\" != \"0\" ]]; then
-  [[ -f /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh ]] && source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh || true
+  [[ -f /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh ]] && source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh || true
   export PYTHONPATH=\$PROBING_HOME:\$PROBING_HOME/python:\$PYTHONPATH
 fi
 mkdir -p \"\$RUN_DIR\" \"\$LOG_DIR\" \"\$TENSORBOARD_DIR\" \"\$CKPT_SAVE_DIR\"

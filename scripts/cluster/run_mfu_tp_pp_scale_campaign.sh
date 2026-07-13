@@ -113,7 +113,7 @@ for k in ("id","mode","scales","tp","pp","mbs","gbs","seq","iters","note","ep","
   export TRAIN_ITERS="${JOB_ITERS:-$ITERS_DEFAULT}"
   export SKIP_TB=1 SKIP_SAVE=1 SKIP_PROFILE=1
   export LOG_DIR MASTER_ADDR
-  export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/logs/train-tp-pp-r${ROUND}-${JOB_ID}-${STAMP}"
+  export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/logs/train-tp-pp-r${ROUND}-${JOB_ID}-${STAMP}"
 
   echo "==> ROUND $ROUND JOB=$JOB_ID MODE=$MODE TP=$TP PP=$PP EP=$EP scales=$JOB_SCALES"
   IFS=',' read -ra SCALE_ARR <<< "$JOB_SCALES"

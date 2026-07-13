@@ -37,25 +37,25 @@ cp -f "$REMOTE_DIR/jumphost_moe_failslow.sh" /tmp/jumphost_moe_failslow.sh
 cp -f "$REMOTE_DIR/jumphost_dense_failslow.sh" /tmp/jumphost_dense_failslow.sh
 chmod +x /tmp/jumphost_moe_failslow.sh /tmp/jumphost_dense_failslow.sh
 cat "$REMOTE_DIR/failslow_step_timer.py" | vcctl pod exec -i ${JOB}-master-0 -- bash -lc \
-  "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py" || true
+  "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/failslow_step_timer.py" || true
 
 echo "==> MoE SCALES=32,64 sequential (32卡时闲64；64卡时闲32)"
 STAMP2="${CAMPAIGN_STAMP}_moe"
 export JOB STAMP="$STAMP2" SCALES='32,64' TRAIN_ITERS=40 PROBING=0 FAILSLOW_STEP_LOG=1
-export MASTER_PORT=28500 RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}"
+export MASTER_PORT=28500 RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2}"
 export LOCAL_LOG="/tmp/moe_failslow_${STAMP2}.log"
 nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP2}_nohup.out 2>&1 &
 wait_marker "/tmp/moe_failslow_${STAMP2}.log" "JUMPHOST_MOE_FAILSLOW_DONE" 10800 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py \$RUN_ROOT --drop-first 5 --csv \$RUN_ROOT/gap_vs_n.csv || true
 " || true
 # fix: RUN_ROOT not expanded in remote - use stamp path
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
-python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2} --drop-first 5 \
-  --csv /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
-cat /afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
+python3 parse_failslow_gap.py /afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2} --drop-first 5 \
+  --csv /afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
+cat /afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP2}/gap_vs_n.csv || true
 " || true
 kill_trainers
 
@@ -64,7 +64,7 @@ STAMP3="${CAMPAIGN_STAMP}_dense_long"
 export STAMP="${STAMP3}_a" SCALES='16+32' GBS_PROP_DP=1 MICROBATCHES_PER_DP=160
 export TRAIN_ITERS=80 PROBING=0 FAILSLOW_STEP_LOG=1 MASTER_PORT=28600
 export SCALE_TIMEOUT_SEC=7200 SCALE_GRACE_SEC=900 TP=4 PP=2
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3}"
+export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3}"
 export LOCAL_LOG="/tmp/dense_long_${STAMP3}_a.log"
 nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_a_nohup.out 2>&1 &
 wait_marker "/tmp/dense_long_${STAMP3}_a.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
@@ -74,16 +74,16 @@ export LOCAL_LOG="/tmp/dense_long_${STAMP3}_b.log"
 nohup bash /tmp/jumphost_dense_failslow.sh > /tmp/dense_long_${STAMP3}_b_nohup.out 2>&1 &
 wait_marker "/tmp/dense_long_${STAMP3}_b.log" "JUMPHOST_DENSE_FAILSLOW_DONE" 9000 || true
 vcctl pod exec ${JOB}-master-0 -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
-python3 parse_failslow_gap.py /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3} --drop-first 10 \
-  --csv /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv || true
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
+python3 parse_failslow_gap.py /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3} --drop-first 10 \
+  --csv /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop_long/${STAMP3}/gap_vs_n.csv || true
 " || true
 kill_trainers
 
 echo "==> MoE32 long only"
 STAMP5="${CAMPAIGN_STAMP}_moe32long"
 export STAMP="$STAMP5" SCALES=32 TRAIN_ITERS=60 MASTER_PORT=28800
-export RUN_ROOT="/afs-a3-241ceshi-shared/montyyin/results/moe_failslow/${STAMP5}"
+export RUN_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/moe_failslow/${STAMP5}"
 export LOCAL_LOG="/tmp/moe_failslow_${STAMP5}.log"
 nohup bash /tmp/jumphost_moe_failslow.sh > /tmp/moe_failslow_${STAMP5}_nohup.out 2>&1 &
 wait_marker "/tmp/moe_failslow_${STAMP5}.log" "JUMPHOST_MOE_FAILSLOW_DONE" 7200 || true

@@ -7,8 +7,8 @@ JOB="${JOB:-montyyin-moe96-r2}"
 POD0="${JOB}-master-0"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 REMOTE_DIR="${REMOTE_DIR:-/root/montyyin-lab-remote}"
-INDEP_ROOT="/afs-a3-241ceshi-shared/montyyin/results/blockA_indep/${STAMP}"
-REAL_ROOT="/afs-a3-241ceshi-shared/montyyin/results/blockA_real/${STAMP}"
+INDEP_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/blockA_indep/${STAMP}"
+REAL_ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/blockA_real/${STAMP}"
 LOG="/tmp/blockA_${STAMP}.log"
 exec > >(tee -a "$LOG") 2>&1
 echo "==> BLOCK_A STAMP=$STAMP $(date -Iseconds)"
@@ -18,13 +18,13 @@ for f in virtual_sync_bench_npu.py parse_network_contrib.py parse_failslow_gap.p
   [[ -f "$REMOTE_DIR/$f" ]] || continue
   if [[ "$f" == failslow_step_timer.py ]]; then
     cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD0" -- bash -lc \
-      "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/$f"
+      "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/$f"
   elif [[ "$f" == jumphost_dense_failslow.sh ]]; then
     cp "$REMOTE_DIR/$f" /tmp/jumphost_dense_failslow.sh
     chmod +x /tmp/jumphost_dense_failslow.sh
   else
     cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD0" -- bash -lc \
-      "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/$f"
+      "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/$f"
   fi
 done
 
@@ -58,12 +58,12 @@ spawn_indep() {
 #!/usr/bin/env bash
 set -uo pipefail
 export PATH=/root/miniconda3/envs/llm_test/bin:\\\$PATH
-export PYTHONPATH=/afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster:\\\$PYTHONPATH
+export PYTHONPATH=/afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster:\\\$PYTHONPATH
 export NODE_RANK=$r
 export NPUS_PER_NODE=$nproc LOCAL_WORLD_SIZE=$nproc
 export MASTER_ADDR=$(pod_for $node_offset).${JOB}
 export MASTER_PORT=$port
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 if [[ $nproc -eq 8 ]]; then
   export ASCEND_RT_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
 fi
@@ -140,24 +140,24 @@ done
 
 # parse network contrib
 vcctl pod exec "$POD0" -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py $INDEP_ROOT --drop-first 8 --csv $INDEP_ROOT/gap_vs_n.csv || true
 python3 parse_failslow_gap.py $REAL_ROOT --drop-first 8 --csv $REAL_ROOT/gap_vs_n.csv || true
 python3 parse_network_contrib.py \
   --indep-root $INDEP_ROOT \
-  --real-csv /afs-a3-241ceshi-shared/montyyin/results/dense_failslow_gbsprop/20260713_071316/gap_vs_n.csv \
+  --real-csv /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow_gbsprop/20260713_071316/gap_vs_n.csv \
   --real-csv $REAL_ROOT/gap_vs_n.csv \
-  --real-csv /afs-a3-241ceshi-shared/montyyin/results/dense_failslow/20260713_001230/gap_vs_n.csv \
+  --real-csv /afs-a3-weight-share/yinjinrun.p-huawei/results/dense_failslow/20260713_001230/gap_vs_n.csv \
   --drop-first 8 \
-  --out /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/network_contrib.csv
-mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713
+  --out /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/network_contrib.csv
+mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713
 {
   echo ''
   echo '## Block A：network_contrib = gap_real − gap_indep'
   echo ''
   echo \"indep stamp: $STAMP\"
   echo ''
-  cat /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/network_contrib.csv
-} >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
+  cat /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/network_contrib.csv
+} >> /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/SUMMARY.md
 "
 echo "BLOCK_A_DONE stamp=$STAMP"

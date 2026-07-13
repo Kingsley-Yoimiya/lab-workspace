@@ -33,9 +33,9 @@ git log -1 --oneline 2>/dev/null || true
 echo '==> toolchain'
 python -V
 # 优先 AFS 上的 rust（install_rust_afs.sh 安装）
-if [[ -f /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh ]]; then
+if [[ -f /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh ]]; then
   # shellcheck disable=SC1091
-  source /afs-a3-241ceshi-shared/montyyin/toolchains/rust-env.sh
+  source /afs-a3-weight-share/yinjinrun.p-huawei/toolchains/rust-env.sh
   echo 'sourced AFS rust-env.sh'
 fi
 if command -v rustc >/dev/null 2>&1; then

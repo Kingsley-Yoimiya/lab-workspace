@@ -15,8 +15,8 @@
 | 典型 job | `huawei-8node-copy`（8 节点 × 16 = **128 NPU**） |
 | 跳板 | `ssh weibozhen` |
 | kubeconfig（跳板上，独立文件） | `/root/.kube/config.huawei-a3-241ceshi` |
-| 真 AFS（华为） | `/afs-a3-241ceshi-shared/montyyin/{lab-workspace,results}` |
-| 写盘规则 | 见 [`AFS_LAYOUT.md`](./AFS_LAYOUT.md)（沐曦 weight-share 用个人目录 `yinjinrun.p`） |
+| 真 AFS（华为个人） | `/afs-a3-weight-share/yinjinrun.p-huawei/{lab-workspace,results}` |
+| 写盘规则 | 见 [`AFS_LAYOUT.md`](./AFS_LAYOUT.md)（与沐曦同盘 weight-share，华为用 `-huawei` 后缀） |
 | 默认训练/筛卡镜像 | `registry2.d.pjlab.org.cn/ccr-yangxiaolei/mindspeed-llm:openeuler22.03-mindspeed-llm-2.3.0-a3-arm` |
 
 本机进入仓库后固定：

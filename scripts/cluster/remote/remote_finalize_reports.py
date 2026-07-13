@@ -8,7 +8,7 @@ import statistics
 from datetime import datetime, timezone
 from pathlib import Path
 
-AFS = Path("/afs-a3-241ceshi-shared/montyyin")
+AFS = Path("/afs-a3-weight-share/yinjinrun.p-huawei")
 OUT = AFS / "results" / "reports" / "offline_20260713"
 PEAK = 292.79
 

@@ -6,7 +6,7 @@ JOB="${JOB:-montyyin-moe96-r2}"
 POD0="${JOB}-master-0"
 STAMP="${STAMP:-$(date +%Y%m%d_%H%M%S)}"
 REMOTE_DIR="${REMOTE_DIR:-/root/montyyin-lab-remote}"
-ROOT="/afs-a3-241ceshi-shared/montyyin/results/blockC_full96/${STAMP}"
+ROOT="/afs-a3-weight-share/yinjinrun.p-huawei/results/blockC_full96/${STAMP}"
 LOG="/tmp/blockC_full96_${STAMP}.log"
 exec > >(tee -a "$LOG") 2>&1
 echo "==> BLOCK_C_FULL96 STAMP=$STAMP $(date -Iseconds)"
@@ -16,12 +16,12 @@ for f in jumphost_dense_failslow.sh failslow_step_timer.py parse_failslow_gap.py
   [[ -f "$REMOTE_DIR/$f" ]] || continue
   if [[ "$f" == failslow_step_timer.py ]]; then
     cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD0" -- bash -lc \
-      "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/hooks/$f"
+      "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/hooks/$f"
   elif [[ "$f" == jumphost_dense_failslow.sh ]]; then
     cp "$REMOTE_DIR/$f" /tmp/jumphost_dense_failslow.sh && chmod +x /tmp/jumphost_dense_failslow.sh
   else
     cat "$REMOTE_DIR/$f" | vcctl pod exec -i "$POD0" -- bash -lc \
-      "cat > /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster/$f"
+      "cat > /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster/$f"
   fi
 done
 
@@ -70,12 +70,12 @@ for p in ${JOB}-master-0 ${JOB}-worker-0 ${JOB}-worker-1 ${JOB}-worker-2 ${JOB}-
 done
 
 vcctl pod exec "$POD0" -- bash -lc "
-cd /afs-a3-241ceshi-shared/montyyin/lab-workspace/scripts/cluster
+cd /afs-a3-weight-share/yinjinrun.p-huawei/lab-workspace/scripts/cluster
 python3 parse_failslow_gap.py $ROOT/train --drop-first 8 --csv $ROOT/train/gap_vs_n.csv || true
 python3 parse_npusmi_heatmap.py $SMI_OUT --out $ROOT/heatmap_means.csv || true
-mkdir -p /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713
-cp -f $ROOT/train/gap_vs_n.csv /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713/gap_real96_blockC.csv 2>/dev/null || true
-cp -f $ROOT/heatmap_means.csv /afs-a3-241ceshi-shared/montyyin/results/reports/ascend_campaign_20260713/ 2>/dev/null || true
+mkdir -p /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/ascend_campaign_20260713
+cp -f $ROOT/train/gap_vs_n.csv /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/ascend_campaign_20260713/gap_real96_blockC.csv 2>/dev/null || true
+cp -f $ROOT/heatmap_means.csv /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/ascend_campaign_20260713/ 2>/dev/null || true
 {
   echo ''
   echo '## Block C full96'
@@ -83,6 +83,6 @@ cp -f $ROOT/heatmap_means.csv /afs-a3-241ceshi-shared/montyyin/results/reports/a
   echo \"train: $ROOT/train\"
   echo \"smi: $SMI_OUT\"
   cat $ROOT/train/gap_vs_n.csv 2>/dev/null || true
-} >> /afs-a3-241ceshi-shared/montyyin/results/reports/offline_20260713/SUMMARY.md
+} >> /afs-a3-weight-share/yinjinrun.p-huawei/results/reports/offline_20260713/SUMMARY.md
 "
 echo "BLOCK_C_FULL96_DONE stamp=$STAMP → $ROOT"
