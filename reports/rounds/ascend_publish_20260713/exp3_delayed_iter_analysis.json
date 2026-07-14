@@ -1,0 +1,12 @@
+{
+  "n_delayed_iters": 8,
+  "n_normal_iters": 17,
+  "gap_median_delayed_ms": 1.847249999998894,
+  "gap_median_normal_ms": 1.6829999999972642,
+  "step_median_delayed_ms": 22102.600749999998,
+  "step_median_normal_ms": 20128.6985,
+  "gap_lift_ms": 0.16425000000162981,
+  "step_lift_ms": 1973.9022499999992,
+  "verdict": "PASS_SYNC_EFFECT",
+  "note": "集合通信把各 rank 墙钟拉齐；注入卡 vs 其他卡的 median 差≈0 是预期。正确读数是 delayed iter 的全局 step 抬升。"
+}
