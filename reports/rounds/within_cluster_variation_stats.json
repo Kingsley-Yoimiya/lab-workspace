@@ -1,0 +1,3152 @@
+{
+  "ascend": {
+    "label": "ascend",
+    "path": "/Users/yinjinrun/random-thing/logs/card-fillgap-20260711_140301/results/constitution128.merged.jsonl",
+    "n_cards": 128,
+    "n_hosts": 8,
+    "verdict_counts": {
+      "good": 128
+    },
+    "metrics": {
+      "func_tflops": {
+        "n": 128,
+        "median": 292.41319972099086,
+        "mean": 291.5350563318191,
+        "std": 5.535903298270773,
+        "cv_pct": 1.8988808302936726,
+        "min": 273.3335604409023,
+        "max": 302.7539763735632,
+        "p5": 281.5567447714152,
+        "p95": 299.43779167634284,
+        "range_pct_of_median": 10.061247563630058
+      },
+      "sustained_tflops": {
+        "n": 128,
+        "median": 306.9051495042121,
+        "mean": 306.20683436165655,
+        "std": 4.2471710358359465,
+        "cv_pct": 1.3870268587211456,
+        "min": 294.79942716311876,
+        "max": 313.7293980876059,
+        "p5": 299.0994413118807,
+        "p95": 311.93664615962933,
+        "range_pct_of_median": 6.168019974597174
+      },
+      "cube_vector_tflops": {
+        "n": 128,
+        "median": 240.2356857996199,
+        "mean": 240.95949189893847,
+        "std": 6.130422059777602,
+        "cv_pct": 2.5441712262361427,
+        "min": 225.31840027692675,
+        "max": 254.6003627960504,
+        "p5": 231.09986060040717,
+        "p95": 252.77390206587302,
+        "range_pct_of_median": 12.188847973047467
+      },
+      "hbm_gbps": {
+        "n": 128,
+        "median": 1240.6531113944748,
+        "mean": 1214.7248170427376,
+        "std": 52.77106432352482,
+        "cv_pct": 4.344281402926847,
+        "min": 1012.3623323607427,
+        "max": 1269.0484087145774,
+        "p5": 1113.9506365301438,
+        "p95": 1257.1411319562687,
+        "range_pct_of_median": 20.689592763389236
+      },
+      "mte_gbps": {
+        "n": 128,
+        "median": 1267.9094947373478,
+        "mean": 1266.8405036461575,
+        "std": 3.238197558976741,
+        "cv_pct": 0.25561209557609826,
+        "min": 1255.2804901354223,
+        "max": 1271.1215744710175,
+        "p5": 1258.319785593131,
+        "p95": 1270.0345522443583,
+        "range_pct_of_median": 1.249386048558364
+      },
+      "vector_gflops": {
+        "n": 128,
+        "median": 98.82175364486773,
+        "mean": 98.83158942703913,
+        "std": 0.30734533856830987,
+        "cv_pct": 0.3109788483116552,
+        "min": 98.05360288824222,
+        "max": 99.46621883829948,
+        "p5": 98.18486714684038,
+        "p95": 99.30755104037279,
+        "range_pct_of_median": 1.4294584926449765
+      },
+      "sfu_gflops": {
+        "n": 128,
+        "median": 156.50023080367876,
+        "mean": 157.0042471683864,
+        "std": 1.4000088534016866,
+        "cv_pct": 0.8917012620048315,
+        "min": 152.34011111027849,
+        "max": 159.22194172193954,
+        "p5": 155.01487131909772,
+        "p95": 158.95229847157344,
+        "range_pct_of_median": 4.397329368986011
+      },
+      "scalar_elems_per_s": {
+        "n": 128,
+        "median": 279916705.04633313,
+        "mean": 279587799.0991667,
+        "std": 2162177.6843073843,
+        "cv_pct": 0.7733447923242474,
+        "min": 262411084.34082294,
+        "max": 280053220.4445094,
+        "p5": 279747130.4526128,
+        "p95": 280023754.7250296,
+        "range_pct_of_median": 6.3026378153337586
+      },
+      "power_w": {
+        "n": 128,
+        "median": 871.55,
+        "mean": 772.15625,
+        "std": 214.14870262492252,
+        "cv_pct": 27.733856020063623,
+        "min": 180.1,
+        "max": 958.9,
+        "p5": 207.58999999999997,
+        "p95": 936.65,
+        "range_pct_of_median": 89.3580402730767
+      },
+      "board_temp_c": {
+        "n": 128,
+        "median": 66.0,
+        "mean": 64.9453125,
+        "std": 3.945544547631385,
+        "cv_pct": 6.075179864030041,
+        "min": 48.0,
+        "max": 70.0,
+        "p5": 56.0,
+        "p95": 68.0,
+        "range_pct_of_median": 33.33333333333333
+      },
+      "aicore_util_pct": {
+        "n": 128,
+        "median": 92.0,
+        "mean": 67.078125,
+        "std": 36.26607604200343,
+        "cv_pct": 54.06542899343627,
+        "min": 0.0,
+        "max": 93.0,
+        "p5": 0.0,
+        "p95": 92.0,
+        "range_pct_of_median": 101.08695652173914
+      },
+      "launch_sync_p50_us": {
+        "n": 128,
+        "median": 6.0694292187690735,
+        "mean": 6.238275091163814,
+        "std": 0.74495480996819,
+        "cv_pct": 11.941679375816225,
+        "min": 5.0086528062820435,
+        "max": 9.480863809585571,
+        "p5": 5.420204252004623,
+        "p95": 8.216220885515213,
+        "range_pct_of_median": 73.68421052631578
+      },
+      "launch_host_overhead_p50_us": {
+        "n": 128,
+        "median": 240.12599466368556,
+        "mean": 244.18155015155207,
+        "std": 16.453419649088197,
+        "cv_pct": 6.7381911691838825,
+        "min": 216.22326597571373,
+        "max": 307.79097974300385,
+        "p5": 223.48007960245013,
+        "p95": 272.3946768324822,
+        "range_pct_of_median": 38.133194990212345
+      },
+      "launch_burst_p50_us": {
+        "n": 128,
+        "median": 472.5176841020584,
+        "mean": 495.7055934937671,
+        "std": 82.92754334371553,
+        "cv_pct": 16.729192575624676,
+        "min": 364.6630793809891,
+        "max": 794.4852113723755,
+        "p5": 389.91644978523254,
+        "p95": 633.7743252515793,
+        "range_pct_of_median": 90.96424249352533
+      }
+    },
+    "host_cluster": {
+      "func_tflops": {
+        "global_median": 292.41319972099086,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": 0.94,
+          "whj4stu-copy-copy-copy-worker-3": 0.08,
+          "whj4stu-copy-copy-copy-worker-2": -0.5,
+          "whj4stu-copy-copy-copy-worker-5": -0.64,
+          "whj4stu-copy-copy-copy-worker-0": 0.02,
+          "whj4stu-copy-copy-copy-worker-6": 0.27,
+          "whj4stu-copy-copy-copy-worker-1": -1.33,
+          "whj4stu-copy-copy-copy-master-0": -1.23
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            -1.33,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -1.23,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            -0.64,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            0.94,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            0.27,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            0.08,
+            16
+          ]
+        ]
+      },
+      "sustained_tflops": {
+        "global_median": 306.9051495042121,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": 0.2,
+          "whj4stu-copy-copy-copy-worker-3": -0.42,
+          "whj4stu-copy-copy-copy-worker-2": -0.39,
+          "whj4stu-copy-copy-copy-worker-5": -0.34,
+          "whj4stu-copy-copy-copy-worker-0": -0.17,
+          "whj4stu-copy-copy-copy-worker-6": -0.27,
+          "whj4stu-copy-copy-copy-worker-1": -0.42,
+          "whj4stu-copy-copy-copy-master-0": -0.02
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -0.42,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            -0.42,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            -0.39,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            0.2,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -0.02,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            -0.17,
+            16
+          ]
+        ]
+      },
+      "cube_vector_tflops": {
+        "global_median": 240.2356857996199,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -0.27,
+          "whj4stu-copy-copy-copy-worker-3": -0.72,
+          "whj4stu-copy-copy-copy-worker-2": 0.06,
+          "whj4stu-copy-copy-copy-worker-5": 0.35,
+          "whj4stu-copy-copy-copy-worker-0": 1.15,
+          "whj4stu-copy-copy-copy-worker-6": 1.33,
+          "whj4stu-copy-copy-copy-worker-1": 0.53,
+          "whj4stu-copy-copy-copy-master-0": -0.02
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -0.72,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -0.27,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -0.02,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            1.33,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            1.15,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            0.53,
+            16
+          ]
+        ]
+      },
+      "hbm_gbps": {
+        "global_median": 1240.6531113944748,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -1.42,
+          "whj4stu-copy-copy-copy-worker-3": -2.93,
+          "whj4stu-copy-copy-copy-worker-2": -2.54,
+          "whj4stu-copy-copy-copy-worker-5": -2.2,
+          "whj4stu-copy-copy-copy-worker-0": -1.94,
+          "whj4stu-copy-copy-copy-worker-6": -2.26,
+          "whj4stu-copy-copy-copy-worker-1": -1.9,
+          "whj4stu-copy-copy-copy-master-0": -1.54
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -2.93,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            -2.54,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            -2.26,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -1.42,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -1.54,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            -1.9,
+            16
+          ]
+        ]
+      },
+      "mte_gbps": {
+        "global_median": 1267.9094947373478,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -0.01,
+          "whj4stu-copy-copy-copy-worker-3": -0.39,
+          "whj4stu-copy-copy-copy-worker-2": 0.04,
+          "whj4stu-copy-copy-copy-worker-5": -0.04,
+          "whj4stu-copy-copy-copy-worker-0": -0.11,
+          "whj4stu-copy-copy-copy-worker-6": -0.1,
+          "whj4stu-copy-copy-copy-worker-1": -0.04,
+          "whj4stu-copy-copy-copy-master-0": -0.03
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -0.39,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            -0.11,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            -0.1,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            0.04,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -0.01,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -0.03,
+            16
+          ]
+        ]
+      },
+      "vector_gflops": {
+        "global_median": 98.82175364486773,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -0.09,
+          "whj4stu-copy-copy-copy-worker-3": 0.08,
+          "whj4stu-copy-copy-copy-worker-2": 0.05,
+          "whj4stu-copy-copy-copy-worker-5": -0.02,
+          "whj4stu-copy-copy-copy-worker-0": -0.0,
+          "whj4stu-copy-copy-copy-worker-6": -0.03,
+          "whj4stu-copy-copy-copy-worker-1": 0.07,
+          "whj4stu-copy-copy-copy-master-0": 0.02
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -0.09,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            -0.03,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            -0.02,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            0.08,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            0.07,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            0.05,
+            16
+          ]
+        ]
+      },
+      "sfu_gflops": {
+        "global_median": 156.50023080367876,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": 0.36,
+          "whj4stu-copy-copy-copy-worker-3": 0.35,
+          "whj4stu-copy-copy-copy-worker-2": 0.17,
+          "whj4stu-copy-copy-copy-worker-5": 0.44,
+          "whj4stu-copy-copy-copy-worker-0": 0.56,
+          "whj4stu-copy-copy-copy-worker-6": 0.32,
+          "whj4stu-copy-copy-copy-worker-1": 0.24,
+          "whj4stu-copy-copy-copy-master-0": 0.12
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            0.12,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            0.17,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            0.24,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            0.56,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            0.44,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            0.36,
+            16
+          ]
+        ]
+      },
+      "scalar_elems_per_s": {
+        "global_median": 279916705.04633313,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": 0.0,
+          "whj4stu-copy-copy-copy-worker-3": -0.34,
+          "whj4stu-copy-copy-copy-worker-2": -0.01,
+          "whj4stu-copy-copy-copy-worker-5": 0.0,
+          "whj4stu-copy-copy-copy-worker-0": -0.38,
+          "whj4stu-copy-copy-copy-worker-6": -0.0,
+          "whj4stu-copy-copy-copy-worker-1": -0.21,
+          "whj4stu-copy-copy-copy-master-0": -0.01
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            -0.38,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -0.34,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            -0.21,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            0.0,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            0.0,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            -0.0,
+            16
+          ]
+        ]
+      },
+      "power_w": {
+        "global_median": 871.55,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -11.04,
+          "whj4stu-copy-copy-copy-worker-3": -20.97,
+          "whj4stu-copy-copy-copy-worker-2": -2.84,
+          "whj4stu-copy-copy-copy-worker-5": -29.73,
+          "whj4stu-copy-copy-copy-worker-0": -7.11,
+          "whj4stu-copy-copy-copy-worker-6": 1.49,
+          "whj4stu-copy-copy-copy-worker-1": -8.13,
+          "whj4stu-copy-copy-copy-master-0": -12.91
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            -29.73,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -20.97,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -12.91,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            1.49,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            -2.84,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            -7.11,
+            16
+          ]
+        ]
+      },
+      "board_temp_c": {
+        "global_median": 66.0,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -6.44,
+          "whj4stu-copy-copy-copy-worker-3": 1.42,
+          "whj4stu-copy-copy-copy-worker-2": -3.5,
+          "whj4stu-copy-copy-copy-worker-5": 0.28,
+          "whj4stu-copy-copy-copy-worker-0": -1.61,
+          "whj4stu-copy-copy-copy-worker-6": 0.38,
+          "whj4stu-copy-copy-copy-worker-1": -0.57,
+          "whj4stu-copy-copy-copy-master-0": -2.75
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -6.44,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            -3.5,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            -2.75,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            1.42,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            0.38,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            0.28,
+            16
+          ]
+        ]
+      },
+      "aicore_util_pct": {
+        "global_median": 92.0,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -24.93,
+          "whj4stu-copy-copy-copy-worker-3": -37.77,
+          "whj4stu-copy-copy-copy-worker-2": -12.98,
+          "whj4stu-copy-copy-copy-worker-5": -57.81,
+          "whj4stu-copy-copy-copy-worker-0": -29.28,
+          "whj4stu-copy-copy-copy-worker-6": -13.59,
+          "whj4stu-copy-copy-copy-worker-1": -12.7,
+          "whj4stu-copy-copy-copy-master-0": -27.65
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            -57.81,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            -37.77,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            -29.28,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            -12.7,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            -12.98,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            -13.59,
+            16
+          ]
+        ]
+      },
+      "launch_sync_p50_us": {
+        "global_median": 6.0694292187690735,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -1.44,
+          "whj4stu-copy-copy-copy-worker-3": 6.58,
+          "whj4stu-copy-copy-copy-worker-2": 2.63,
+          "whj4stu-copy-copy-copy-worker-5": 0.62,
+          "whj4stu-copy-copy-copy-worker-0": 6.07,
+          "whj4stu-copy-copy-copy-worker-6": 4.37,
+          "whj4stu-copy-copy-copy-worker-1": 0.98,
+          "whj4stu-copy-copy-copy-master-0": 2.46
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -1.44,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            0.62,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            0.98,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-3",
+            6.58,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            6.07,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            4.37,
+            16
+          ]
+        ]
+      },
+      "launch_host_overhead_p50_us": {
+        "global_median": 240.12599466368556,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -2.62,
+          "whj4stu-copy-copy-copy-worker-3": 2.31,
+          "whj4stu-copy-copy-copy-worker-2": 2.98,
+          "whj4stu-copy-copy-copy-worker-5": 3.8,
+          "whj4stu-copy-copy-copy-worker-0": 1.88,
+          "whj4stu-copy-copy-copy-worker-6": 3.38,
+          "whj4stu-copy-copy-copy-worker-1": 0.76,
+          "whj4stu-copy-copy-copy-master-0": 1.02
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -2.62,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            0.76,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            1.02,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-5",
+            3.8,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            3.38,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            2.98,
+            16
+          ]
+        ]
+      },
+      "launch_burst_p50_us": {
+        "global_median": 472.5176841020584,
+        "n_hosts": 8,
+        "host_rel_pct": {
+          "whj4stu-copy-copy-copy-worker-4": -4.93,
+          "whj4stu-copy-copy-copy-worker-3": 6.26,
+          "whj4stu-copy-copy-copy-worker-2": 8.29,
+          "whj4stu-copy-copy-copy-worker-5": 7.39,
+          "whj4stu-copy-copy-copy-worker-0": 7.87,
+          "whj4stu-copy-copy-copy-worker-6": 8.33,
+          "whj4stu-copy-copy-copy-worker-1": 2.13,
+          "whj4stu-copy-copy-copy-master-0": 3.93
+        },
+        "n_cards_per_host": {
+          "whj4stu-copy-copy-copy-worker-4": 16,
+          "whj4stu-copy-copy-copy-worker-3": 16,
+          "whj4stu-copy-copy-copy-worker-2": 16,
+          "whj4stu-copy-copy-copy-worker-5": 16,
+          "whj4stu-copy-copy-copy-worker-0": 16,
+          "whj4stu-copy-copy-copy-worker-6": 16,
+          "whj4stu-copy-copy-copy-worker-1": 16,
+          "whj4stu-copy-copy-copy-master-0": 16
+        },
+        "worst_low_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-4",
+            -4.93,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-1",
+            2.13,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-master-0",
+            3.93,
+            16
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "whj4stu-copy-copy-copy-worker-6",
+            8.33,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-2",
+            8.29,
+            16
+          ],
+          [
+            "whj4stu-copy-copy-copy-worker-0",
+            7.87,
+            16
+          ]
+        ]
+      }
+    },
+    "slow_outliers": {
+      "func_tflops": [],
+      "sustained_tflops": [],
+      "cube_vector_tflops": [],
+      "hbm_gbps": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-0",
+          "device": 0,
+          "value": 1012.3623323607427,
+          "rel_pct": -18.4
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 3,
+          "value": 1057.1862372750188,
+          "rel_pct": -14.79
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-1",
+          "device": 0,
+          "value": 1061.4082131099565,
+          "rel_pct": -14.45
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 13,
+          "value": 1067.7623807362943,
+          "rel_pct": -13.94
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-6",
+          "device": 2,
+          "value": 1081.0932536917571,
+          "rel_pct": -12.86
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 8,
+          "value": 1095.6213827843326,
+          "rel_pct": -11.69
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-0",
+          "device": 15,
+          "value": 1111.7181354825736,
+          "rel_pct": -10.39
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 4,
+          "value": 1118.0967099042027,
+          "rel_pct": -9.88
+        }
+      ],
+      "mte_gbps": [],
+      "vector_gflops": [],
+      "sfu_gflops": [],
+      "scalar_elems_per_s": [],
+      "power_w": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 7,
+          "value": 180.1,
+          "rel_pct": -79.34
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 0,
+          "value": 198.1,
+          "rel_pct": -77.27
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-1",
+          "device": 15,
+          "value": 198.6,
+          "rel_pct": -77.21
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 11,
+          "value": 203.6,
+          "rel_pct": -76.64
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 15,
+          "value": 203.8,
+          "rel_pct": -76.62
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 7,
+          "value": 205.5,
+          "rel_pct": -76.42
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 9,
+          "value": 207.1,
+          "rel_pct": -76.24
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 6,
+          "value": 208.5,
+          "rel_pct": -76.08
+        }
+      ],
+      "board_temp_c": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 14,
+          "value": 48.0,
+          "rel_pct": -27.27
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 4,
+          "value": 51.0,
+          "rel_pct": -22.73
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 2,
+          "value": 52.0,
+          "rel_pct": -21.21
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 8,
+          "value": 54.0,
+          "rel_pct": -18.18
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 9,
+          "value": 55.0,
+          "rel_pct": -16.67
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 1,
+          "value": 55.0,
+          "rel_pct": -16.67
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-0",
+          "device": 2,
+          "value": 56.0,
+          "rel_pct": -15.15
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-0",
+          "device": 8,
+          "value": 56.0,
+          "rel_pct": -15.15
+        }
+      ],
+      "aicore_util_pct": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 8,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 14,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 2,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 3,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 6,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 7,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 14,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 2,
+          "value": 0.0,
+          "rel_pct": -100.0
+        }
+      ],
+      "launch_sync_p50_us": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 12,
+          "value": 5.0086528062820435,
+          "rel_pct": -17.48
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 10,
+          "value": 5.109235644340515,
+          "rel_pct": -15.82
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 14,
+          "value": 5.327165126800537,
+          "rel_pct": -12.23
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 3,
+          "value": 5.340203642845154,
+          "rel_pct": -12.01
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-6",
+          "device": 5,
+          "value": 5.381181836128235,
+          "rel_pct": -11.34
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 1,
+          "value": 5.399808287620544,
+          "rel_pct": -11.03
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 11,
+          "value": 5.409121513366699,
+          "rel_pct": -10.88
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 3,
+          "value": 5.4407864809036255,
+          "rel_pct": -10.36
+        }
+      ],
+      "launch_host_overhead_p50_us": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 3,
+          "value": 216.22326597571373,
+          "rel_pct": -9.95
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-5",
+          "device": 3,
+          "value": 219.16149742901325,
+          "rel_pct": -8.73
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-6",
+          "device": 0,
+          "value": 219.52093485742807,
+          "rel_pct": -8.58
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 15,
+          "value": 219.8307579383254,
+          "rel_pct": -8.45
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-6",
+          "device": 6,
+          "value": 220.39195615798235,
+          "rel_pct": -8.22
+        }
+      ],
+      "launch_burst_p50_us": [
+        {
+          "host": "whj4stu-copy-copy-copy-worker-4",
+          "device": 12,
+          "value": 364.6630793809891,
+          "rel_pct": -22.83
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 3,
+          "value": 378.41126322746277,
+          "rel_pct": -19.92
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 10,
+          "value": 385.0124776363373,
+          "rel_pct": -18.52
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-2",
+          "device": 4,
+          "value": 385.4837268590927,
+          "rel_pct": -18.42
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-6",
+          "device": 1,
+          "value": 385.94380021095276,
+          "rel_pct": -18.32
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 13,
+          "value": 389.3226385116577,
+          "rel_pct": -17.61
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-worker-3",
+          "device": 8,
+          "value": 389.6765410900116,
+          "rel_pct": -17.53
+        },
+        {
+          "host": "whj4stu-copy-copy-copy-master-0",
+          "device": 8,
+          "value": 390.3619945049286,
+          "rel_pct": -17.39
+        }
+      ]
+    },
+    "verdict_by_host": {
+      "whj4stu-copy-copy-copy-worker-4": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-3": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-2": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-5": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-0": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-6": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-worker-1": {
+        "good": 16
+      },
+      "whj4stu-copy-copy-copy-master-0": {
+        "good": 16
+      }
+    }
+  },
+  "muxi": {
+    "label": "muxi",
+    "path": "/Users/yinjinrun/random-thing/logs/muxi-constitution-20260711_232400-muxi-constitution128/results/constitution128.merged.jsonl",
+    "n_cards": 128,
+    "n_hosts": 16,
+    "verdict_counts": {
+      "contended": 8,
+      "good": 119,
+      "bad": 1
+    },
+    "metrics": {
+      "func_tflops": {
+        "n": 127,
+        "median": 279.8571210540547,
+        "mean": 279.3197426570711,
+        "std": 3.1613840581513806,
+        "cv_pct": 1.1318154699980167,
+        "min": 272.47144517700906,
+        "max": 287.96294856092004,
+        "p5": 273.8211924661216,
+        "p95": 284.10199737882436,
+        "range_pct_of_median": 5.53550444797107
+      },
+      "sustained_tflops": {
+        "n": 127,
+        "median": 280.02536415754605,
+        "mean": 281.3339609122265,
+        "std": 7.874965731206514,
+        "cv_pct": 2.7991521911083566,
+        "min": 258.06510476528126,
+        "max": 299.6182174205159,
+        "p5": 274.16646873062547,
+        "p95": 298.7119711708824,
+        "range_pct_of_median": 14.839053162290083
+      },
+      "cube_vector_tflops": {
+        "n": 127,
+        "median": 195.15534881396187,
+        "mean": 189.25014285016027,
+        "std": 15.437138362446856,
+        "cv_pct": 8.157002224653159,
+        "min": 104.93699397632925,
+        "max": 202.13305418283943,
+        "p5": 163.2822268289913,
+        "p95": 198.0337515279577,
+        "range_pct_of_median": 49.80445619205931
+      },
+      "hbm_gbps": {
+        "n": 127,
+        "median": 1468.8510029396741,
+        "mean": 1380.2169179068726,
+        "std": 161.8212643542723,
+        "cv_pct": 11.724335664547395,
+        "min": 871.0006852914081,
+        "max": 1487.078209344676,
+        "p5": 1036.1426135250497,
+        "p95": 1478.6899026266387,
+        "range_pct_of_median": 41.94281944324412
+      },
+      "mte_gbps": {
+        "n": 127,
+        "median": 1387.4641230142183,
+        "mean": 1372.8574788755095,
+        "std": 51.53984083354478,
+        "cv_pct": 3.7542018473585776,
+        "min": 1186.8432702838375,
+        "max": 1409.37630801819,
+        "p5": 1202.1164831358421,
+        "p95": 1401.5586565973294,
+        "range_pct_of_median": 16.038831854686602
+      },
+      "vector_gflops": {
+        "n": 127,
+        "median": 122.15470400809635,
+        "mean": 119.79077798558156,
+        "std": 5.124041099441212,
+        "cv_pct": 4.277492128866514,
+        "min": 108.16752881826885,
+        "max": 122.72659369009587,
+        "p5": 108.72608043323046,
+        "p95": 122.64046242861076,
+        "range_pct_of_median": 11.918546232048543
+      },
+      "sfu_gflops": {
+        "n": 127,
+        "median": 177.36400998062513,
+        "mean": 169.74388668819807,
+        "std": 18.307929807507353,
+        "cv_pct": 10.785619538179377,
+        "min": 124.18000895175079,
+        "max": 179.55067783498194,
+        "p5": 126.04895528430518,
+        "p95": 179.02344486555853,
+        "range_pct_of_median": 31.218660927478876
+      },
+      "scalar_elems_per_s": {
+        "n": 127,
+        "median": 120915130420.34674,
+        "mean": 117643002175.03853,
+        "std": 12021298338.725584,
+        "cv_pct": 10.218455935729478,
+        "min": 42335916511.66399,
+        "max": 132129034045.33556,
+        "p5": 101467138491.13678,
+        "p95": 127555213593.57278,
+        "range_pct_of_median": 74.26127501290924
+      },
+      "power_w": {
+        "n": 127,
+        "median": 471.0,
+        "mean": 469.755905511811,
+        "std": 20.702130642917563,
+        "cv_pct": 4.406997421429341,
+        "min": 417.0,
+        "max": 517.0,
+        "p5": 435.9,
+        "p95": 501.5,
+        "range_pct_of_median": 21.231422505307858
+      },
+      "board_temp_c": {
+        "n": 127,
+        "median": 54.0,
+        "mean": 54.29133858267716,
+        "std": 2.5721409821039094,
+        "cv_pct": 4.7376635928527415,
+        "min": 47.0,
+        "max": 62.0,
+        "p5": 50.3,
+        "p95": 58.0,
+        "range_pct_of_median": 27.77777777777778
+      },
+      "aicore_util_pct": {
+        "n": 127,
+        "median": 98.0,
+        "mean": 79.96062992125984,
+        "std": 32.633348860803665,
+        "cv_pct": 40.8117706087845,
+        "min": 0.0,
+        "max": 98.0,
+        "p5": 0.0,
+        "p95": 98.0,
+        "range_pct_of_median": 100.0
+      },
+      "launch_sync_p50_us": {
+        "n": 127,
+        "median": 2.689659595489502,
+        "mean": 3.3778629786386265,
+        "std": 1.613711118933171,
+        "cv_pct": 47.773137310132746,
+        "min": 2.4707987904548645,
+        "max": 10.029412806034088,
+        "p5": 2.5704503059387207,
+        "p95": 7.807835936546328,
+        "range_pct_of_median": 281.02493074792244
+      },
+      "launch_host_overhead_p50_us": {
+        "n": 127,
+        "median": 184.03560668230057,
+        "mean": 201.00745910734642,
+        "std": 45.413687463608014,
+        "cv_pct": 22.593035932738793,
+        "min": 154.29837815463543,
+        "max": 514.2077207565308,
+        "p5": 166.03134740144014,
+        "p95": 252.38082483410835,
+        "range_pct_of_median": 195.565058898197
+      },
+      "launch_burst_p50_us": {
+        "n": 127,
+        "median": 1317.845657467842,
+        "mean": 1286.792686194416,
+        "std": 348.04105233275,
+        "cv_pct": 27.047173648620344,
+        "min": 600.5782634019852,
+        "max": 1918.671652674675,
+        "p5": 657.6011888682842,
+        "p95": 1820.5121159553528,
+        "range_pct_of_median": 100.01879824116307
+      }
+    },
+    "host_cluster": {
+      "func_tflops": {
+        "global_median": 279.8571210540547,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -1.13,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -0.76,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -0.16,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -0.09,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -0.36,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -0.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -0.79,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 0.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 0.15,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -0.17,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -0.0,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.78,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -1.03,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 0.09,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.14
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-master-0",
+            -1.13,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -1.03,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -0.79,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-6",
+            0.78,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-1",
+            0.24,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-3",
+            0.15,
+            8
+          ]
+        ]
+      },
+      "sustained_tflops": {
+        "global_median": 280.02536415754605,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 1.25,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 0.78,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.05,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -0.43,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -0.58,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -1.03,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 2.87,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 1.03,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 0.63,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 0.39,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -0.6,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 2.28,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.97,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 0.4,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -0.05,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": -0.68
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-12",
+            -1.03,
+            7
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-9",
+            -0.68,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            -0.6,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            2.87,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-5",
+            2.28,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-master-0",
+            1.25,
+            8
+          ]
+        ]
+      },
+      "cube_vector_tflops": {
+        "global_median": 195.15534881396187,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -1.08,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -2.57,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": -1.29,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -5.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 0.43,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -1.81,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -1.65,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -7.44,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 0.93,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -9.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -7.08,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -2.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -1.5,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -2.95,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -1.42,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": -3.19
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-3",
+            -9.71,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -7.44,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            -7.08,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            0.93,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-11",
+            0.43,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-master-0",
+            -1.08,
+            8
+          ]
+        ]
+      },
+      "hbm_gbps": {
+        "global_median": 1468.8510029396741,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -1.99,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -11.86,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": -0.77,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 0.27,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -1.83,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -5.62,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -3.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -29.9,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -1.32,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -2.49,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -0.2,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -2.16,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -1.93,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -29.45,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -1.84,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": -1.68
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -29.9,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -29.45,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-0",
+            -11.86,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-10",
+            0.27,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            -0.2,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-1",
+            -0.77,
+            8
+          ]
+        ]
+      },
+      "mte_gbps": {
+        "global_median": 1387.4641230142183,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -1.7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -1.5,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": -1.55,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -1.54,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 0.02,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 0.25,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 0.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -2.27,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -1.52,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -1.62,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 0.34,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -1.31,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -1.61,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -1.74,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -1.52,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.38
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -2.27,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -1.74,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-master-0",
+            -1.7,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-9",
+            0.38,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            0.34,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-12",
+            0.25,
+            7
+          ]
+        ]
+      },
+      "vector_gflops": {
+        "global_median": 122.15470400809635,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -0.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -4.08,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.1,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -1.39,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -1.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -1.48,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 0.11,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -10.79,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -0.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 0.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 0.18,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -1.31,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.07,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -11.1,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 0.15,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.09
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -11.1,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -10.79,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-0",
+            -4.08,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            0.18,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            0.15,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            0.11,
+            8
+          ]
+        ]
+      },
+      "sfu_gflops": {
+        "global_median": 177.36400998062513,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -0.63,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -10.6,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.21,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -0.45,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 0.11,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -0.26,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 0.21,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -28.57,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 0.5,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 0.26,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 0.13,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -0.55,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.1,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -29.36,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 0.26,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.39
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -29.36,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -28.57,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-0",
+            -10.6,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            0.5,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-9",
+            0.39,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            0.26,
+            8
+          ]
+        ]
+      },
+      "scalar_elems_per_s": {
+        "global_median": 120915130420.34674,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -0.51,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -6.04,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 1.35,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -1.25,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -7.05,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -8.46,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 1.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -14.07,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -0.82,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 0.35,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 2.3,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -0.73,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.91,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -14.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 3.31,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.18
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -14.71,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            -14.07,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-12",
+            -8.46,
+            7
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            3.31,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            2.3,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-1",
+            1.35,
+            8
+          ]
+        ]
+      },
+      "power_w": {
+        "global_median": 471.0,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -1.54,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -0.69,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 2.52,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -0.82,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -0.69,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 2.55,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -1.99,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -1.49,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -1.7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -1.46,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 1.88,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -0.32,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 0.66,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -1.22,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 0.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 0.19
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            -1.99,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            -1.7,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-master-0",
+            -1.54,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-12",
+            2.55,
+            7
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-1",
+            2.52,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            1.88,
+            8
+          ]
+        ]
+      },
+      "board_temp_c": {
+        "global_median": 54.0,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 2.31,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 1.39,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.0,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -2.31,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 0.93,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 0.79,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -3.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -1.16,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -0.46,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 3.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 1.62,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -0.46,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -4.86,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 3.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 3.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 4.86
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-6",
+            -4.86,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            -3.24,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-10",
+            -2.31,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-9",
+            4.86,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            3.24,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-3",
+            3.01,
+            8
+          ]
+        ]
+      },
+      "aicore_util_pct": {
+        "global_median": 98.0,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": -25.38,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -3.19,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": -24.11,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": -12.37,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -12.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -19.24,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -21.81,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": -16.84,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": -28.32,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -13.14,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -12.37,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -25.51,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -12.5,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -33.93,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -23.6,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": -10.08
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            -33.93,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            -28.32,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-5",
+            -25.51,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-0",
+            -3.19,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-9",
+            -10.08,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-11",
+            -12.24,
+            8
+          ]
+        ]
+      },
+      "launch_sync_p50_us": {
+        "global_median": 2.689659595489502,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 2.85,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 9.21,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 0.33,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 17.95,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 17.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 12.97,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 0.05,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 2.23,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 69.72,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 17.34,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -2.45,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 23.33,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -0.82,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 221.64,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 11.49,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 4.25
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            -2.45,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-6",
+            -0.82,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            0.05,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-7",
+            221.64,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            69.72,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-5",
+            23.33,
+            8
+          ]
+        ]
+      },
+      "launch_host_overhead_p50_us": {
+        "global_median": 184.03560668230057,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 9.64,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 13.99,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 4.5,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 18.65,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 6.17,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 10.14,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": -3.84,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 2.74,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 23.04,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 6.93,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -2.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 30.33,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 5.53,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 13.25,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 0.81,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8.5
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-13",
+            -3.84,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-4",
+            -2.71,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            0.81,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-5",
+            30.33,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-2",
+            23.04,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-10",
+            18.65,
+            8
+          ]
+        ]
+      },
+      "launch_burst_p50_us": {
+        "global_median": 1317.845657467842,
+        "n_hosts": 16,
+        "host_rel_pct": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 2.47,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": -15.97,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 11.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 13.42,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": -5.48,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": -10.87,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 0.4,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 16.71,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 4.41,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": -11.01,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": -8.48,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": -2.87,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": -8.81,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": -2.39,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": -12.96,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": -8.35
+        },
+        "n_cards_per_host": {
+          "yushan-muxi-card-screen-128-cp-copy-master-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-0": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-1": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-10": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-11": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-12": 7,
+          "yushan-muxi-card-screen-128-cp-copy-worker-13": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-14": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-2": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-3": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-4": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-5": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-6": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-7": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-8": 8,
+          "yushan-muxi-card-screen-128-cp-copy-worker-9": 8
+        },
+        "worst_low_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-0",
+            -15.97,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-8",
+            -12.96,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-3",
+            -11.01,
+            8
+          ]
+        ],
+        "worst_high_hosts": [
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-14",
+            16.71,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-10",
+            13.42,
+            8
+          ],
+          [
+            "yushan-muxi-card-screen-128-cp-copy-worker-1",
+            11.01,
+            8
+          ]
+        ]
+      }
+    },
+    "slow_outliers": {
+      "func_tflops": [],
+      "sustained_tflops": [],
+      "cube_vector_tflops": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-3",
+          "device": 2,
+          "value": 104.93699397632925,
+          "rel_pct": -46.23
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 4,
+          "value": 109.09354457738831,
+          "rel_pct": -44.1
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 1,
+          "value": 157.63648502850663,
+          "rel_pct": -19.23
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 7,
+          "value": 158.10053473212383,
+          "rel_pct": -18.99
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 0,
+          "value": 161.42696942702148,
+          "rel_pct": -17.28
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-10",
+          "device": 4,
+          "value": 162.15806403459965,
+          "rel_pct": -16.91
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 1,
+          "value": 163.19280890361284,
+          "rel_pct": -16.38
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-12",
+          "device": 1,
+          "value": 163.49086865487436,
+          "rel_pct": -16.23
+        }
+      ],
+      "hbm_gbps": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-12",
+          "device": 5,
+          "value": 871.0006852914081,
+          "rel_pct": -40.7
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 6,
+          "value": 974.8528017540459,
+          "rel_pct": -33.63
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 3,
+          "value": 1029.9089195938714,
+          "rel_pct": -29.88
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 1,
+          "value": 1032.5710972858312,
+          "rel_pct": -29.7
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 3,
+          "value": 1033.2070296833679,
+          "rel_pct": -29.66
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 4,
+          "value": 1035.7584925822487,
+          "rel_pct": -29.49
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 6,
+          "value": 1035.7584925822487,
+          "rel_pct": -29.49
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 2,
+          "value": 1037.038895724919,
+          "rel_pct": -29.4
+        }
+      ],
+      "mte_gbps": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 5,
+          "value": 1186.8432702838375,
+          "rel_pct": -14.46
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-3",
+          "device": 7,
+          "value": 1192.5800382301682,
+          "rel_pct": -14.05
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-master-0",
+          "device": 0,
+          "value": 1192.9192273997157,
+          "rel_pct": -14.02
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-1",
+          "device": 6,
+          "value": 1194.6180714965808,
+          "rel_pct": -13.9
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-2",
+          "device": 5,
+          "value": 1199.743680471782,
+          "rel_pct": -13.53
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-8",
+          "device": 0,
+          "value": 1200.4304307834614,
+          "rel_pct": -13.48
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 7,
+          "value": 1201.806292743902,
+          "rel_pct": -13.38
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-10",
+          "device": 6,
+          "value": 1202.8402607170358,
+          "rel_pct": -13.31
+        }
+      ],
+      "vector_gflops": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 6,
+          "value": 108.16752881826885,
+          "rel_pct": -11.45
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 0,
+          "value": 108.30159412212734,
+          "rel_pct": -11.34
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 3,
+          "value": 108.48086566973177,
+          "rel_pct": -11.19
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 3,
+          "value": 108.50331112376578,
+          "rel_pct": -11.18
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 7,
+          "value": 108.59320684694009,
+          "rel_pct": -11.1
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 5,
+          "value": 108.63821059108533,
+          "rel_pct": -11.07
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 2,
+          "value": 108.70578094307308,
+          "rel_pct": -11.01
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 4,
+          "value": 108.77344591026437,
+          "rel_pct": -10.95
+        }
+      ],
+      "sfu_gflops": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 1,
+          "value": 124.18000895175079,
+          "rel_pct": -29.99
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 5,
+          "value": 124.47483553351927,
+          "rel_pct": -29.82
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 7,
+          "value": 124.83048064147549,
+          "rel_pct": -29.62
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 4,
+          "value": 124.8899525023942,
+          "rel_pct": -29.59
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 0,
+          "value": 125.90970094599739,
+          "rel_pct": -29.01
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 3,
+          "value": 125.97020582772794,
+          "rel_pct": -28.98
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 6,
+          "value": 126.03076888767221,
+          "rel_pct": -28.94
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 6,
+          "value": 126.0913902097821,
+          "rel_pct": -28.91
+        }
+      ],
+      "scalar_elems_per_s": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-12",
+          "device": 6,
+          "value": 42335916511.66399,
+          "rel_pct": -64.99
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-11",
+          "device": 2,
+          "value": 42528229085.81426,
+          "rel_pct": -64.83
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 3,
+          "value": 99146743254.43896,
+          "rel_pct": -18.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 6,
+          "value": 100054964637.52303,
+          "rel_pct": -17.25
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 5,
+          "value": 100361405099.24263,
+          "rel_pct": -17.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 0,
+          "value": 100361405099.24263,
+          "rel_pct": -17.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 7,
+          "value": 101135804569.80666,
+          "rel_pct": -16.36
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 3,
+          "value": 102240250974.24043,
+          "rel_pct": -15.44
+        }
+      ],
+      "power_w": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-2",
+          "device": 4,
+          "value": 417.0,
+          "rel_pct": -11.46
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 5,
+          "value": 421.0,
+          "rel_pct": -10.62
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-10",
+          "device": 3,
+          "value": 423.0,
+          "rel_pct": -10.19
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-6",
+          "device": 2,
+          "value": 427.0,
+          "rel_pct": -9.34
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-5",
+          "device": 7,
+          "value": 428.0,
+          "rel_pct": -9.13
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-3",
+          "device": 7,
+          "value": 429.0,
+          "rel_pct": -8.92
+        }
+      ],
+      "board_temp_c": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-6",
+          "device": 1,
+          "value": 47.0,
+          "rel_pct": -12.96
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-5",
+          "device": 4,
+          "value": 49.0,
+          "rel_pct": -9.26
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-6",
+          "device": 2,
+          "value": 49.0,
+          "rel_pct": -9.26
+        }
+      ],
+      "aicore_util_pct": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-14",
+          "device": 5,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-2",
+          "device": 0,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-3",
+          "device": 1,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-5",
+          "device": 6,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-6",
+          "device": 0,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 0,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-7",
+          "device": 7,
+          "value": 0.0,
+          "rel_pct": -100.0
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-8",
+          "device": 2,
+          "value": 0.0,
+          "rel_pct": -100.0
+        }
+      ],
+      "launch_sync_p50_us": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 5,
+          "value": 2.4707987904548645,
+          "rel_pct": -8.14
+        }
+      ],
+      "launch_host_overhead_p50_us": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 6,
+          "value": 154.29837815463543,
+          "rel_pct": -16.16
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-8",
+          "device": 2,
+          "value": 157.11015462875366,
+          "rel_pct": -14.63
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-12",
+          "device": 3,
+          "value": 162.27195598185062,
+          "rel_pct": -11.83
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 2,
+          "value": 162.58864849805832,
+          "rel_pct": -11.65
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 1,
+          "value": 162.84280829131603,
+          "rel_pct": -11.52
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 0,
+          "value": 164.48945738375187,
+          "rel_pct": -10.62
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-1",
+          "device": 4,
+          "value": 165.7156888395548,
+          "rel_pct": -9.95
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-8",
+          "device": 1,
+          "value": 166.7678840458393,
+          "rel_pct": -9.38
+        }
+      ],
+      "launch_burst_p50_us": [
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-6",
+          "device": 2,
+          "value": 600.5782634019852,
+          "rel_pct": -54.43
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 6,
+          "value": 614.4000217318535,
+          "rel_pct": -53.38
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-12",
+          "device": 3,
+          "value": 621.3681772351265,
+          "rel_pct": -52.85
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 1,
+          "value": 622.2166121006012,
+          "rel_pct": -52.79
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-0",
+          "device": 2,
+          "value": 623.4059110283852,
+          "rel_pct": -52.7
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-4",
+          "device": 7,
+          "value": 623.6191838979721,
+          "rel_pct": -52.68
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-8",
+          "device": 2,
+          "value": 649.559311568737,
+          "rel_pct": -50.71
+        },
+        {
+          "host": "yushan-muxi-card-screen-128-cp-copy-worker-3",
+          "device": 7,
+          "value": 676.3655692338943,
+          "rel_pct": -48.68
+        }
+      ]
+    },
+    "verdict_by_host": {
+      "yushan-muxi-card-screen-128-cp-copy-master-0": {
+        "contended": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-0": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-1": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-10": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-11": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-12": {
+        "bad": 1,
+        "good": 7
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-13": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-14": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-2": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-3": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-4": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-5": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-6": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-7": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-8": {
+        "good": 8
+      },
+      "yushan-muxi-card-screen-128-cp-copy-worker-9": {
+        "good": 8
+      }
+    }
+  }
+}
