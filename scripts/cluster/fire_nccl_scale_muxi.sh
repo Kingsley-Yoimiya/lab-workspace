@@ -30,8 +30,7 @@ out="$AFS_OUT/scale_${WORLD}.jsonl"
 echo "FIRE scale=$WORLD nnodes=$nnodes port=$MASTER_PORT out=$out"
 
 cluster_pod_exec "${CLUSTER_POD}" "mkdir -p '$AFS_SCRIPTS' '$AFS_OUT'"
-ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
-  "$(_cluster_vcctl_prefix) pod exec -i ${CLUSTER_POD} -- bash -c 'cat > $AFS_SCRIPTS/nccl_torch_bench.py'" \
+cluster_pod_exec_i "${CLUSTER_POD}" "cat > $AFS_SCRIPTS/nccl_torch_bench.py" \
   < "$SCRIPT_DIR/nccl_torch_bench.py"
 
 r=0
@@ -50,21 +49,20 @@ export PYTHONUNBUFFERED=1
 export NCCL_SOCKET_IFNAME=${NCCL_SOCKET_IFNAME:-eth0}
 export MCCL_SOCKET_IFNAME=${MCCL_SOCKET_IFNAME:-eth0}
 export GLOO_SOCKET_IFNAME=${GLOO_SOCKET_IFNAME:-eth0}
-# 默认 xscale（verbs Active）；IB 不通时可 NCCL_IB_DISABLE=1 回退 socket
-export NCCL_IB_HCA=${NCCL_IB_HCA:-xscale}
-export MCCL_IB_HCA=${MCCL_IB_HCA:-xscale}
+# 线上 muxi-128node：xscale_0..3 + GID=5 + VSWITCH（历史 GID=4 跨机失败）
+export NCCL_IB_HCA=${NCCL_IB_HCA:-xscale_0,xscale_1,xscale_2,xscale_3}
+export MCCL_IB_HCA=${MCCL_IB_HCA:-xscale_0,xscale_1,xscale_2,xscale_3}
 export NCCL_DEBUG=${NCCL_DEBUG:-WARN}
 export MCCL_DEBUG=${MCCL_DEBUG:-WARN}
 export FORCE_ACTIVE_WAIT=${FORCE_ACTIVE_WAIT:-2}
-# RoCE IPv4-mapped GID 默认 4（与 net1–4 地址一致）；可用环境覆盖
-export NCCL_IB_GID_INDEX=${NCCL_IB_GID_INDEX:-4}
-export MCCL_IB_GID_INDEX=${MCCL_IB_GID_INDEX:-4}
+export NCCL_IB_GID_INDEX=${NCCL_IB_GID_INDEX:-5}
+export MCCL_IB_GID_INDEX=${MCCL_IB_GID_INDEX:-5}
+export MCCL_IB_TC=${MCCL_IB_TC:-128}
+export MCCL_ENABLE_VSWITCH=${MCCL_ENABLE_VSWITCH:-1}
+export MCCL_PCIE_BUFFER_MODE=${MCCL_PCIE_BUFFER_MODE:-0}
 # 将本机调用时的可选 env 固化进脚本（setsid 不会继承操作机 export）
 $( [[ -n "${NCCL_IB_DISABLE:-}" ]] && echo "export NCCL_IB_DISABLE=${NCCL_IB_DISABLE}" )
 $( [[ -n "${MCCL_IB_DISABLE:-}" ]] && echo "export MCCL_IB_DISABLE=${MCCL_IB_DISABLE}" )
-# 若调用方显式传了 GID，覆盖默认
-$( [[ -n "${NCCL_IB_GID_INDEX:-}" ]] && echo "export NCCL_IB_GID_INDEX=${NCCL_IB_GID_INDEX}" )
-$( [[ -n "${MCCL_IB_GID_INDEX:-}" ]] && echo "export MCCL_IB_GID_INDEX=${MCCL_IB_GID_INDEX}" )
 $( [[ -n "${NCCL_NET:-}" ]] && echo "export NCCL_NET=${NCCL_NET}" )
 $( [[ -n "${MCCL_NET:-}" ]] && echo "export MCCL_NET=${MCCL_NET}" )
 rm -f '$donef' '$failf'
@@ -80,11 +78,11 @@ EOF
 )
 
   # 分两步：先 stdin 写 /tmp 脚本，再 setsid 启动（避免复合命令吃掉 stdin）
-  printf '%s\n' "$run_body" | ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
-    "$(_cluster_vcctl_prefix) pod exec -i ${pod} -- bash -c \"cat > $run_local && chmod +x $run_local && wc -c $run_local\"" \
+  printf '%s\n' "$run_body" | cluster_pod_exec_i "$pod" \
+    "cat > $run_local && chmod +x $run_local && wc -c $run_local" \
     >"$LOG_DIR/scale${WORLD}_noderank${r}.fire.log" 2>&1
-  ssh -o BatchMode=yes -o ConnectTimeout=30 "$CLUSTER_SSH_HOST" \
-    "$(_cluster_vcctl_prefix) pod exec ${pod} -- bash -c \"setsid nohup bash $run_local </dev/null >/dev/null 2>&1 & echo STARTED \\\$!; sleep 2; pgrep -af torchrun | head -3\"" \
+  cluster_pod_exec "$pod" \
+    "setsid nohup bash $run_local </dev/null >/dev/null 2>&1 & echo STARTED \$!; sleep 2; pgrep -af torchrun | head -3" \
     >>"$LOG_DIR/scale${WORLD}_noderank${r}.fire.log" 2>&1
   echo "  fired node_rank=$r pod=$pod -> $(tr '\n' ' ' < "$LOG_DIR/scale${WORLD}_noderank${r}.fire.log")"
   r=$((r + 1))
