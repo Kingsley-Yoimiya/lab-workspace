@@ -31,7 +31,7 @@ CLUSTER_FANOUT_PARALLEL=6 ./scripts/cluster/run_card_screen_muxi.sh all
 约定：
 
 - 默认 `~/.kube/config` **保持华为**，供其他同事/会话；本仓库脚本一律走 `CLUSTER_KUBECONFIG`。
-- 扇出并发默认有界（muxi=6），避免 16 路 SSH 把跳板打成 `Connection closed by UNKNOWN port`。
+- **多节点发射必须有界并行**：`CLUSTER_FANOUT_PARALLEL`（`muxi.env` 默认 **16**）。筛卡用 `fire_screen_durable_muxi.sh` / `cluster_fanout_run`；NCCL/MCCL scale 用 `fire_nccl_scale_muxi.sh`（已并行）。**禁止** `for …; sleep 2; done` 串行点 32/64 节点。跳板 SSH 过载时只降并发（试 4～8），不要改回串行。
 - `egress_tunnel.sh` 的 18080 端口两边共用，同时只开一条即可。
 
 ## 路径约定

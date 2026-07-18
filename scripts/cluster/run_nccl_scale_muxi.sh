@@ -44,11 +44,14 @@ for i in $(seq 0 "$((CLUSTER_N_WORKERS - 1))"); do
 done
 echo "==> nodes(${#POD_NODES[@]}): ${POD_NODES[*]}"
 
-echo "==> upload nccl_torch_bench.py"
+echo "==> upload nccl_torch_bench.py + metrics"
 cluster_pod_exec "${CLUSTER_POD}" "mkdir -p '$AFS_SCRIPTS' '$AFS_OUT'"
 ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
   "$(_cluster_vcctl_prefix) pod exec -i ${CLUSTER_POD} -- bash -c 'cat > $AFS_SCRIPTS/nccl_torch_bench.py'" \
   < "$SCRIPT_DIR/nccl_torch_bench.py"
+ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
+  "$(_cluster_vcctl_prefix) pod exec -i ${CLUSTER_POD} -- bash -c 'cat > $AFS_SCRIPTS/nccl_torch_bench_metrics.py'" \
+  < "$SCRIPT_DIR/nccl_torch_bench_metrics.py"
 
 fire_node() {
   local world="$1" nnodes="$2" r="$3" out="$4"
@@ -64,6 +67,7 @@ fire_node() {
 set -euo pipefail
 rm -f '$donef' '$failf'
 cp -f '$AFS_SCRIPTS/nccl_torch_bench.py' /tmp/nccl_torch_bench.py
+cp -f '$AFS_SCRIPTS/nccl_torch_bench_metrics.py' /tmp/nccl_torch_bench_metrics.py
 nohup bash -lc '
 export PYTHONUNBUFFERED=1
 if torchrun --nnodes=$nnodes --node_rank=$r --nproc_per_node=$NPROC \
@@ -127,13 +131,53 @@ run_scale() {
     return 1
   fi
   local out="$AFS_OUT/scale_${world}.jsonl"
-  echo "==> scale=$world nnodes=$nnodes port=$MASTER_PORT"
+  local parallel="${CLUSTER_FANOUT_PARALLEL:-16}"
+  echo "==> scale=$world nnodes=$nnodes port=$MASTER_PORT parallel=$parallel"
   local r=0
+  local active=0
+  local pids=()
+  local rank_of_pid=()
+  local fail_ranks=()
   while [[ "$r" -lt "$nnodes" ]]; do
-    fire_node "$world" "$nnodes" "$r" "$out"
+    while [[ "$active" -ge "$parallel" ]]; do
+      for i in "${!pids[@]}"; do
+        if ! kill -0 "${pids[$i]}" 2>/dev/null; then
+          rc=0
+          wait "${pids[$i]}" || rc=$?
+          if [[ "$rc" -ne 0 ]]; then
+            fail_ranks+=("${rank_of_pid[$i]}")
+          fi
+          unset "pids[$i]"
+          unset "rank_of_pid[$i]"
+          active=$((active - 1))
+        fi
+      done
+      if [[ ${#pids[@]} -gt 0 ]]; then
+        pids=("${pids[@]}")
+        rank_of_pid=("${rank_of_pid[@]}")
+      else
+        pids=()
+        rank_of_pid=()
+      fi
+      [[ "$active" -ge "$parallel" ]] && sleep 0.3
+    done
+    fire_node "$world" "$nnodes" "$r" "$out" &
+    pids+=("$!")
+    rank_of_pid+=("$r")
+    active=$((active + 1))
     r=$((r + 1))
-    sleep 1
   done
+  for i in "${!pids[@]}"; do
+    rc=0
+    wait "${pids[$i]}" || rc=$?
+    if [[ "$rc" -ne 0 ]]; then
+      fail_ranks+=("${rank_of_pid[$i]}")
+    fi
+  done
+  if [[ ${#fail_ranks[@]} -gt 0 ]]; then
+    echo "FAIL fire ranks=${fail_ranks[*]}"
+    return 1
+  fi
   wait_scale "$world" "$nnodes" || return 1
   cluster_pod_exec "${CLUSTER_POD}" "
 set -euo pipefail
