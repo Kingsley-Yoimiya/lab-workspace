@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "muxi.inventory.v1",
+  "title": "Muxi node inventory",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "pod",
+    "host",
+    "pod_ip",
+    "rails",
+    "proc_net_dev",
+    "mx_smi_topo_n_raw",
+    "topo_signature",
+    "pci_layout_signature",
+    "validation_errors"
+  ],
+  "properties": {
+    "schema_version": {"const": "muxi.inventory.v1"},
+    "pod": {"type": "string", "minLength": 1},
+    "host": {"type": "string", "minLength": 1},
+    "pod_ip": {"type": "string", "minLength": 1},
+    "rails": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": {
+        "type": "object",
+        "required": [
+          "device",
+          "present",
+          "pci_bdf",
+          "state",
+          "phys_state",
+          "rate",
+          "active_mtu",
+          "active_mtu_source",
+          "gid_index5",
+          "gid_index5_netdev",
+          "state_active",
+          "phys_link_up",
+          "rate_gbps",
+          "active_mtu_bytes",
+          "gid_index5_valid"
+        ]
+      }
+    },
+    "validation_errors": {"type": "array", "maxItems": 0}
+  }
+}

@@ -1,0 +1,31 @@
+probe: muxi_pair_round_robin
+schedule_schema: muxi.pair_schedule.v1
+result_schema: muxi.pair_result.v1
+schedule_algorithm: circle-v1-direction-sha256-v1
+question: node-disjoint pair调度与MCCL单向P2P探针能否在64节点可靠运行
+fixed_parameters:
+  nodes: 64
+  total_rounds: 63
+  pairs_per_round: 32
+  executed_rounds: 2
+  bytes: 16777216
+  warmup: 3
+  iters: 10
+  gpu_per_node: 1
+  hca: xscale_0
+  gid_index: 5
+  tc: 128
+  vswitch: 1
+primitive: torch.distributed.isend/irecv
+positive_control: 传输完成、接收pattern正确、MCCL INFO确认xscale_0
+negative_control: 每轮node-disjoint perfect matching降低probe自身端点争用
+supports:
+  - schedule_correctness
+  - probe_runnability
+  - first_two_round_distribution
+  - obvious_pair_outliers
+does_not_prove:
+  - topology_cluster
+  - leaf_or_spine_identity
+  - physical_path
+  - absence_of_shared_fabric

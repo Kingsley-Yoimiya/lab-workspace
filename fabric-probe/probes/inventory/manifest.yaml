@@ -1,0 +1,40 @@
+probe: muxi_inventory
+schema_version: muxi.inventory.v1
+question: 64个pod的xscale rail、GID、PCI与GPU-NIC亲和inventory是否完整一致
+preconditions:
+  - jump_host_home_kubeconfig_identity_yinjinrun.p
+  - target_job_has_64_running_pods
+  - read_only_commands_only
+load_and_risk: 只读、无通信负载、64pod并发短命令
+commands:
+  - hostname
+  - hostname -i
+  - readlink /sys/class/infiniband/xscale_*/device
+  - cat /sys/class/infiniband/xscale_*/ports/1/{state,phys_state,rate,active_mtu,gids/5}
+  - cat /sys/class/infiniband/xscale_*/ports/1/gid_attrs/ndevs/5
+  - cat /proc/net/dev
+  - mx-smi topo -n
+  - ibv_devinfo
+unavailable_tools_record_only:
+  - lldpctl
+  - lldpd
+  - ip
+  - ethtool
+  - traceroute
+supports:
+  - rail_completeness
+  - gid_mtu_rate_consistency
+  - pci_and_gpu_nic_affinity_signature_groups
+  - endpoint_outlier_detection
+does_not_prove:
+  - leaf_or_spine_identity
+  - physical_path
+  - rail_traffic_balance
+  - switch_fault_domain
+artifacts:
+  - raw/*.raw.log
+  - raw/*.rc
+  - inventory.jsonl
+  - rails.csv
+  - validation_summary.json
+  - SUMMARY.md

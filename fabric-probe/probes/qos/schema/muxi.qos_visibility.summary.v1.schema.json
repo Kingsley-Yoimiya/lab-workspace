@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "muxi.qos_visibility.summary.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "valid",
+    "pods",
+    "tc_evidence",
+    "xscale_counter_directories",
+    "xscale_counter_files",
+    "unavailable_command_counts",
+    "recognized_mccl_environment_names",
+    "parameters"
+  ],
+  "properties": {
+    "schema_version": {"const": "muxi.qos_visibility.summary.v1"},
+    "valid": {"type": "boolean"},
+    "pods": {"type": "array"},
+    "tc_evidence": {
+      "type": "object",
+      "required": [
+        "environment_variable_read",
+        "qp_traffic_class_set",
+        "wire_dscp_ecn"
+      ]
+    }
+  }
+}

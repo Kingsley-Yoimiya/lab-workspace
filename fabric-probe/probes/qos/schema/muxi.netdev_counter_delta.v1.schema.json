@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "muxi.netdev_counter_delta.v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "valid",
+    "pods",
+    "rows",
+    "payload_bytes",
+    "observed_to_payload_ratio",
+    "roce_data_byte_sensitive",
+    "error_drop_delta_nonzero"
+  ],
+  "properties": {
+    "schema_version": {"const": "muxi.netdev_counter_delta.v1"},
+    "valid": {"type": "boolean"},
+    "roce_data_byte_sensitive": {"type": "boolean"}
+  }
+}
