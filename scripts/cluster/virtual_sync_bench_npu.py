@@ -3,6 +3,13 @@
 
 独立模式：无 HCCL，每卡本地 forward+backward，落墙钟 step JSONL。
 real_sync：可选机内 HCCL AllReduce（单节点校准）。
+
+重要：real_sync = DP 风格 grad AllReduce（dp_allreduce），不是 Tensor Parallel。
+真 TP 见同目录 tp_block_bench_npu.py。
+
+--arch mlp|block：
+  mlp   — 原双 FFN MLP（默认，保持兼容）
+  block — 单层 LayerNorm + Linear FFN（与 op_block_bench_npu 同构）
 """
 from __future__ import annotations
 
@@ -21,11 +28,18 @@ def _write(path: Path, rec: dict) -> None:
 
 
 def main() -> None:
-    ap = argparse.ArgumentParser()
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--mode", choices=["independent", "real_sync"], required=True)
+    ap.add_argument(
+        "--arch",
+        choices=["mlp", "block"],
+        default="mlp",
+        help="mlp=原双FFN（默认）；block=单层 LN+FFN（与 Phase2 同构）",
+    )
     ap.add_argument("--iters", type=int, default=80)
     ap.add_argument("--warmup", type=int, default=10)
     ap.add_argument("--hidden", type=int, default=4096)
+    ap.add_argument("--ffn", type=int, default=0, help="block 用；0→4*hidden")
     ap.add_argument("--seq", type=int, default=1024)
     ap.add_argument("--batch", type=int, default=1)
     ap.add_argument("--layers", type=int, default=4)
@@ -59,8 +73,11 @@ def main() -> None:
         rank = global_rank
         world = 1
 
-    # 纯 MLP：Ascend 上避免手写 attention 维踩坑；indep 轨只需制造卡间算力抖动
-    class Block(nn.Module):
+    H = args.hidden
+    FFN = args.ffn if args.ffn > 0 else 4 * H
+
+    # mlp：Ascend 上避免手写 attention 维踩坑；indep 轨只需制造卡间算力抖动
+    class MlpStackBlock(nn.Module):
         def __init__(self, h: int):
             super().__init__()
             self.ln1 = nn.LayerNorm(h)
@@ -76,11 +93,31 @@ def main() -> None:
             y = self.fc4(F.gelu(self.fc3(self.ln2(x))))
             return x + y
 
-    model = nn.Sequential(*[Block(args.hidden) for _ in range(args.layers)]).to(
-        device=device, dtype=torch.float16
-    )
+    class Phase2Block(nn.Module):
+        """与 op_block_bench_npu 同构：LN + FFN Linear。"""
+
+        def __init__(self, h: int, ffn: int):
+            super().__init__()
+            self.ln1 = nn.LayerNorm(h)
+            self.fc1 = nn.Linear(h, ffn, bias=False)
+            self.fc2 = nn.Linear(ffn, h, bias=False)
+            self.ln2 = nn.LayerNorm(h)
+
+        def forward(self, x):
+            y = self.fc2(F.gelu(self.fc1(self.ln1(x))))
+            x = x + y
+            return self.ln2(x)
+
+    if args.arch == "mlp":
+        model = nn.Sequential(*[MlpStackBlock(H) for _ in range(args.layers)]).to(
+            device=device, dtype=torch.float16
+        )
+    else:
+        model = nn.Sequential(*[Phase2Block(H, FFN) for _ in range(args.layers)]).to(
+            device=device, dtype=torch.float16
+        )
     opt = torch.optim.AdamW(model.parameters(), lr=1e-4)
-    B, S, H = args.batch, args.seq, args.hidden
+    B, S = args.batch, args.seq
 
     def one_step() -> None:
         x = torch.randn(B, S, H, device=device, dtype=torch.float16)
@@ -89,6 +126,7 @@ def main() -> None:
         loss = y.float().pow(2).mean()
         loss.backward()
         if use_dist:
+            # real_sync = dp_allreduce（对 grad 做 AllReduce），不是 TP
             for p in model.parameters():
                 if p.grad is not None:
                     dist.all_reduce(p.grad)
@@ -119,15 +157,22 @@ def main() -> None:
                 "node": node,
                 "local": local,
                 "mode": args.mode,
+                # real_sync 语义标签：dp_allreduce，不是 TP
+                "sync_kind": "dp_allreduce" if use_dist else "none",
+                "arch": args.arch,
                 "hostname": hostname,
                 "t_start": t_start,
+                "tag": args.tag,
             },
         )
 
     Path(args.out_dir).joinpath(f"done_rank{global_rank:03d}.txt").write_text(
-        f"OK {args.mode} rank={global_rank}\n", encoding="utf-8"
+        f"OK {args.mode} arch={args.arch} rank={global_rank}\n", encoding="utf-8"
     )
-    print(f"VSYNC_DONE mode={args.mode} rank={global_rank} iters={args.iters}", flush=True)
+    print(
+        f"VSYNC_DONE mode={args.mode} arch={args.arch} rank={global_rank} iters={args.iters}",
+        flush=True,
+    )
     if use_dist:
         dist.barrier()
         dist.destroy_process_group()

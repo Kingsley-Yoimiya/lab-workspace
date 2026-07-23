@@ -92,10 +92,7 @@ run_one() {
   local pod="$1"
   local logf="$LOG_DIR/${pod}.log"
   echo "==> start $pod"
-  local prefix
-  prefix="$(_cluster_vcctl_prefix)"
-  if ssh -o BatchMode=yes -o ConnectTimeout=30 "$CLUSTER_SSH_HOST" \
-    "${prefix} pod exec ${pod} -- bash -lc $(printf '%q' "
+  if cluster_pod_exec "$pod" "
 set -euo pipefail
 cd '$AFS_CS'
 export PYTHONUNBUFFERED=1
@@ -107,7 +104,7 @@ python screen.py \
   --out '$OUT_JSONL' \
   --no-plot
 echo SCREEN_DONE_${pod}
-")" >"$logf" 2>&1; then
+" >"$logf" 2>&1; then
     echo "==> done $pod"
     return 0
   fi
@@ -186,10 +183,9 @@ ls -la '$AFS_OUT_DIR' | head -40
 "
 
 echo "==> pull results → $LOG_DIR/results"
-ssh -o BatchMode=yes "$CLUSTER_SSH_HOST" \
-  "$(_cluster_vcctl_prefix) pod exec -i ${CLUSTER_POD} -- bash -c 'tar -C $AFS_OUT_DIR -cf - .' " \
-  > "$LOG_DIR/results.tar" || true
 mkdir -p "$LOG_DIR/results"
+cluster_pod_exec_i "${CLUSTER_POD}" "tar -C $AFS_OUT_DIR -cf - ." \
+  > "$LOG_DIR/results.tar" || true
 tar -xf "$LOG_DIR/results.tar" -C "$LOG_DIR/results" 2>/dev/null || true
 
 if [[ ${#FAIL_PODS[@]} -ne 0 ]]; then

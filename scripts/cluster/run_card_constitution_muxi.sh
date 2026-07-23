@@ -92,11 +92,8 @@ run_one() {
   local logf="$LOG_DIR/${pod}.log"
   local tag="$pod"
   echo "==> start $pod (durable)"
-  local prefix
-  prefix="$(_cluster_vcctl_prefix)"
-  # 短 SSH：远端 setsid nohup；勿 kill 含 screen.py 字样的 bash -lc 包装进程
-  if ssh -o BatchMode=yes -o ConnectTimeout=45 "$CLUSTER_SSH_HOST" \
-    "${prefix} pod exec ${pod} -- bash -lc $(printf '%q' "
+  # 短连：远端 setsid nohup；勿 kill 含 screen.py 字样的 bash -lc 包装进程
+  if cluster_pod_exec "$pod" "
 set -euo pipefail
 mkdir -p '$AFS_OUT_DIR'
 python3 -c \"from pathlib import Path; p=Path('$AFS_OUT_DIR') / ('$tag' + '.run.sh'); p.write_text('#!/bin/bash\\nset -euo pipefail\\ncd $AFS_CS\\nexport PYTHONUNBUFFERED=1\\nexec python -u screen.py --device all --config $CONFIG_NAME --sdc-rounds $SDC_ROUNDS --gemm-n $GEMM_N --sustained-s $SUSTAINED_S $IDLE_CLI --out $OUT_JSONL --no-plot\\n'); p.chmod(0o755); print('wrote', p)\"
@@ -106,7 +103,7 @@ setsid nohup '$AFS_OUT_DIR/${tag}.run.sh' > '$AFS_OUT_DIR/${tag}.run.log' 2>&1 <
 echo STARTED_\$!
 sleep 5
 ps -eo etime,args | awk '\$2 ~ /^python/ && /screen\\.py/ {print; found=1} END{if(!found) exit 1}'
-")" >"$logf" 2>&1; then
+" >"$logf" 2>&1; then
     echo "==> launched $pod"
     return 0
   fi

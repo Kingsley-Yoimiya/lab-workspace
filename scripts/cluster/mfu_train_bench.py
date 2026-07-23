@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Ascend 训练 MFU 微基准（dense / moe），用 torchrun+HCCL 在 16/32/64/128 上跑。
 
+★ 这是 DP + grad AllReduce，不是 Tensor Parallel。真 TP 见同目录 tp_block_bench_npu.py。
+
 Dense: 小型 GPT 前向+反向（近似 6ND FLOPs）
 MoE:  专家路由 + 多专家 FFN（额外 all_to_all 风格通信用 all_gather 近似）
 

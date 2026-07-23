@@ -31,13 +31,29 @@ unset _JH_DIR
 
 # 独立 kubeconfig（跳板上的路径）。空 = 用登录机默认 ~/.kube/config
 # 华为: ~/.kube/config.huawei-a3-241ceshi
-# 沐曦: ~/.kube/config.muxi-mohe
+# 沐曦 h3c: ~/.kube/config-vc-c550-h3c-test.yaml；旧 mohe 见 muxi.env
 CLUSTER_KUBECONFIG="${CLUSTER_KUBECONFIG:-}"
+# kubectl=本机直连；vcctl=经跳板（默认）
+CLUSTER_EXEC_MODE="${CLUSTER_EXEC_MODE:-vcctl}"
 
 DEVICES_PER_NODE="${DEVICES_PER_NODE:-16}"
 CLUSTER_N_WORKERS="${CLUSTER_N_WORKERS:-6}"
 # 扇出时本机→weibozhen 的并发 SSH 上限（过大易 Connection closed by UNKNOWN port）
 CLUSTER_FANOUT_PARALLEL="${CLUSTER_FANOUT_PARALLEL:-6}"
+
+_cluster_kubectl_env() {
+  # 本机 Clash → aTrust；必须清掉 NO_PROXY=10/8
+  export HTTPS_PROXY="${HTTPS_PROXY:-http://127.0.0.1:7897}"
+  export HTTP_PROXY="${HTTP_PROXY:-http://127.0.0.1:7897}"
+  export https_proxy="$HTTPS_PROXY"
+  export http_proxy="$HTTP_PROXY"
+  export NO_PROXY="127.0.0.1,localhost"
+  export no_proxy="$NO_PROXY"
+  unset ALL_PROXY all_proxy 2>/dev/null || true
+  if [[ -n "${CLUSTER_KUBECONFIG}" ]]; then
+    export KUBECONFIG="$CLUSTER_KUBECONFIG"
+  fi
+}
 
 # 远端 vcctl 命令前缀：绑定独立 KUBECONFIG，不碰默认 config
 _cluster_vcctl_prefix() {
@@ -68,6 +84,11 @@ cluster_pod_exec() {
     shift
   fi
   local cmd="$1"
+  if [[ "$CLUSTER_EXEC_MODE" == "kubectl" ]]; then
+    _cluster_kubectl_env
+    kubectl exec "$pod" -- bash -lc "$cmd"
+    return
+  fi
   local prefix
   prefix="$(_cluster_vcctl_prefix)"
   cluster_ssh "${prefix} pod exec ${pod} -- bash -lc $(printf '%q' "$cmd")"
@@ -82,6 +103,11 @@ cluster_pod_exec_i() {
     shift
   fi
   local cmd="$1"
+  if [[ "$CLUSTER_EXEC_MODE" == "kubectl" ]]; then
+    _cluster_kubectl_env
+    kubectl exec -i "$pod" -- bash -c "$cmd"
+    return
+  fi
   local prefix
   prefix="$(_cluster_vcctl_prefix)"
   ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" \
@@ -89,6 +115,11 @@ cluster_pod_exec_i() {
 }
 
 cluster_pod_list() {
+  if [[ "$CLUSTER_EXEC_MODE" == "kubectl" ]]; then
+    _cluster_kubectl_env
+    kubectl get pods -l "volcano.sh/job-name=${CLUSTER_JOB}" -o wide
+    return
+  fi
   # 兼容旧 -j 与新 --job
   if ! cluster_vcctl "pod get --job ${CLUSTER_JOB}" 2>/dev/null; then
     cluster_vcctl "pod get -j ${CLUSTER_JOB}"
@@ -97,6 +128,13 @@ cluster_pod_list() {
 
 # 列出 Running pod 名（stdout 一行一个），兼容 macOS bash 3.2
 cluster_pods_running() {
+  if [[ "$CLUSTER_EXEC_MODE" == "kubectl" ]]; then
+    _cluster_kubectl_env
+    kubectl get pods -l "volcano.sh/job-name=${CLUSTER_JOB}" --no-headers 2>/dev/null \
+      | awk '$3=="Running" {print $1}' \
+      | sort
+    return
+  fi
   cluster_ssh "$(_cluster_vcctl_prefix) pod get --job ${CLUSTER_JOB} 2>/dev/null" \
     | awk 'NR>1 && $3=="Running" {print $1}' \
     | sort
