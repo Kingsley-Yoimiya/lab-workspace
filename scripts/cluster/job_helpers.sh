@@ -64,8 +64,32 @@ _cluster_vcctl_prefix() {
   fi
 }
 
+# CLUSTER_SSH_CONTROL_PATH 非空时，所有 ssh 复用同一 ControlMaster 连接
+# （跳板经多层 ProxyCommand，逐次新建连接慢且触发 sshd 限流；多路复用是正解）。
 cluster_ssh() {
-  ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" "$@"
+  if [[ -n "${CLUSTER_SSH_CONTROL_PATH:-}" ]]; then
+    ssh -o BatchMode=yes -o ConnectTimeout=20 \
+        -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" "$CLUSTER_SSH_HOST" "$@"
+  else
+    ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" "$@"
+  fi
+}
+
+# 建立/关闭复用主连接。driver 起止各调一次。
+cluster_ssh_mux_start() {
+  [[ -n "${CLUSTER_SSH_CONTROL_PATH:-}" ]] || return 0
+  # 已存在活连接则复用
+  if ssh -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" -O check "$CLUSTER_SSH_HOST" 2>/dev/null; then
+    return 0
+  fi
+  ssh -o BatchMode=yes -o ConnectTimeout=20 \
+      -o ControlMaster=yes -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" \
+      -o ControlPersist="${CLUSTER_SSH_CONTROL_PERSIST:-300}" \
+      -fN "$CLUSTER_SSH_HOST"
+}
+cluster_ssh_mux_stop() {
+  [[ -n "${CLUSTER_SSH_CONTROL_PATH:-}" ]] || return 0
+  ssh -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" -O exit "$CLUSTER_SSH_HOST" 2>/dev/null || true
 }
 
 # 在登录机上跑 vcctl（自动带 KUBECONFIG）
@@ -89,6 +113,11 @@ cluster_pod_exec() {
     kubectl exec "$pod" -- bash -lc "$cmd"
     return
   fi
+  if [[ "$CLUSTER_EXEC_MODE" == "vcctl_local" ]]; then
+    # driver 已在跳板上：直接本地 vcctl，无 ssh（消除 Mac↔跳板连接 churn）
+    KUBECONFIG="${CLUSTER_KUBECONFIG:-$KUBECONFIG}" "${VCCTL_BIN:-vcctl}" pod exec "${pod}" -- bash -lc "$cmd"
+    return
+  fi
   local prefix
   prefix="$(_cluster_vcctl_prefix)"
   cluster_ssh "${prefix} pod exec ${pod} -- bash -lc $(printf '%q' "$cmd")"
@@ -108,10 +137,13 @@ cluster_pod_exec_i() {
     kubectl exec -i "$pod" -- bash -c "$cmd"
     return
   fi
+  if [[ "$CLUSTER_EXEC_MODE" == "vcctl_local" ]]; then
+    KUBECONFIG="${CLUSTER_KUBECONFIG:-$KUBECONFIG}" "${VCCTL_BIN:-vcctl}" pod exec -i "${pod}" -- bash -c "$cmd"
+    return
+  fi
   local prefix
   prefix="$(_cluster_vcctl_prefix)"
-  ssh -o BatchMode=yes -o ConnectTimeout=20 "$CLUSTER_SSH_HOST" \
-    "${prefix} pod exec -i ${pod} -- bash -c $(printf '%q' "$cmd")"
+  cluster_ssh "${prefix} pod exec -i ${pod} -- bash -c $(printf '%q' "$cmd")"
 }
 
 cluster_pod_list() {
@@ -132,6 +164,12 @@ cluster_pods_running() {
     _cluster_kubectl_env
     kubectl get pods -l "volcano.sh/job-name=${CLUSTER_JOB}" --no-headers 2>/dev/null \
       | awk '$3=="Running" {print $1}' \
+      | sort
+    return
+  fi
+  if [[ "$CLUSTER_EXEC_MODE" == "vcctl_local" ]]; then
+    KUBECONFIG="${CLUSTER_KUBECONFIG:-$KUBECONFIG}" "${VCCTL_BIN:-vcctl}" pod get --job "${CLUSTER_JOB}" 2>/dev/null \
+      | awk 'NR>1 && $3=="Running" {print $1}' \
       | sort
     return
   fi
