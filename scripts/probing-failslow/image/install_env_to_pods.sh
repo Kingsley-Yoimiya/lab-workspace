@@ -57,6 +57,13 @@ rm -rf \$PYDEPS/probing \$PYDEPS/probing-*.dist-info \$PYDEPS/probing.pth \$PYDE
 /opt/conda/bin/python3.12 -m pip install --target=\$PYDEPS --no-deps /tmp/probing-0.2.5-cp38-abi3-linux_x86_64.whl
 strings \$PYDEPS/probing/_core.abi3.so | grep -q mx-smi
 strings \$PYDEPS/probing/_core.abi3.so | grep -q gpu.utilization
+# site-packages 挂 hook：仅 PYTHONPATH 时 .pth 不会被 site 加载
+SP=/opt/conda/lib/python3.12/site-packages
+ln -sfn \$PYDEPS/probing \$SP/probing
+ln -sfn \$PYDEPS/probing-0.2.5.dist-info \$SP/probing-0.2.5.dist-info
+ln -sfn \$PYDEPS/probing_hook.py \$SP/probing_hook.py
+cp -f \$PYDEPS/probing.pth \$SP/probing.pth
+# 禁止把 maca cu-bridge libcuda 塞进 LD_LIBRARY_PATH：cudarc 缺符号会 SIGSEGV
 command -v stress-ng >/dev/null || (apt-get update -qq && DEBIAN_FRONTEND=noninteractive apt-get install -y -qq stress-ng fio) || true
 cat > /etc/profile.d/probe-bundle.sh <<'EOT'
 export LOCAL_CODE=/workspace/probe-bundle
@@ -65,9 +72,10 @@ export PYTHONPATH=/workspace/probe-bundle/pydeps\${PYTHONPATH:+:\$PYTHONPATH}
 export PATH=/workspace/probe-bundle/pydeps/bin:/opt/conda/bin:\$PATH
 export PROBING_GPU=on
 export PROBING_GPU_SAMPLE_MS=1000
-export PROBING_TORCH_PROFILING=on
+unset PROBING_TORCH_PROFILING
 export SIDECAR_WARMUP=8
 EOT
+/opt/conda/bin/python3.12 -c "import probing; print('probing_import_ok', probing.__file__)"
 echo INSTALL_OK $pod
 "
 done

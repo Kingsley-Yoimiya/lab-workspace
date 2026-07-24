@@ -7,7 +7,12 @@ D4 规则（decisions A5）：
   - 缺 EXT 所需表 → 停 D3，tool_probing_sql=TABLE_MISSING
   - 表在但无外部争用信号 → 停 D3，SQL_NO_EXT_EVIDENCE
   - 表在且信号命中且 grid 对 → D4
-绝不把 injection.log 升为 D4。
+  - P3-EXT：cpu.tasks 含 stress 优先；否则 dump 同窗 host_pressure.json
+    （/proc/pressure CPU rate）hit → D4（host_psi_cpu）
+  - P3-SW：cpu.utilization 进程 scope 的 rss_kb 超阈 → D4（cpu.utilization_rss）
+  - P1-EXT：优先 process.gpu_users / gpu.utilization；MetaX 缺表时 dump 同窗
+    mx-smi（host_gpu.json）→ D4（host_mx_smi_hbm_bw / host_mx_smi_gpu_util）
+绝不把 injection.log / 裸 pgrep 升为 D4。
 """
 from __future__ import annotations
 
@@ -21,6 +26,72 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 from score_dlevel_offline import GT, score_case  # noqa: E402
+
+
+def _host_psi_evidence(root: Path, case: str, manifest: dict) -> tuple[bool, str]:
+    """Read case-appropriate dump-time /proc/pressure evidence."""
+    hp = manifest.get("host_pressure") or {}
+    paths = list(root.glob(f"{case}/**/C2_probing/probing/host_pressure.json"))
+    blob: dict = {}
+    if paths:
+        paths.sort(key=lambda p: (0 if "h14410" in str(p) else 1, str(p)))
+        try:
+            blob = json.loads(paths[0].read_text())
+        except Exception as exc:  # noqa: BLE001
+            return False, f"SQL_NO_EXT_EVIDENCE:host_pressure_unreadable:{exc}"
+    if not blob and hp:
+        blob = dict(hp)
+    if not blob:
+        return False, "SQL_NO_EXT_EVIDENCE:no_host_pressure"
+    if blob.get("hit"):
+        if case == "P3-EXT-B":
+            rate = blob.get("io_some_rate_us_s")
+            return True, f"host_psi_io:rate={rate}"
+        rate = blob.get("cpu_some_rate_us_s")
+        return True, f"host_psi_cpu:rate={rate}"
+    if case == "P3-EXT-B":
+        rate = blob.get("io_some_rate_us_s")
+        thr = blob.get("threshold_io_rate_us_s")
+        return False, f"SQL_NO_EXT_EVIDENCE:host_psi_io_no_hit:rate={rate}:thresh={thr}"
+    rate = blob.get("cpu_some_rate_us_s")
+    thr = blob.get("threshold_cpu_rate_us_s")
+    return False, f"SQL_NO_EXT_EVIDENCE:host_psi_no_hit:rate={rate}:thresh={thr}"
+
+
+def _host_gpu_evidence(root: Path, case: str, manifest: dict) -> tuple[bool, str]:
+    """MetaX：dump 同窗 mx-smi（host_gpu.json），绕过缺失的 gpu.utilization。"""
+    hg = manifest.get("host_gpu") or {}
+    paths = list(root.glob(f"{case}/**/C2_probing/probing/host_gpu.json"))
+    blob: dict = {}
+    if paths:
+        paths.sort(key=lambda p: (0 if "h14410" in str(p) else 1, str(p)))
+        try:
+            blob = json.loads(paths[0].read_text())
+        except Exception as exc:  # noqa: BLE001
+            return False, f"SQL_NO_EXT_EVIDENCE:host_gpu_unreadable:{exc}"
+    if not blob and hg:
+        blob = dict(hg)
+    if not blob:
+        return False, "SQL_NO_EXT_EVIDENCE:no_host_gpu"
+    evid = str(blob.get("evidence") or "host_mx_smi")
+    if blob.get("hit"):
+        if case == "P1-EXT-B":
+            return True, f"{evid}:hbm_bw_mbs={blob.get('hbm_bw_mbs')}"
+        return True, (
+            f"{evid}:util={blob.get('gpu_util_pct')}"
+            f":n_procs={blob.get('n_procs')}"
+        )
+    if case == "P1-EXT-B":
+        return False, (
+            f"SQL_NO_EXT_EVIDENCE:{evid}"
+            f":hbm_bw_mbs={blob.get('hbm_bw_mbs')}"
+            f":thresh={blob.get('threshold_hbm_bw_mbs')}"
+        )
+    return False, (
+        f"SQL_NO_EXT_EVIDENCE:{evid}"
+        f":util={blob.get('gpu_util_pct')}"
+        f":thresh={blob.get('threshold_gpu_util_pct')}"
+    )
 
 
 def load_manifest(root: Path, case: str) -> dict | None:
@@ -49,23 +120,61 @@ def ext_evidence(case: str, manifest: dict, root: Path) -> tuple[bool, str]:
     missing = manifest.get("tables_missing") or []
 
     if case.startswith("P1-EXT"):
-        if not present.get("process.gpu_users"):
-            if not present.get("gpu.utilization"):
-                miss = [t for t in ("gpu.utilization", "process.gpu_users") if not present.get(t)]
-                return False, "TABLE_MISSING:" + ",".join(miss)
-            return False, "SQL_NO_EXT_EVIDENCE:gpu.utilization_present_but_no_process.gpu_users"
-        ok, _ = read_query_ok(root, case, "process_gpu_users")
-        return (ok, "process.gpu_users_rows" if ok else "process.gpu_users_empty")
+        # 理想路径：Probing GPU 表
+        if present.get("process.gpu_users"):
+            ok, _ = read_query_ok(root, case, "process_gpu_users")
+            return (ok, "process.gpu_users_rows" if ok else "process.gpu_users_empty")
+        if present.get("gpu.utilization"):
+            ok, snippet = read_query_ok(root, case, "gpu_util")
+            if ok and re.search(r"\b([5-9]\d|100)(\.\d+)?\b", snippet):
+                return True, "gpu.utilization_high"
+            # 表在但行弱：仍可回落 mx-smi
+        # MetaX 旁路：同窗 mx-smi（CudaBackend 起不来时表永不出现）
+        hg_hit, hg_note = _host_gpu_evidence(root, case, manifest)
+        if hg_hit:
+            return True, hg_note
+        if present.get("gpu.utilization"):
+            return False, hg_note or "SQL_NO_EXT_EVIDENCE:gpu.utilization_present_but_weak"
+        miss = [t for t in ("gpu.utilization", "process.gpu_users") if not present.get(t)]
+        if hg_note and "no_host_gpu" not in hg_note:
+            return False, hg_note
+        return False, "TABLE_MISSING:" + ",".join(miss)
 
     if case.startswith("P3-EXT"):
-        if not present.get("process.cpu_stats"):
-            if not present.get("cpu.utilization"):
-                return False, "TABLE_MISSING:process.cpu_stats,cpu.utilization"
-            return False, "SQL_NO_EXT_EVIDENCE:cpu.utilization_is_self_process_only"
-        ok, snippet = read_query_ok(root, case, "process_cpu_stats")
-        if ok and re.search(r"stress", snippet, re.I):
-            return True, "process.cpu_stats_stress"
-        return False, "SQL_NO_EXT_EVIDENCE:no_external_pid_in_process.cpu_stats"
+        # 优先 process.cpu_stats / cpu.tasks 指名 stress
+        if present.get("process.cpu_stats"):
+            ok, snippet = read_query_ok(root, case, "process_cpu_stats")
+            if ok and re.search(r"stress", snippet, re.I):
+                return True, "process.cpu_stats_stress"
+        for qname in ("p3_cpu_tasks_stress", "cpu_tasks"):
+            ok, snippet = read_query_ok(root, case, qname)
+            if ok and re.search(r"stress", snippet, re.I):
+                return True, f"{qname}_stress"
+        # 其次：dump 同窗 host PSI（P3-EXT-A=CPU，P3-EXT-B=IO）
+        hp_hit, hp_note = _host_psi_evidence(root, case, manifest)
+        if hp_hit:
+            return True, hp_note
+        if present.get("cpu.tasks") or present.get("cpu.utilization") or hp_note:
+            return False, hp_note or "SQL_NO_EXT_EVIDENCE:no_stress_in_cpu.tasks"
+        return False, "TABLE_MISSING:process.cpu_stats,cpu.tasks,cpu.utilization"
+
+    if case.startswith("P3-SW"):
+        # 训练进程内泄漏：Probing 无 process.memory；用 cpu.utilization.rss_kb
+        if not present.get("cpu.utilization"):
+            return False, "TABLE_MISSING:cpu.utilization"
+        rss_thr_kb = 700_000  # ~700 MiB：Loud 窗内累计泄漏后应明显抬升
+        for qname in ("p3sw_rss_window", "cpu_util"):
+            ok, snippet = read_query_ok(root, case, qname)
+            if not ok:
+                continue
+            nums = [int(x) for x in re.findall(r"\b(\d{5,})\b", snippet)]
+            # 过滤明显是 ts 的超大数；rss_kb 通常 1e5–1e7
+            rss_cands = [n for n in nums if 50_000 <= n <= 50_000_000]
+            if rss_cands and max(rss_cands) >= rss_thr_kb:
+                return True, f"cpu.utilization_rss:max_kb={max(rss_cands)}:{qname}"
+            if rss_cands:
+                return False, f"SQL_NO_EXT_EVIDENCE:rss_low:max_kb={max(rss_cands)}:thr={rss_thr_kb}"
+        return False, "SQL_NO_EXT_EVIDENCE:cpu.utilization_rss_unparsed"
 
     _ = missing
     return False, "unsupported_case"

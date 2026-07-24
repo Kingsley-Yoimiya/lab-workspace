@@ -13,7 +13,6 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PATH=/workspace/probe-bundle/pydeps/bin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
     PROBING_GPU=on \
     PROBING_GPU_SAMPLE_MS=1000 \
-    PROBING_TORCH_PROFILING=on \
     SIDECAR_WARMUP=8 \
     LOCAL_CODE=/workspace/probe-bundle \
     LOCAL_OUT=/workspace/probe-bundle/out
@@ -30,7 +29,12 @@ COPY probing.whl /tmp/probing.whl
 RUN mkdir -p /workspace/probe-bundle/pydeps \
     && /opt/conda/bin/python3.12 -m pip install --no-cache-dir --target=/workspace/probe-bundle/pydeps --no-deps /tmp/probing.whl \
     && rm -f /tmp/probing.whl \
-    && /opt/conda/bin/python3.12 -c "import sys; sys.path.insert(0,'/workspace/probe-bundle/pydeps'); import probing; print('probing_ok', probing.__file__)"
+    && SP=/opt/conda/lib/python3.12/site-packages \
+    && ln -sfn /workspace/probe-bundle/pydeps/probing $SP/probing \
+    && ln -sfn /workspace/probe-bundle/pydeps/probing-0.2.5.dist-info $SP/probing-0.2.5.dist-info \
+    && ln -sfn /workspace/probe-bundle/pydeps/probing_hook.py $SP/probing_hook.py \
+    && cp -f /workspace/probe-bundle/pydeps/probing.pth $SP/probing.pth \
+    && /opt/conda/bin/python3.12 -c "import probing; print('probing_ok', probing.__file__)"
 
 # 编排 / 训练 / 注入 / SQL dump（镜像内自洽，起 pod 即可跑）
 COPY bundle/ /workspace/probe-bundle/

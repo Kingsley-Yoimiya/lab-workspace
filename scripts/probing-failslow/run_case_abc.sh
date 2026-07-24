@@ -11,6 +11,11 @@
 set -euo pipefail
 
 HERE="$(cd "$(dirname "$0")" && pwd)"
+# 门禁：/dev/shm 默认 64Mi 会 SIGBUS；privileged pod 上 remount 到 32G
+if [ "${ENSURE_SHM:-1}" = "1" ] && [ -f "$HERE/ensure_shm.sh" ]; then
+  PODS="$PODS" KUBECONFIG="$KUBECONFIG" NS="${NS:-default}" SHM_SIZE="${SHM_SIZE:-32G}" \
+    bash "$HERE/ensure_shm.sh" || echo "WARN: ensure_shm failed (继续跑可能 SIGBUS)" >&2
+fi
 CASE_ID="${CASE_ID:?need CASE_ID}"
 RUN_ID="${RUN_ID:?need RUN_ID (timestamped)}"
 PODS="${PODS:?need PODS csv}"
@@ -30,6 +35,11 @@ LOCAL_RESULT_ROOT="${LOCAL_RESULT_ROOT:-/Users/yinjinrun/Codespace/myportal/resu
 ACCEPT_GATE="${ACCEPT_GATE:-0}"
 ACCEPT_SCRIPT="${ACCEPT_SCRIPT:-$HERE/accept_loud.py}"
 SIDECAR_WARMUP="${SIDECAR_WARMUP:-8}"
+# 导出，避免 pipeline 子进程读到父 shell 里更短的残留 ITERS
+export ITERS WARMUP SIDECAR_WARMUP
+if [ "$ITERS" -lt 350 ] 2>/dev/null; then
+  echo "WARN: ITERS=$ITERS < 350；cube/hbm 注入窗/预热不足，结果不可信" >&2
+fi
 
 case "$CASE_ID" in
   P1-EXT-A|3a)
@@ -55,6 +65,13 @@ case "$CASE_ID" in
     INJECT_ARGS="${INJECT_ARGS:-}"
     MODE="${MODE:-host_bound}"
     ACCEPT_MIN_RATIO="${ACCEPT_MIN_RATIO:-1.3}"
+    # Loud IO 咬合：加密 ckpt + 同盘 payload 读（fio 否则咬不到 step_ms）
+    CKPT_EVERY="${CKPT_EVERY:-20}"
+    FLUSH_EVERY="${FLUSH_EVERY:-1}"
+    IO_PAYLOAD="${IO_PAYLOAD:-/workspace/probe-bundle/io_stress/payload.bin}"
+    IO_READ_KB="${IO_READ_KB:-1024}"
+    IO_STRESS_DIR="${IO_STRESS_DIR:-/workspace/probe-bundle/io_stress}"
+    export CKPT_EVERY FLUSH_EVERY IO_PAYLOAD IO_READ_KB IO_STRESS_DIR
     ;;
   P3-SW-A|8a)
     CASE="P3-SW-A"; INJECT_KIND="8a"
@@ -75,6 +92,9 @@ run_config() {
     ROUNDS="$ROUNDS" SEED="$SEED" MODEL="$MODEL" MODE="$MODE" LOCAL_FS=1 \
     GROUP_ID="$group_id" CONFIGS_ONLY="$config" KUBECONFIG="$KUBECONFIG" NS="$NS" \
     SIDECAR_WARMUP="$SIDECAR_WARMUP" \
+    CKPT_EVERY="${CKPT_EVERY:-100}" FLUSH_EVERY="${FLUSH_EVERY:-5}" \
+    IO_PAYLOAD="${IO_PAYLOAD:-}" IO_READ_KB="${IO_READ_KB:-0}" \
+    IO_STRESS_DIR="${IO_STRESS_DIR:-/workspace/probe-bundle/io_stress}" \
     bash "$HERE/run_case_pipeline_v4.sh"
 }
 
@@ -100,8 +120,10 @@ pull_results() {
 }
 
 # 默认 A/B/C；smoke 可设 ABC_CONFIGS=C0_baseline,C1_inject_none
+# 注意：父 shell 若 export 过 ABC_CONFIGS 会污染全量跑——需要全量时请 unset ABC_CONFIGS
 if [ -n "${ABC_CONFIGS:-}" ]; then
-  IFS=',' read -r -a RUN_CFGS <<< "$ABC_CONFIGS"
+  echo "ABC_CONFIGS=${ABC_CONFIGS} (override; unset for full A/B/C)"
+  IFS=',' read -r -a RUN_CFGS <<< "${ABC_CONFIGS}"
 else
   RUN_CFGS=(C0_baseline C1_inject_none C2_probing)
 fi

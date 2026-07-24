@@ -15,6 +15,12 @@ mkdir -p "$STATE_ROOT/logs" "$STATE_ROOT/Loud" "$STATE_ROOT/Quiet"
 export ACCEPT_GATE=0
 export SIDECAR_WARMUP=8
 export DUMP_PROBING_SQL=1
+# 强制 500：父 shell 若残留 ITERS=200，会在 SIDECAR_WARMUP 未结束就收工 → C1/C0 假阴性
+export ITERS="${ITERS:-500}"
+if [ "$ITERS" -lt 500 ]; then
+  echo "WARN: overriding ITERS=$ITERS → 500 for sql_d4 campaign" | tee -a "$STATE_ROOT/campaign.log"
+  export ITERS=500
+fi
 
 IFS=',' read -r -a POD_ARRAY <<< "$PODS"
 for pod in "${POD_ARRAY[@]}"; do
