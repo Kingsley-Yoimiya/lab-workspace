@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # 沐曦 matched-world 跳板直连编排。
-# 所有目标 pod 的 vcctl exec 均在 ais-cf3e61a5 内发起；Mac 只上传 bundle 和回拉结果。
+# 所有目标 pod 的 vcctl exec 均在 afs-cpu 内发起；Mac 只上传 bundle 和回拉结果。
+# 2026-09-05：禁止再经 AIS 发射或探测 AIS。
 set -euo pipefail
 
 RUN_ID="${RUN_ID:?set RUN_ID}"

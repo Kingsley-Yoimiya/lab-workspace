@@ -26,7 +26,7 @@ Profile：`source scripts/cluster/huawei.env` / `muxi.env`（可用 `AFS_USER_OV
 1. **只写 `$AFS_HOME`**：同步、日志、ckpt、报告、临时文件只落在自己的 `lab-workspace` 或 `results`。
 2. **他人目录 / 测试 Shared 只读**：`yushan`、`geruijun`、`/afs-a3-241ceshi-shared` 下他人前缀等只能读；要跑别人的 CARD_SCREEN 用只读变量，或拷到自己的 `lab-workspace`，**禁止原地改**。
 3. **误写在别人底下的自有内容要迁走**：迁到 `$AFS_HOME`，不留可写尾巴。
-4. **真盘只在 pod**：跳板登录壳里 `/afs-a3-*` 常是假挂载；写 / 测 / 迁移一律 `cluster_pod_exec`。
+4. **真盘只在 pod**：跳板登录壳里 `/afs-a3-*` 常是假挂载；写 / 测 / 迁移一律 `cluster_pod_exec`。日常只处理数据时，用 **AFS CPU 数据壳** `yjr-afs-cpu-*`（对齐单机 16 卡 256C/1920Gi，带 16 卡 hold；模板见 myportal `plans/afs-cpu-shell/`）。
 5. **破坏性操作必须过守卫**：目标须在 `$AFS_HOME` 下（`afs_assert_under_home`），越界失败。
 6. **Job / kubeconfig 隔离**：不覆盖跳板默认 `~/.kube/config`。
 7. **结果带时间戳子目录**，避免互相覆盖。

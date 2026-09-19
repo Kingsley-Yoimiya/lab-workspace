@@ -5,7 +5,7 @@
 #   - 绝不覆盖跳板默认 ~/.kube/config
 #   - 通过 CLUSTER_KUBECONFIG 指向独立文件，vcctl 前缀 KUBECONFIG=...
 #   - source huawei.env 或 muxi.env 后再调本文件的函数
-#   - 默认跳板 ais-cf3e61a5（见 docs/AIS_JUMP_CLUSTER.md）；旧 weibozhen 暂不可用
+#   - 默认跳板 afs-cpu（2026-09-05 AIS 已回收，禁止自动探测）
 #
 # 例:
 #   source scripts/cluster/muxi.env
@@ -13,7 +13,7 @@
 #   cluster_pod_exec 'mx-smi | head'
 set -euo pipefail
 
-CLUSTER_SSH_HOST="${CLUSTER_SSH_HOST:-ais-cf3e61a5}"
+CLUSTER_SSH_HOST="${CLUSTER_SSH_HOST:-afs-cpu}"
 CLUSTER_JOB="${CLUSTER_JOB:-huawei-8node-copy}"
 CLUSTER_POD="${CLUSTER_POD:-${CLUSTER_JOB}-master-0}"
 CLUSTER_IMAGE="${CLUSTER_IMAGE:-registry2.d.pjlab.org.cn/ccr-yangxiaolei/mindspeed-llm:openeuler22.03-mindspeed-llm-2.3.0-a3-arm}"
@@ -66,7 +66,17 @@ _cluster_vcctl_prefix() {
 
 # CLUSTER_SSH_CONTROL_PATH 非空时，所有 ssh 复用同一 ControlMaster 连接
 # （跳板经多层 ProxyCommand，逐次新建连接慢且触发 sshd 限流；多路复用是正解）。
+_cluster_refuse_ais_jump() {
+  case "${CLUSTER_SSH_HOST:-}" in
+    ais-*|ais-jump|pjlab-ais)
+      echo "refusing AIS jump '${CLUSTER_SSH_HOST}' (recycled 2026-09-05; no auto-probe). Use CLUSTER_SSH_HOST=afs-cpu." >&2
+      return 1
+      ;;
+  esac
+}
+
 cluster_ssh() {
+  _cluster_refuse_ais_jump || return 1
   if [[ -n "${CLUSTER_SSH_CONTROL_PATH:-}" ]]; then
     ssh -o BatchMode=yes -o ConnectTimeout=20 \
         -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" "$CLUSTER_SSH_HOST" "$@"
@@ -77,6 +87,7 @@ cluster_ssh() {
 
 # 建立/关闭复用主连接。driver 起止各调一次。
 cluster_ssh_mux_start() {
+  _cluster_refuse_ais_jump || return 1
   [[ -n "${CLUSTER_SSH_CONTROL_PATH:-}" ]] || return 0
   # 已存在活连接则复用
   if ssh -o ControlPath="$CLUSTER_SSH_CONTROL_PATH" -O check "$CLUSTER_SSH_HOST" 2>/dev/null; then
